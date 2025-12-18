@@ -4,26 +4,13 @@ const jwt = require('jsonwebtoken');
 const pool = require('./db');
 const multer = require('multer');
 const bcrypt = require('bcryptjs');
-const path = require('path');
+const path = require('path'); // Se declara una sola vez acá
 const fs = require('fs');
 require('dotenv').config();
 
-const path = require('path'); // Asegurate de importar esto arriba de todo
-
-// ... después de tus rutas de API (app.use('/api', ...)) ...
-
-// 1. Decirle a Express que la carpeta '../dist' tiene los archivos estáticos
-app.use(express.static(path.join(__dirname, '../dist')));
-
-// 2. Cualquier otra ruta que no sea API, devuelve el index.html (para que ande React/Vite)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../dist/index.html'));
-});
-
-// app.listen(PORT, ...)
-
 const app = express();
-const SECRET_KEY = process.env.JWT_SECRET || 'dev_secret_only_for_local_dev'; // In prod, MUST be in .env
+const PORT = process.env.PORT || 3000; // Definimos el puerto
+const SECRET_KEY = process.env.JWT_SECRET || 'dev_secret_only_for_local_dev';
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
   console.error("FATAL: JWT_SECRET no definidos en .env para producción");
@@ -33,9 +20,9 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads')); // Serve uploaded files
+app.use('/uploads', express.static('uploads')); 
 
-// Configure Multer
+// Configurar Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = './uploads';
@@ -45,7 +32,7 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append extension
+    cb(null, Date.now() + path.extname(file.originalname)); 
   }
 });
 const upload = multer({ storage: storage });
@@ -64,7 +51,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Routes
+// --- RUTAS DE LA API ---
 
 // 1. Login Endpoint
 app.post('/api/login', async (req, res) => {
@@ -101,9 +88,11 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// 2. Register Endpoint (with File Upload)
+// 2. Register Endpoint
 app.post('/api/register', upload.single('foto_perfil'), async (req, res) => {
   const { dni, password, nombre, apellido, nro_socio, tipo_socio, email, telefono } = req.body;
+  // Nota: En producción, 'localhost' en la URL de la imagen podría no funcionar para usuarios externos.
+  // Idealmente usarías req.get('host') o una variable de entorno, pero lo dejamos así para que funcione ahora.
   const foto_perfil = req.file ? `http://localhost:${PORT}/uploads/${req.file.filename}` : null;
   
   if (!dni || !password || !nombre || !apellido || !nro_socio) {
@@ -243,27 +232,16 @@ app.delete('/api/deportes/:id', authenticateToken, async (req, res) => {
    }
 });
 
-// 5. Validate Token & Get User (Session Persistence)
-// Session persistent is now handled by /api/socios (unified)
-
+// 5. User & Admin Endpoints
 app.put('/api/me/update', authenticateToken, upload.single('foto_perfil'), async (req, res) => {
   try {
     const { telefono, email } = req.body;
     const userId = req.user.id;
     
-    // For update, if no new file is provided, keep the old one? Or client sends it?
-    // It's tricky to keep the old one without knowing what it was if we don't query first.
-    // Ideally client sends what changed.
-    // If req.file exists, we update the photo. If not, we might want to keep the current one 
-    // OR allow clearing it? For now, let's assume if file is not sent, we don't update that column (dynamic query needed or just retrieve first).
-    
-    // Let's retreive current user to handle partial updates cleanly or just use COALESCE in SQL
-    
     const currentUserRes = await pool.query('SELECT foto_perfil FROM socios WHERE id = $1', [userId]);
     const currentPhoto = currentUserRes.rows[0].foto_perfil;
     
     const foto_perfil = req.file ? `http://localhost:${PORT}/uploads/${req.file.filename}` : (req.body.foto_perfil || currentPhoto); 
-    // Note: req.body.foto_perfil might come as text if they didn't change the file but we just want to update phone.
 
     const result = await pool.query(
       'UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3 WHERE id = $4 RETURNING *',
@@ -284,7 +262,6 @@ app.put('/api/me/update', authenticateToken, upload.single('foto_perfil'), async
   }
 });
 
-// 5a. Admin User Management Endpoints
 app.get('/api/admin/users', authenticateToken, async (req, res) => {
     try {
         const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
@@ -308,11 +285,7 @@ app.put('/api/admin/users/:id/status', authenticateToken, async (req, res) => {
         }
         
         const { id } = req.params;
-        const { status } = req.body; // 'approved' or 'rejected'
-        
-        // If rejected, maybe we delete or just set status? "rejected" status allows keeping record.
-        // Or if user wants to "accept", maybe reject means delete?
-        // Let's implement status update.
+        const { status } = req.body; 
         
         const result = await pool.query('UPDATE socios SET account_status = $1 WHERE id = $2 RETURNING *', [status, id]);
         res.json(result.rows[0]);
@@ -330,7 +303,6 @@ app.delete('/api/admin/users/:id', authenticateToken, async (req, res) => {
         }
 
         const { id } = req.params;
-        // Optional: Prevent deleting oneself?
         if (parseInt(id) === req.user.id) {
              return res.status(400).json({ error: 'No puedes eliminarte a ti mismo.' });
         }
@@ -343,8 +315,6 @@ app.delete('/api/admin/users/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// 3. Get Socio Data (Protected)
-// Unified logic: if no :id, returns current user (me). If :id, returns that user.
 app.get('/api/socios/:id?', authenticateToken, async (req, res) => {
   try {
     const id = req.params.id || req.user.id;
@@ -354,7 +324,6 @@ app.get('/api/socios/:id?', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Socio no encontrado' });
     }
     
-    // Authorization check: users can only see their own profile unless they are admins
     if (id !== req.user.id) {
         const userRes = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
         if (userRes.rows[0].rol !== 'admin') {
@@ -369,11 +338,7 @@ app.get('/api/socios/:id?', authenticateToken, async (req, res) => {
   }
 });
 
-// Remove redundant /api/me and old /api/socios/:id
-
 // 6. Prode Endpoints
-
-// Helper: Calculate Points
 const calculatePoints = (predHome, predAway, realHome, realAway) => {
     if (predHome === realHome && predAway === realAway) return 3;
     const predDiff = predHome - predAway;
@@ -382,7 +347,6 @@ const calculatePoints = (predHome, predAway, realHome, realAway) => {
     return 0;
 };
 
-// GET /api/matches
 app.get('/api/matches', authenticateToken, async (req, res) => {
   try {
     const { season } = req.query;
@@ -392,13 +356,6 @@ app.get('/api/matches', authenticateToken, async (req, res) => {
     if (season) {
         query += ' WHERE season = $1';
         params.push(season);
-    } else {
-        // Default to current year if not specified, OR just show all logic but usually UI handles it.
-        // Let's filter by current year by default if no param, to satisfy "not show old matches"
-        // But better to let client decide. 
-        // User asked: "don't show old matches". 
-        // Strategy: Frontend will ask for current season by default.
-        // Backend just supports the filter.
     }
     
     query += ' ORDER BY start_time ASC';
@@ -411,7 +368,6 @@ app.get('/api/matches', authenticateToken, async (req, res) => {
   }
 });
 
-// POST /api/matches (Admin)
 app.post('/api/matches', authenticateToken, async (req, res) => {
     try {
         const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
@@ -431,7 +387,6 @@ app.post('/api/matches', authenticateToken, async (req, res) => {
     }
 });
 
-// PUT /api/matches/:id/result (Admin - Triggers Scoring)
 app.put('/api/matches/:id/result', authenticateToken, async (req, res) => {
     const client = await pool.connect();
     try {
@@ -445,7 +400,6 @@ app.put('/api/matches/:id/result', authenticateToken, async (req, res) => {
 
         await client.query('BEGIN');
 
-        // 1. Update Match Result
         const matchRes = await client.query(
             "UPDATE matches SET home_score = $1, away_score = $2, status = 'finished' WHERE id = $3 RETURNING *",
             [home_score, away_score, id]
@@ -456,7 +410,6 @@ app.put('/api/matches/:id/result', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'Partido no encontrado' });
         }
 
-        // 2. Calculate Points for all predictions
         const predsRes = await client.query('SELECT * FROM predictions WHERE match_id = $1', [id]);
         const predictions = predsRes.rows;
 
@@ -477,7 +430,6 @@ app.put('/api/matches/:id/result', authenticateToken, async (req, res) => {
     }
 });
 
-// GET /api/predictions/my (User's predictions)
 app.get('/api/predictions/my', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM predictions WHERE user_id = $1', [req.user.id]);
@@ -488,31 +440,27 @@ app.get('/api/predictions/my', authenticateToken, async (req, res) => {
     }
 });
 
-// POST /api/predictions (Submit/Update)
 app.post('/api/predictions', authenticateToken, async (req, res) => {
     try {
         const { match_id, home_score, away_score } = req.body;
         const user_id = req.user.id;
 
-        // Check Approved Status
         const userStatus = await pool.query('SELECT account_status FROM socios WHERE id = $1', [user_id]);
         if (userStatus.rows.length === 0 || userStatus.rows[0].account_status !== 'approved') {
              return res.status(403).json({ error: 'Tu cuenta está pendiente de aprobación. No puedes realizar acciones aún.' });
         }
 
-        // 1. Check Match Time
         const matchRes = await pool.query('SELECT start_time FROM matches WHERE id = $1', [match_id]);
         if (matchRes.rows.length === 0) return res.status(404).json({ error: 'Partido no encontrado' });
         
         const startTime = new Date(matchRes.rows[0].start_time);
         const now = new Date();
-        const lockTime = new Date(startTime.getTime() - 2 * 60 * 60 * 1000); // 2 hours before
+        const lockTime = new Date(startTime.getTime() - 2 * 60 * 60 * 1000); 
 
         if (now >= lockTime) {
             return res.status(400).json({ error: 'El partido ya comenzó o está por comenzar. No se pueden cambiar pronósticos.' });
         }
 
-        // 2. Upsert Prediction
         const result = await pool.query(`
             INSERT INTO predictions (user_id, match_id, home_score, away_score)
             VALUES ($1, $2, $3, $4)
@@ -529,7 +477,6 @@ app.post('/api/predictions', authenticateToken, async (req, res) => {
     }
 });
 
-// GET /api/ranking
 app.get('/api/ranking', async (req, res) => {
     try {
         const { season } = req.query;
@@ -563,7 +510,6 @@ app.get('/api/ranking', async (req, res) => {
     }
 });
 
-// GET /api/seasons
 app.get('/api/seasons', async (req, res) => {
     try {
         const result = await pool.query('SELECT DISTINCT season FROM matches ORDER BY season DESC');
@@ -572,6 +518,15 @@ app.get('/api/seasons', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Error fetching seasons' });
     }
+});
+
+// --- INTEGRACIÓN FRONTEND (LO QUE TE FALTABA PARA QUE ANDE LA WEB) ---
+// 1. Decirle a Express que la carpeta '../dist' tiene los archivos estáticos de la web
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// 2. Cualquier ruta que no sea de la API, devuelve el index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 // Start Server
