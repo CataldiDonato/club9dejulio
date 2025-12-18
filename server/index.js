@@ -93,7 +93,7 @@ app.post('/api/register', upload.single('foto_perfil'), async (req, res) => {
   const { dni, password, nombre, apellido, nro_socio, tipo_socio, email, telefono } = req.body;
   // Nota: En producción, 'localhost' en la URL de la imagen podría no funcionar para usuarios externos.
   // Idealmente usarías req.get('host') o una variable de entorno, pero lo dejamos así para que funcione ahora.
-  const foto_perfil = req.file ? `http://localhost:${PORT}/uploads/${req.file.filename}` : null;
+  const foto_perfil = req.file ? `/uploads/${req.file.filename}` : null;
   
   if (!dni || !password || !nombre || !apellido || !nro_socio) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
@@ -142,7 +142,7 @@ app.post('/api/noticias', authenticateToken, upload.single('imagen'), async (req
     }
 
     const { titulo, bajad, contenido } = req.body;
-    const imagen_url = req.file ? `http://localhost:${PORT}/uploads/${req.file.filename}` : req.body.imagen_url;
+    const imagen_url = req.file ? `/uploads/${req.file.filename}` : req.body.imagen_url;
 
     const newNews = await pool.query(
       'INSERT INTO noticias (titulo, bajad, contenido, imagen_url) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -203,7 +203,7 @@ app.post('/api/deportes', authenticateToken, upload.single('imagen'), async (req
     }
     
     const { nombre, dia_horario, profesor, descripcion } = req.body;
-    const imagen_url = req.file ? `http://localhost:${PORT}/uploads/${req.file.filename}` : req.body.imagen_url;
+    const imagen_url = req.file ? `/uploads/${req.file.filename}` : req.body.imagen_url;
 
     const newSport = await pool.query(
       'INSERT INTO deportes (nombre, dia_horario, profesor, descripcion, imagen_url) VALUES ($1, $2, $3, $4, $5) RETURNING *',
@@ -241,7 +241,7 @@ app.put('/api/me/update', authenticateToken, upload.single('foto_perfil'), async
     const currentUserRes = await pool.query('SELECT foto_perfil FROM socios WHERE id = $1', [userId]);
     const currentPhoto = currentUserRes.rows[0].foto_perfil;
     
-    const foto_perfil = req.file ? `http://localhost:${PORT}/uploads/${req.file.filename}` : (req.body.foto_perfil || currentPhoto); 
+    const foto_perfil = req.file ? `/uploads/${req.file.filename}` : (req.body.foto_perfil || currentPhoto); 
 
     const result = await pool.query(
       'UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3 WHERE id = $4 RETURNING *',

@@ -49,7 +49,7 @@ const AdminNews = () => {
         const token = localStorage.getItem('token');
         if (!confirm('¿Seguro que querés borrar esta noticia?')) return;
 
-        const res = await fetch(`http://localhost:3000/api/noticias/${id}`, {
+        const res = await fetch(`${API_URL}/noticias/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` },
         });

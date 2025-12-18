@@ -20,7 +20,7 @@ const ProdeJugar = () => {
                 const currentSeason = seasons.length > 0 ? seasons[0] : new Date().getFullYear().toString();
 
                 // 1. Get Matches for Current Season
-                const matchesRes = await fetch(`http://localhost:3000/api/matches?season=${currentSeason}`, {
+                const matchesRes = await fetch(`${API_URL}/matches?season=${currentSeason}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!matchesRes.ok) {
@@ -32,7 +32,7 @@ const ProdeJugar = () => {
                 const matchesData = await matchesRes.json();
 
                 // 2. Get My Predictions
-                const predsRes = await fetch('http://localhost:3000/api/predictions/my', {
+                const predsRes = await fetch(`${API_URL}/predictions/my`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!predsRes.ok) {

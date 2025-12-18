@@ -50,7 +50,7 @@ const AdminSports = () => {
         const token = localStorage.getItem('token');
         if (!confirm('¿Seguro que querés borrar este deporte?')) return;
 
-        const res = await fetch(`http://localhost:3000/api/deportes/${id}`, {
+        const res = await fetch(`${API_URL}/deportes/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` },
         });

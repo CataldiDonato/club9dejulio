@@ -38,7 +38,7 @@ const AdminUsers = () => {
         
         try {
             if (type === 'APPROVE') {
-                const res = await fetch(`http://localhost:3000/api/admin/users/${userId}/status`, {
+                const res = await fetch(`${API_URL}/admin/users/${userId}/status`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ const AdminUsers = () => {
                 // User requirement: "admin accepts". 
                 // Let's assume reject = delete for clean up, or maybe status rejected.
                 // Doing status update to 'rejected' for now.
-                const res = await fetch(`http://localhost:3000/api/admin/users/${userId}/status`, {
+                const res = await fetch(`${API_URL}/admin/users/${userId}/status`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const AdminUsers = () => {
                 });
                 if (res.ok) fetchUsers();
             } else if (type === 'REVOKE') {
-                const res = await fetch(`http://localhost:3000/api/admin/users/${userId}/status`, {
+                const res = await fetch(`${API_URL}/admin/users/${userId}/status`, {
                     method: 'PUT',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const AdminUsers = () => {
                 });
                 if (res.ok) fetchUsers();
             } else if (type === 'DELETE') {
-                const res = await fetch(`http://localhost:3000/api/admin/users/${userId}`, {
+                const res = await fetch(`${API_URL}/admin/users/${userId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

@@ -108,7 +108,7 @@ const AdminProde = () => {
     const handleSetResult = async () => {
         const { matchId, homeScore, awayScore } = modal.data;
         try {
-            const res = await fetch(`http://localhost:3000/api/matches/${matchId}/result`, {
+            const res = await fetch(`${API_URL}/matches/${matchId}/result`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
