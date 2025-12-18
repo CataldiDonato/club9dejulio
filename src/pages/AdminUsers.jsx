@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { Check, X, User } from 'lucide-react';
 import { API_URL } from '../config';
