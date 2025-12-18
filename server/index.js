@@ -8,6 +8,20 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
+const path = require('path'); // Asegurate de importar esto arriba de todo
+
+// ... después de tus rutas de API (app.use('/api', ...)) ...
+
+// 1. Decirle a Express que la carpeta '../dist' tiene los archivos estáticos
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// 2. Cualquier otra ruta que no sea API, devuelve el index.html (para que ande React/Vite)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
+// app.listen(PORT, ...)
+
 const app = express();
 const SECRET_KEY = process.env.JWT_SECRET || 'dev_secret_only_for_local_dev'; // In prod, MUST be in .env
 
