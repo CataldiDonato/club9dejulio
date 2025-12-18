@@ -1,0 +1,77 @@
+import React from 'react';
+import { MapPin } from 'lucide-react';
+
+const Instalaciones = () => {
+  const facilities = [
+    {
+      title: "Estadio 'El Lanudo'",
+      desc: "Nuestro campo de juego principal, con capacidad para 3000 espectadores. Cuenta con iluminación LED de última generación inaugurada en 2022, permitiendo la disputa de encuentros nocturnos de primer nivel. El césped es orgullo de la región.",
+      image: "../src/images/estadio.jpg"
+    },
+    {
+      title: "Sede Social",
+      desc: "El corazón de la vida social del club. Un espacio renovado que incluye secretaría administrativa, salón de trofeos y un buffet restaurante abierto a toda la comunidad. Punto de encuentro obligado para los socios.",
+      image: "../src/images/sede.png"
+    },
+    {
+      title: "Complejo Natatorio",
+      desc: "Disfrutá del verano en nuestras tres piletas: semi-olímpica para nadadores, recreativa para la familia y pileta para niños. Rodeado de un amplio parque arbolado con asadores y quinchos.",
+      image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=2670&auto=format&fit=crop"
+    },
+    {
+      title: "Gimnasio",
+      desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico, Voley, Básquet y Futsal. Escenario también de grandes eventos sociales, fiestas y cenas multitudinarias.",
+      image: "../src/images/gimnasio.png"
+    },
+    {
+      title: "Salón",
+      desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico, Voley, Básquet y Futsal. Escenario también de grandes eventos sociales, fiestas y cenas multitudinarias.",
+      image: "../src/images/salon.png"
+    },
+    
+  ];
+
+
+
+  return (
+    <div className="bg-white">
+      {/* Hero simple */}
+      <div className="bg-black text-white py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">Nuestras <br/> <span className="text-gray-500">Instalaciones</span></h1>
+            <p className="text-xl max-w-2xl text-gray-300">
+                Infraestructura de primer nivel al servicio del socio y del deportista. Conocé los espacios donde late la pasión del 9 de Julio.
+            </p>
+        </div>
+      </div>
+
+      {/* Facilities Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="grid gap-20">
+            {facilities.map((item, index) => (
+                <div key={index} className={`flex flex-col md:flex-row items-center gap-10 ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
+                    <div className="w-full md:w-1/2">
+                        <div className="relative group overflow-hidden shadow-2xl border-4 border-black">
+                             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
+                             <img src={item.image} alt={item.title} className="w-full h-64 md:h-[400px] object-cover transform group-hover:scale-110 transition-transform duration-700 grayscale group-hover:grayscale-0" />
+                        </div>
+                    </div>
+                    <div className="w-full md:w-1/2">
+                        <div className="flex items-center gap-2 mb-4">
+                            <MapPin className="text-black" />
+                            <span className="text-sm font-bold uppercase tracking-widest text-gray-500">Instalaciones</span>
+                        </div>
+                        <h2 className="text-4xl font-black uppercase mb-6">{item.title}</h2>
+                        <p className="text-lg text-gray-600 leading-relaxed mb-6">
+                            {item.desc}
+                        </p>
+                    </div>
+                </div>
+            ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Instalaciones;
