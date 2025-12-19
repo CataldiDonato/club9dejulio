@@ -33,7 +33,7 @@ const Historia = () => {
              <p className="mb-4 text-gray-700">9 de Julio es uno de los clubes más ganadores y tradicionales de la liga. Miembro fundador "de facto" al ganar el primer torneo de la historia en 1932.</p>
              <div className="flex flex-wrap gap-2">
                 {[1932, 1933, 1935, 1963, 1973, 1974, 1975, 1984, 1986, 2011, 2016, 2018, 2023].map(year => (
-                    <span key={year} className="bg-club-blue text-black px-3 py-1 rounded-full font-bold text-sm shadow-sm border border-blue-600">
+                    <span key={year} className="bg-club-black text-white px-3 py-1 rounded-full font-bold text-sm shadow-sm border border-blue-600">
                         {year}
                     </span>
                 ))}

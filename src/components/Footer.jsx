@@ -14,7 +14,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-white transition-colors"><Facebook size={24} /></a>
-              <a href="#" className="hover:text-white transition-colors"><Instagram size={24} /></a>
+              <a href="https://www.instagram.com/club9dejulioberabevu/" className="hover:text-white transition-colors"><Instagram size={24} /></a>
             </div>
           </div>
           <div>
@@ -35,17 +35,17 @@ const Footer = () => {
             </ul>
           </div>
           <div>
-            <h3 className="text-white text-lg font-bold mb-4">Enlaces Rápidos</h3>
+            <h3 className="text-white text-lg font-bold mb-4">Telefonos extras</h3>
             <ul className="space-y-2">
-              <li><button className="text-sm hover:text-white transition-colors">Házte Socio</button></li>
-              <li><button className="text-sm hover:text-white transition-colors">Alquiler de Salón</button></li>
-              <li><button className="text-sm hover:text-white transition-colors">Mutual</button></li>
-              <li><button className="text-sm hover:text-white transition-colors">Tienda Oficial</button></li>
+              <li><a href="https://api.whatsapp.com/send/?phone=543465668393">Alquiler de Salón</a></li>
+              <li><a href="https://api.whatsapp.com/send/?phone=543465668393">Mutual</a></li>
+              <li><a href="https://api.whatsapp.com/send/?phone=543465668393">Tienda Oficial</a></li>
             </ul>
           </div>
         </div>
         <div className="border-t border-slate-800 mt-8 pt-8 text-center text-xs">
           <p>&copy; {new Date().getFullYear()} Club Atlético 9 de Julio de Berabevú. Todos los derechos reservados.</p>
+          <p>Desarrollado por <a href="https://techphite.com" className="text-white hover:text-blue-500 transition-colors">TechPhite</a></p>
         </div>
       </div>
     </footer>
