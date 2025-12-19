@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS socios (
     password VARCHAR(100) NOT NULL, -- In production, use hashing!
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
-    nro_socio VARCHAR(20) UNIQUE NOT NULL,
+    nro_socio VARCHAR(20) UNIQUE,
     tipo_socio VARCHAR(50) DEFAULT 'Activo',
     fecha_alta DATE DEFAULT CURRENT_DATE,
     vencimiento_cuota DATE,

@@ -1,2 +1,3 @@
-export const API_URL = '/api';
-// export const API_URL = 'https://tu-dominio-produccion.com/api';
+export const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000/api' 
+  : '/api';

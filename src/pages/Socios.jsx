@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, CreditCard, ShieldCheck, LogOut } from 'lucide-react';
+import { UserCheck, CreditCard, ShieldCheck, LogOut, Eye, EyeOff } from 'lucide-react';
 import { API_URL } from '../config';
 
 const Socios = () => {
@@ -9,6 +9,8 @@ const Socios = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   // Check for existing session
   useEffect(() => {
@@ -373,7 +375,7 @@ const Socios = () => {
              <input type="text" placeholder="DNI" required 
                 className="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
                 value={regData.dni} onChange={e => setRegData({...regData, dni: e.target.value})} />
-             <input type="text" placeholder="Nro Socio (Si tenés)" required 
+             <input type="text" placeholder="Nro Socio (Si tenés)" 
                 className="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
                 value={regData.nro_socio} onChange={e => setRegData({...regData, nro_socio: e.target.value})} />
              
@@ -391,9 +393,18 @@ const Socios = () => {
                     onChange={e => setRegData({...regData, foto_perfil: e.target.files[0]})} />
              </div>
 
-             <input type="password" placeholder="Contraseña" required 
-                className="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} />
+             <div className="relative">
+                <input type={showRegPassword ? "text" : "password"} placeholder="Contraseña" required 
+                    className="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                    value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} />
+                <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowRegPassword(!showRegPassword)}
+                >
+                    {showRegPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+             </div>
              
              <button type="submit" disabled={isLoading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold uppercase rounded-lg text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors">
@@ -417,18 +428,25 @@ const Socios = () => {
                   onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
                 />
               </div>
-              <div>
+              <div className="relative">
                 <label htmlFor="password" className="sr-only">Contraseña</label>
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showLoginPassword ? "text" : "password"}
                   required
-                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm pr-10"
                   placeholder="Contraseña"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 z-20"
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                >
+                  {showLoginPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
             </div>
 

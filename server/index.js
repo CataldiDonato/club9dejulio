@@ -63,8 +63,8 @@ app.post('/api/login', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT * FROM socios WHERE dni = $1 AND password = $2',
-      [dni, password]
+      'SELECT * FROM socios WHERE dni = $1',
+      [dni]
     );
 
     if (result.rows.length > 0) {
@@ -95,9 +95,12 @@ app.post('/api/register', upload.single('foto_perfil'), async (req, res) => {
   // Idealmente usarías req.get('host') o una variable de entorno, pero lo dejamos así para que funcione ahora.
   const foto_perfil = req.file ? `/uploads/${req.file.filename}` : null;
   
-  if (!dni || !password || !nombre || !apellido || !nro_socio) {
+  if (!dni || !password || !nombre || !apellido) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
+
+  // Convert empty string to null for nro_socio
+  const finalNroSocio = nro_socio && nro_socio.trim() !== '' ? nro_socio : null;
 
   try {
     const userCheck = await pool.query('SELECT * FROM socios WHERE dni = $1', [dni]);
@@ -105,11 +108,18 @@ app.post('/api/register', upload.single('foto_perfil'), async (req, res) => {
       return res.status(409).json({ error: 'El DNI ya está registrado' });
     }
 
+    if (finalNroSocio) {
+      const socioCheck = await pool.query('SELECT * FROM socios WHERE nro_socio = $1', [finalNroSocio]);
+      if (socioCheck.rows.length > 0) {
+        return res.status(409).json({ error: 'El Número de Socio ya está registrado' });
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await pool.query(
       "INSERT INTO socios (dni, password, nombre, apellido, nro_socio, tipo_socio, email, telefono, foto_perfil, rol, fecha_alta, estado_cuota, vencimiento_cuota, account_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', CURRENT_DATE, 'Al Día', CURRENT_DATE + INTERVAL '1 month', 'pending') RETURNING *",
-      [dni, hashedPassword, nombre, apellido, nro_socio, tipo_socio || 'Activo', email, telefono, foto_perfil]
+      [dni, hashedPassword, nombre, apellido, finalNroSocio, tipo_socio || 'Activo', email, telefono, foto_perfil]
     );
     
     const user = newUser.rows[0];
@@ -274,6 +284,32 @@ app.get('/api/admin/users', authenticateToken, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error fetching users' });
+    }
+});
+
+app.put('/api/admin/users/:id/nro_socio', authenticateToken, async (req, res) => {
+    try {
+        const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
+        if (userResult.rows.length === 0 || userResult.rows[0].rol !== 'admin') {
+            return res.status(403).json({ error: 'Acceso denegado.' });
+        }
+        
+        const { id } = req.params;
+        const { nro_socio } = req.body; 
+        const finalNroSocio = nro_socio && nro_socio.trim() !== '' ? nro_socio : null;
+
+        if (finalNroSocio) {
+            const socioCheck = await pool.query('SELECT * FROM socios WHERE nro_socio = $1 AND id != $2', [finalNroSocio, id]);
+            if (socioCheck.rows.length > 0) {
+                return res.status(409).json({ error: 'El Número de Socio ya está asignado a otro usuario.' });
+            }
+        }
+        
+        const result = await pool.query('UPDATE socios SET nro_socio = $1 WHERE id = $2 RETURNING *', [finalNroSocio, id]);
+        res.json({ success: true, user: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error actualizando número de socio' });
     }
 });
 

@@ -134,6 +134,33 @@ const AdminUsers = () => {
         });
     };
 
+    const [editingNroSocio, setEditingNroSocio] = useState({ userId: null, value: '' });
+
+    const handleUpdateNroSocio = async (userId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/admin/users/${userId}/nro_socio`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ nro_socio: editingNroSocio.value })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                setEditingNroSocio({ userId: null, value: '' });
+                fetchUsers();
+            } else {
+                alert(data.error || 'Error al actualizar');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión');
+        }
+    };
+
     // Filter pending vs others
     const pendingUsers = users.filter(u => u.account_status === 'pending');
     const otherUsers = users.filter(u => u.account_status !== 'pending');
@@ -181,7 +208,32 @@ const AdminUsers = () => {
                                         <div className="text-sm text-gray-600 space-y-1 mb-4">
                                             <p><strong>Email:</strong> {user.email || '-'}</p>
                                             <p><strong>Tel:</strong> {user.telefono || '-'}</p>
-                                            <p><strong>Socio:</strong> {user.nro_socio}</p>
+                                            <div className="flex items-center gap-2">
+                                                <strong>Socio:</strong> 
+                                                {editingNroSocio.userId === user.id ? (
+                                                    <div className="flex gap-1">
+                                                        <input 
+                                                            type="text" 
+                                                            className="border rounded px-1 w-20 py-0.5 text-xs" 
+                                                            value={editingNroSocio.value} 
+                                                            onChange={e => setEditingNroSocio({...editingNroSocio, value: e.target.value})}
+                                                            placeholder="Nro"
+                                                        />
+                                                        <button onClick={() => handleUpdateNroSocio(user.id)} className="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">OK</button>
+                                                        <button onClick={() => setEditingNroSocio({ userId: null, value: '' })} className="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-[10px]">X</button>
+                                                    </div>
+                                                ) : (
+                                                    <span className="flex items-center gap-1">
+                                                        {user.nro_socio || 'N/A'}
+                                                        <button 
+                                                            onClick={() => setEditingNroSocio({ userId: user.id, value: user.nro_socio || '' })}
+                                                            className="text-blue-600 hover:underline text-[10px] ml-2"
+                                                        >
+                                                            Editar
+                                                        </button>
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                         <div className="flex gap-2">
                                             <button onClick={() => confirmApprove(user)} className="flex-1 bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700 flex justify-center items-center gap-2">
@@ -207,6 +259,7 @@ const AdminUsers = () => {
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DNI</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nro Socio</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
@@ -221,6 +274,31 @@ const AdminUsers = () => {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.dni}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {editingNroSocio.userId === user.id ? (
+                                                        <div className="flex items-center gap-1">
+                                                            <input 
+                                                                type="text" 
+                                                                className="border rounded px-2 w-24 py-1 text-sm mr-2" 
+                                                                value={editingNroSocio.value} 
+                                                                onChange={e => setEditingNroSocio({...editingNroSocio, value: e.target.value})}
+                                                                placeholder="Número"
+                                                            />
+                                                            <button onClick={() => handleUpdateNroSocio(user.id)} className="bg-black text-white px-2 py-1 rounded text-xs font-bold">OK</button>
+                                                            <button onClick={() => setEditingNroSocio({ userId: null, value: '' })} className="bg-gray-200 text-gray-600 px-2 py-1 rounded text-xs font-bold">CANCELAR</button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-2 group">
+                                                            <span>{user.nro_socio || 'N/A'}</span>
+                                                            <button 
+                                                                onClick={() => setEditingNroSocio({ userId: user.id, value: user.nro_socio || '' })}
+                                                                className="opacity-0 group-hover:opacity-100 text-blue-600 text-xs font-bold hover:underline transition-opacity"
+                                                            >
+                                                                EDITAR
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                                         user.account_status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
