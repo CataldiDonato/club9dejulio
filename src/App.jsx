@@ -14,6 +14,7 @@ import ProdeJugar from './pages/ProdeJugar';
 import ProdeRanking from './pages/ProdeRanking';
 import AdminProde from './pages/AdminProde';
 import AdminUsers from './pages/AdminUsers';
+import AdminSponsors from './pages/AdminSponsors';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
              <Route path="/admin/sports" element={<AdminSports />} />
              <Route path="/admin/prode" element={<AdminProde />} />
              <Route path="/admin/users" element={<AdminUsers />} />
+             <Route path="/admin/sponsors" element={<AdminSponsors />} />
              <Route path="/prode/jugar" element={<ProdeJugar />} />
              <Route path="/prode/ranking" element={<ProdeRanking />} />
            </Routes>

@@ -46,7 +46,7 @@ const NewsDetail = () => {
 
       <div className="rounded-2xl overflow-hidden shadow-2xl mb-10 border border-gray-100">
         <img 
-            src={news.imagen_url || "https://images.unsplash.com/photo-1504450758481-7338eba7524a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"} 
+            src={news.imagen_url ? `${API_URL}${news.imagen_url}` : "https://images.unsplash.com/photo-1504450758481-7338eba7524a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"} 
             alt={news.titulo}
             className="w-full h-auto object-cover max-h-[500px]"
         />

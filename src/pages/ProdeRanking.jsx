@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import SponsorList from '../components/SponsorList';
 
 const ProdeRanking = () => {
     const [ranking, setRanking] = useState([]);
@@ -123,6 +124,10 @@ const ProdeRanking = () => {
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            <div className="mt-12">
+                <SponsorList location="prode" />
             </div>
         </div>
     );

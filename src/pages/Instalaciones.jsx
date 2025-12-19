@@ -1,17 +1,20 @@
-import React from 'react';
 import { MapPin } from 'lucide-react';
+import estadio from '../images/estadio.jpg';
+import sede from '../images/sede.png';
+import gimnasio from '../images/gimnasio.png';
+import salon from '../images/salon.png';
 
 const Instalaciones = () => {
   const facilities = [
     {
       title: "Estadio 'El Lanudo'",
       desc: "Nuestro campo de juego principal, con capacidad para 3000 espectadores. Cuenta con iluminación LED de última generación inaugurada en 2022, permitiendo la disputa de encuentros nocturnos de primer nivel. El césped es orgullo de la región.",
-      image: "../src/images/estadio.jpg"
+      image: estadio
     },
     {
       title: "Sede Social",
       desc: "El corazón de la vida social del club. Un espacio renovado que incluye secretaría administrativa, salón de trofeos y un buffet restaurante abierto a toda la comunidad. Punto de encuentro obligado para los socios.",
-      image: "../src/images/sede.png"
+      image: sede
     },
     {
       title: "Complejo Natatorio",
@@ -21,12 +24,12 @@ const Instalaciones = () => {
     {
       title: "Gimnasio",
       desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico, Voley, Básquet y Futsal. Escenario también de grandes eventos sociales, fiestas y cenas multitudinarias.",
-      image: "../src/images/gimnasio.png"
+      image: gimnasio
     },
     {
       title: "Salón",
       desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico, Voley, Básquet y Futsal. Escenario también de grandes eventos sociales, fiestas y cenas multitudinarias.",
-      image: "../src/images/salon.png"
+      image: salon
     },
     
   ];

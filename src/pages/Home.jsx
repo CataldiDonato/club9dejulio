@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Trophy, Users, Star, Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SponsorList from '../components/SponsorList';
 
 const Home = () => {
   return (
@@ -45,6 +46,10 @@ const Home = () => {
         </div>
       </div>
 
+      <div className="max-w-7xl mx-auto px-4 w-full">
+         <SponsorList location="home" />
+      </div>
+
       {/* Gallery Grid */}
       <div className="py-24 bg-black text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,26 +66,26 @@ const Home = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-4 h-[600px]">
                 {/* Note: Using placeholders since we don't have real assets */}
                 <div className="col-span-2 row-span-2 relative group overflow-hidden bg-gray-900">
-                    <div className="absolute inset-0 bg-[url('../src/images/futbol.jpg/')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
                     <div className="absolute bottom-0 left-0 p-6">
                         <span className="bg-black text-white text-xs font-bold px-2 py-1 uppercase">Fútbol</span>
                         <h3 className="text-2xl font-bold mt-2">Una gran pasión</h3>
                     </div>
                 </div>
                 <div className="col-span-1 row-span-1 relative group overflow-hidden bg-gray-800">
-                    <div className="absolute inset-0 bg-[url('../src/images/inchada.jpg/')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1543351611-58f6a2ff8578?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
                      <div className="absolute bottom-0 left-0 p-4">
                         <span className="bg-black text-white text-xs font-bold px-2 py-1 uppercase">Hinchada</span>
                     </div>
                 </div>
                 <div className="col-span-1 row-span-1 relative group overflow-hidden bg-gray-800">
-                     <div className="absolute inset-0 bg-[url('../src/images/padel.png/')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
+                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
                       <div className="absolute bottom-0 left-0 p-4">
                         <span className="bg-black text-white text-xs font-bold px-2 py-1 uppercase">Padel</span>
                     </div>
                 </div>
                 <div className="col-span-2 row-span-1 relative group overflow-hidden bg-gray-800">
-                    <div className="absolute inset-0 bg-[url('../src/images/bochas.png/')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1510051640316-543ee0fbf33c?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"></div>
                      <div className="absolute bottom-0 left-0 p-6">
                         <span className="bg-black text-white text-xs font-bold px-2 py-1 uppercase">Bochas</span>
               

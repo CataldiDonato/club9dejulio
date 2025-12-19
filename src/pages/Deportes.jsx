@@ -29,7 +29,7 @@ const Deportes = () => {
             {deportes.map((sport) => (
             <div key={sport.id} className="group relative overflow-hidden rounded-2xl shadow-lg aspect-[3/4] cursor-pointer" onClick={() => setSelectedSport(sport)}>
                 <img 
-                src={sport.imagen_url || "https://images.unsplash.com/photo-1526676037777-05a232554f77?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"} 
+                src={sport.imagen_url ? `${API_URL}${sport.imagen_url}` : "https://images.unsplash.com/photo-1526676037777-05a232554f77?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"} 
                 alt={sport.nombre} 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -59,7 +59,7 @@ const Deportes = () => {
                 
                 <div className="h-64 overflow-hidden relative">
                     <img 
-                        src={selectedSport.imagen_url || "https://images.unsplash.com/photo-1526676037777-05a232554f77?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"}
+                        src={selectedSport.imagen_url ? `${API_URL}${selectedSport.imagen_url}` : "https://images.unsplash.com/photo-1526676037777-05a232554f77?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"}
                         className="w-full h-full object-cover" 
                         alt={selectedSport.nombre}
                     />

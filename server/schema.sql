@@ -68,3 +68,13 @@ CREATE TABLE IF NOT EXISTS predictions (
     points INTEGER DEFAULT 0,
     UNIQUE(user_id, match_id)
 );
+CREATE TABLE IF NOT EXISTS sponsors (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    imagen_url TEXT NOT NULL,
+    link TEXT,
+    ubicacion VARCHAR(20) DEFAULT 'footer', -- 'home', 'prode', 'footer'
+    activo BOOLEAN DEFAULT TRUE,
+    clics INTEGER DEFAULT 0,
+    fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

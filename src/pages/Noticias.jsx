@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../config';
+import SponsorList from '../components/SponsorList';
 
 const Noticias = () => {
   const [noticias, setNoticias] = useState([]);
@@ -28,7 +29,7 @@ const Noticias = () => {
             <article>
               <div className="relative overflow-hidden rounded-xl aspect-[4/3] mb-4">
                 <img 
-                  src={item.imagen_url || "https://images.unsplash.com/photo-1504450758481-7338eba7524a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"} 
+                  src={item.imagen_url ? `${API_URL}${item.imagen_url}` : "https://images.unsplash.com/photo-1504450758481-7338eba7524a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"} 
                   alt={item.titulo} 
                   className="object-cover w-full h-full transform transition-transform duration-700 group-hover:scale-110"
                 />
@@ -58,6 +59,9 @@ const Noticias = () => {
       
       {noticias.length === 0 && <p className="text-center text-gray-500">No hay noticias cargadas aún.</p>}
 
+      <div className="mt-20">
+        <SponsorList location="home" /> 
+      </div>
     </div>
   );
 };

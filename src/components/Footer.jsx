@@ -1,9 +1,13 @@
 import React from 'react';
 import { Facebook, Instagram, Phone, MapPin, Mail } from 'lucide-react';
+import SponsorList from './SponsorList';
 
 const Footer = () => {
   return (
     <footer className="bg-slate-900 text-slate-300">
+      <div className="border-b border-slate-800 bg-slate-950">
+        <SponsorList location="footer" />
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
