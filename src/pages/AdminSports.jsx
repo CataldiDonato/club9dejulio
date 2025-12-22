@@ -63,7 +63,10 @@ const AdminSports = () => {
     };
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
-            <h2 className="text-3xl font-black uppercase mb-8">Administrar Deportes</h2>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <h2 className="text-3xl font-black uppercase">Administrar Deportes</h2>
+                <button onClick={() => window.location.href='/socios'} className="bg-gray-200 px-4 py-2 rounded font-bold hover:bg-gray-300 uppercase text-sm">Volver</button>
+            </div>
             
             {message && <div className="bg-green-100 p-4 rounded mb-4 text-green-800 font-bold">{message}</div>}
 
@@ -91,8 +94,6 @@ const AdminSports = () => {
                     </div>
                 ))}
             </div>
-            
-            <button onClick={() => window.location.href='/socios'} className="mt-8 text-black underline">Volver al Dashboard</button>
         </div>
     );
 };

@@ -184,33 +184,33 @@ const Socios = () => {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12 relative">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-          <div className="bg-black p-6 flex justify-between items-center text-white">
+          <div className="bg-black p-4 md:p-6 flex flex-col md:flex-row justify-between items-center text-white gap-4">
             <h2 className="text-2xl font-black uppercase flex items-center gap-2">
               <ShieldCheck /> Dashboard del Socio
             </h2>
-            <div className="flex gap-4">
+            <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                {userData.rol === 'admin' && (
                   <>
-                    <button onClick={() => window.location.href='/admin/users'} className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors flex items-center gap-2">
+                    <button onClick={() => window.location.href='/admin/users'} className="whitespace-nowrap bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors flex items-center gap-2">
                       <UserCheck size={18} /> Solicitudes
                     </button>
-                    <button onClick={() => window.location.href='/admin/sports'} className="hidden md:block bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
+                    <button onClick={() => window.location.href='/admin/sports'} className="whitespace-nowrap bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
                       Deportes +
                     </button>
-                    <button onClick={() => window.location.href='/admin/news'} className="hidden md:block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
+                    <button onClick={() => window.location.href='/admin/news'} className="whitespace-nowrap bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
                       Noticias +
                     </button>
-                    <button onClick={() => window.location.href='/admin/prode'} className="hidden lg:block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
+                    <button onClick={() => window.location.href='/admin/prode'} className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
                       Prode +
                     </button>
-                    <button onClick={() => window.location.href='/admin/sponsors'} className="hidden lg:block bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
+                    <button onClick={() => window.location.href='/admin/sponsors'} className="whitespace-nowrap bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
                       Publicidad +
                     </button>
                   </>
                )}
               <button  
                 onClick={handleLogout}
-                className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors text-sm font-bold uppercase"
+                className="whitespace-nowrap flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors text-sm font-bold uppercase"
               >
                 <LogOut size={16} /> <span className="hidden md:inline">Cerrar Sesión</span>
               </button>
@@ -219,7 +219,7 @@ const Socios = () => {
           
           {/* Pending Banner */}
           {userData.account_status === 'pending' && (
-            <div className="bg-yellow-50 border-b-4 border-yellow-400 p-6 text-center">
+            <div className="bg-yellow-50 border-b-4 border-yellow-400 p-4 md:p-6 text-center">
                 <h3 className="text-xl font-bold text-yellow-800 mb-2">⚠ Cuenta Pendiente de Aprobación</h3>
                 <p className="text-yellow-700 max-w-2xl mx-auto">
                     Tu registro fue exitoso, pero un administrador debe aprobar tu cuenta antes de que puedas utilizar todas las funciones (Prode, Reservas, etc).
@@ -228,7 +228,7 @@ const Socios = () => {
             </div>
           )}
           
-          <div className="p-8 grid md:grid-cols-2 gap-8">
+          <div className="p-4 md:p-8 grid md:grid-cols-2 gap-8">
             {/* Carnet Digital */}
             <div className="flex flex-col items-center">
               <div className="w-full max-w-sm bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white rounded-xl shadow-2xl overflow-hidden relative aspect-[1.586/1] border-2 border-white/10">

@@ -49,7 +49,7 @@ const Footer = () => {
         </div>
         <div className="border-t border-slate-800 mt-8 pt-8 text-center text-xs">
           <p>&copy; {new Date().getFullYear()} Club Atlético 9 de Julio de Berabevú. Todos los derechos reservados.</p>
-          <p>Desarrollado por <a href="https://techphite.com" className="text-white hover:text-blue-500 transition-colors">TechPhite</a></p>
+          <p>Desarrollado por <a href="https://techphite.com" className="text-white hover:text-blue-500 transition-colors">TechPhite. v001</a></p>
         </div>
       </div>
     </footer>

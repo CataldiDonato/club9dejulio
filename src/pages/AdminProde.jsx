@@ -139,7 +139,10 @@ const AdminProde = () => {
                 isDestructive={modal.isDestructive}
             />
 
-            <h1 className="text-3xl font-bold mb-8">Administrar Prode</h1>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <h1 className="text-3xl font-bold">Administrar Prode</h1>
+                <button onClick={() => window.location.href='/socios'} className="bg-gray-200 px-4 py-2 rounded font-bold hover:bg-gray-300 uppercase text-sm">Volver</button>
+            </div>
 
             {/* Create Match Form - Protected for Admin Only on Frontend too */}
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">

@@ -73,7 +73,17 @@ const MatchCard = ({ match, prediction, onPredict }) => {
                 </div>
             </div>
 
-            <div className="bg-slate-50 p-3 rounded-lg w-full flex justify-center items-center gap-4">
+            <div className="bg-slate-50 p-3 rounded-lg w-full flex justify-center items-center gap-4 relative">
+                 {/* Status Indicator inside input area */}
+                 {prediction && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-2 rounded-full border border-gray-200 shadow-sm flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                            {prediction.update_count >= 2 ? 'Sin Cambios' : 'Guardado'}
+                        </span>
+                    </div>
+                 )}
+
                  <div className="flex flex-col items-center">
                     <label className="text-xs font-bold mb-1 text-gray-500">LOCAL</label>
                     <input 
@@ -81,8 +91,8 @@ const MatchCard = ({ match, prediction, onPredict }) => {
                         min="0"
                         value={homeScore}
                         onChange={(e) => setHomeScore(e.target.value)}
-                        disabled={locked}
-                        className="w-16 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded focus:border-club-blue focus:outline-none disabled:bg-gray-200 disabled:text-gray-500"
+                        disabled={locked || (prediction?.update_count >= 2)}
+                        className="w-16 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded focus:border-club-blue focus:outline-none disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                     />
                  </div>
                  <span className="text-gray-400 font-bold">-</span>
@@ -93,19 +103,31 @@ const MatchCard = ({ match, prediction, onPredict }) => {
                         min="0"
                         value={awayScore}
                         onChange={(e) => setAwayScore(e.target.value)}
-                        disabled={locked}
-                        className="w-16 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded focus:border-club-blue focus:outline-none disabled:bg-gray-200 disabled:text-gray-500"
+                        disabled={locked || (prediction?.update_count >= 2)}
+                        className="w-16 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded focus:border-club-blue focus:outline-none disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                     />
                  </div>
             </div>
+            
+            {prediction && prediction.update_count < 2 && !locked && (
+                <p className="mt-2 text-[10px] text-gray-400 font-bold uppercase text-center">
+                    Te quedan {2 - prediction.update_count} {2 - prediction.update_count === 1 ? 'cambio' : 'cambios'} posibles.
+                </p>
+            )}
 
-            {!locked && (
+            {!locked && !(prediction?.update_count >= 2) && (
                 <button 
                     onClick={handleSave}
-                    className="mt-4 w-full bg-club-blue hover:bg-blue-700 text-black font-bold py-2 rounded transition-colors"
+                    className="mt-2 w-full bg-club-blue hover:bg-blue-700 text-black font-bold py-2 rounded transition-colors text-sm uppercase"
                 >
-                    Guardar Pronóstico
+                    {prediction ? 'Actualizar Pronóstico' : 'Guardar Pronóstico'}
                 </button>
+            )}
+            
+            {!locked && prediction?.update_count >= 2 && (
+                <div className="mt-2 w-full bg-gray-200 text-gray-500 font-bold py-2 rounded text-center text-xs uppercase border border-gray-300">
+                    Límite de cambios alcanzado
+                </div>
             )}
 
             {match.status === 'finished' && (

@@ -353,12 +353,49 @@ app.post('/api/predictions', authenticateToken, async (req, res) => {
     try {
         const { match_id, home_score, away_score } = req.body;
         const user_id = req.user.id;
+        
+        // Check account status
         const userStatus = await pool.query('SELECT account_status FROM socios WHERE id = $1', [user_id]);
         if (userStatus.rows.length === 0 || userStatus.rows[0].account_status !== 'approved') return res.status(403).json({ error: 'Tu cuenta está pendiente de aprobación.' });
+        
+        // Check match time
         const matchRes = await pool.query('SELECT start_time FROM matches WHERE id = $1', [match_id]);
         if (matchRes.rows.length === 0) return res.status(404).json({ error: 'Partido no encontrado' });
         if (new Date() >= new Date(new Date(matchRes.rows[0].start_time).getTime() - 2 * 60 * 60 * 1000)) return res.status(400).json({ error: 'El tiempo límite ha pasado.' });
-        const result = await pool.query('INSERT INTO predictions (user_id, match_id, home_score, away_score) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, match_id) DO UPDATE SET home_score = EXCLUDED.home_score, away_score = EXCLUDED.away_score RETURNING *', [user_id, match_id, home_score, away_score]);
+
+        // Check existing prediction limit
+        const existingPred = await pool.query('SELECT * FROM predictions WHERE user_id = $1 AND match_id = $2', [user_id, match_id]);
+        
+        let result;
+        if (existingPred.rows.length > 0) {
+            const currentCount = existingPred.rows[0].update_count || 0;
+            // Existing prediction: Check limit
+            // Initial save counts as update_count=0 or 1?
+            // Let's say:
+            // 1. First save: INSERT -> update_count = 0
+            // 2. First edit: UPDATE -> update_count = 1
+            // 3. Second edit: UPDATE -> update_count = 2 (LAST CHANCE used)
+            // 4. Third edit: Blocked (count is 2)
+            
+            // Adjust logic based on user request "unicamente me deberia dejar poder hacer dos veces la prediccion"
+            // If they mean "enter, then change, then change", that's 2 changes.
+            // If existing count is >= 2, block.
+            
+            if (currentCount >= 2) {
+                return res.status(403).json({ error: 'Has alcanzado el límite de cambios para este partido.' });
+            }
+
+            result = await pool.query(
+                'UPDATE predictions SET home_score = $1, away_score = $2, update_count = update_count + 1 WHERE user_id = $3 AND match_id = $4 RETURNING *',
+                [home_score, away_score, user_id, match_id]
+            );
+        } else {
+            // New prediction
+            result = await pool.query(
+                'INSERT INTO predictions (user_id, match_id, home_score, away_score, update_count) VALUES ($1, $2, $3, $4, 0) RETURNING *',
+                [user_id, match_id, home_score, away_score]
+            );
+        }
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err);
@@ -381,6 +418,16 @@ app.get('/api/ranking', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error fetching ranking' });
+    }
+});
+
+app.get('/api/seasons', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT DISTINCT season FROM matches ORDER BY season DESC');
+        res.json(result.rows.map(r => r.season));
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error fetching seasons' });
     }
 });
 

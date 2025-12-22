@@ -142,12 +142,20 @@ const AdminSponsors = () => {
                     <h1 className="text-5xl font-black uppercase tracking-tighter mb-2">Publicidad</h1>
                     <p className="text-gray-500 font-medium">Gestioná los sponsors y banners de la plataforma.</p>
                 </div>
-                <button 
-                    onClick={() => openModal()}
-                    className="bg-black text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-lg active:scale-95"
-                >
-                    <Plus size={20} /> NUEVO SPONSOR
-                </button>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => window.location.href='/socios'}
+                        className="bg-gray-200 text-black px-6 py-3 rounded-full font-bold hover:bg-gray-300 transition-all uppercase text-sm"
+                    >
+                        Volver
+                    </button>
+                    <button 
+                        onClick={() => openModal()}
+                        className="bg-black text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-lg active:scale-95 text-sm uppercase"
+                    >
+                        <Plus size={20} /> Nuevo Sponsor
+                    </button>
+                </div>
             </div>
 
             {/* SEARCH AND FILTERS */}
