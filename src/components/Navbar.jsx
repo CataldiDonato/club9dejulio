@@ -14,6 +14,7 @@ const Navbar = () => {
     { name: 'Instalaciones', path: '/instalaciones' },
     { name: 'Noticias', path: '/noticias' },
     { name: 'Deportes', path: '/deportes' },
+    { name: 'Galería', path: '/galeria' },
     { name: 'Prode', path: '/prode/jugar' },
     { name: 'Ranking', path: '/prode/ranking' },
   ];

@@ -3,7 +3,7 @@ import { API_URL } from '../config';
 
 const AdminNews = () => {
     const [news, setNews] = useState([]);
-    const [newPost, setNewPost] = useState({ titulo: '', bajad: '', contenido: '', imagen: null });
+    const [newPost, setNewPost] = useState({ titulo: '', bajad: '', contenido: '', imagenes: [] });
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -24,8 +24,11 @@ const AdminNews = () => {
         formData.append('titulo', newPost.titulo);
         formData.append('bajad', newPost.bajad);
         formData.append('contenido', newPost.contenido);
-        if (newPost.imagen) {
-            formData.append('imagen', newPost.imagen);
+        
+        if (newPost.imagenes) {
+            newPost.imagenes.forEach(file => {
+                formData.append('imagenes', file);
+            });
         }
 
         const res = await fetch(`${API_URL}/noticias`, {
@@ -38,7 +41,7 @@ const AdminNews = () => {
 
         if (res.ok) {
             setMessage('Noticia creada correctamente!');
-            setNewPost({ titulo: '', bajad: '', contenido: '', imagen: null });
+            setNewPost({ titulo: '', bajad: '', contenido: '', imagenes: [] });
             fetchNews();
         } else {
             setMessage('Error al crear noticia (permisos insuficientes?)');
@@ -75,7 +78,17 @@ const AdminNews = () => {
                     <input className="w-full border p-2 rounded" placeholder="Título" value={newPost.titulo} onChange={e => setNewPost({...newPost, titulo: e.target.value})} required />
                     <input className="w-full border p-2 rounded" placeholder="Bajada (Resumen)" value={newPost.bajad} onChange={e => setNewPost({...newPost, bajad: e.target.value})} />
                     <textarea className="w-full border p-2 rounded h-32" placeholder="Contenido" value={newPost.contenido} onChange={e => setNewPost({...newPost, contenido: e.target.value})} required />
-                    <input type="file" className="w-full border p-2 rounded" accept="image/*" onChange={e => setNewPost({...newPost, imagen: e.target.files[0]})} />
+                    
+                    <div>
+                        <label className="block text-sm font-bold mb-1">Imágenes (La primera será la portada)</label>
+                        <input type="file" multiple className="w-full border p-2 rounded" accept="image/*" onChange={e => setNewPost({...newPost, imagenes: Array.from(e.target.files)})} />
+                        {newPost.imagenes && newPost.imagenes.length > 0 && (
+                            <div className="text-sm text-gray-500 mt-1">
+                                {newPost.imagenes.length} archivos seleccionados
+                            </div>
+                        )}
+                    </div>
+
                     <button type="submit" className="bg-black text-white px-6 py-2 rounded font-bold hover:bg-gray-800">PUBLICAR</button>
                 </div>
             </form>

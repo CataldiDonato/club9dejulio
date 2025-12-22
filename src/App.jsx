@@ -15,6 +15,8 @@ import ProdeRanking from './pages/ProdeRanking';
 import AdminProde from './pages/AdminProde';
 import AdminUsers from './pages/AdminUsers';
 import AdminSponsors from './pages/AdminSponsors';
+import AdminGaleria from './pages/AdminGaleria';
+import Galeria from './pages/Galeria';
 
 function App() {
   return (
@@ -29,12 +31,14 @@ function App() {
             <Route path="/noticias/:id" element={<NewsDetail />} />
             <Route path="/deportes" element={<Deportes />} />
             <Route path="/instalaciones" element={<Instalaciones />} />
+            <Route path="/galeria" element={<Galeria />} />
             <Route path="/socios" element={<Socios />} />
             <Route path="/admin/news" element={<AdminNews />} />
              <Route path="/admin/sports" element={<AdminSports />} />
              <Route path="/admin/prode" element={<AdminProde />} />
              <Route path="/admin/users" element={<AdminUsers />} />
              <Route path="/admin/sponsors" element={<AdminSponsors />} />
+             <Route path="/admin/galeria" element={<AdminGaleria />} />
              <Route path="/prode/jugar" element={<ProdeJugar />} />
              <Route path="/prode/ranking" element={<ProdeRanking />} />
            </Routes>

@@ -73,6 +73,25 @@ CREATE TABLE IF NOT EXISTS predictions (
     UNIQUE(user_id, match_id)
 );
 
+CREATE TABLE IF NOT EXISTS noticias_imagenes (
+    id SERIAL PRIMARY KEY,
+    noticia_id INTEGER REFERENCES noticias(id) ON DELETE CASCADE,
+    imagen_url TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS galeria_eventos (
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    fecha DATE DEFAULT CURRENT_DATE,
+    portada_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS galeria_fotos (
+    id SERIAL PRIMARY KEY,
+    evento_id INTEGER REFERENCES galeria_eventos(id) ON DELETE CASCADE,
+    imagen_url TEXT NOT NULL
+);
+
 -- Insertar Usuario Admin de Preuba (Contraseña: admin123)
 -- El hash corresponde a 'admin123' usando bcrypt
 INSERT INTO socios (dni, password, nombre, apellido, nro_socio, tipo_socio, rol, account_status)

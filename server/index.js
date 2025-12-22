@@ -114,13 +114,54 @@ app.get('/api/noticias', async (req, res) => {
   }
 });
 
-app.post('/api/noticias', authenticateToken, upload.single('imagen'), async (req, res) => {
+/* NOTICIAS (Ahora con múltiples imágenes) */
+
+// GET News Detail with images
+app.get('/api/noticias/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM noticias WHERE id = $1', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Noticia no encontrada' });
+
+    const imagenes = await pool.query('SELECT imagen_url FROM noticias_imagenes WHERE noticia_id = $1', [id]);
+    
+    const noticia = result.rows[0];
+    noticia.imagenes = imagenes.rows.map(row => row.imagen_url);
+
+    res.json(noticia);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener noticia' });
+  }
+});
+
+app.post('/api/noticias', authenticateToken, upload.array('imagenes', 10), async (req, res) => {
   try {
     const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
     if (userResult.rows.length === 0 || userResult.rows[0].rol !== 'admin') return res.status(403).json({ error: 'Acceso denegado.' });
     const { titulo, bajad, contenido } = req.body;
-    const imagen_url = req.file ? `/uploads/${req.file.filename}` : req.body.imagen_url;
-    const newNews = await pool.query('INSERT INTO noticias (titulo, bajad, contenido, imagen_url) VALUES ($1, $2, $3, $4) RETURNING *', [titulo, bajad, contenido, imagen_url]);
+    
+    let main_image_url = null;
+    let other_images = [];
+
+    if (req.files && req.files.length > 0) {
+        main_image_url = `/uploads/${req.files[0].filename}`;
+        other_images = req.files.slice(1).map(f => `/uploads/${f.filename}`);
+    }
+
+    // Insert News
+    const newNews = await pool.query(
+        'INSERT INTO noticias (titulo, bajad, contenido, imagen_url) VALUES ($1, $2, $3, $4) RETURNING *', 
+        [titulo, bajad, contenido, main_image_url]
+    );
+    
+    const noticiaId = newNews.rows[0].id;
+
+    // Insert Extra Images
+    for (const imgUrl of other_images) {
+        await pool.query('INSERT INTO noticias_imagenes (noticia_id, imagen_url) VALUES ($1, $2)', [noticiaId, imgUrl]);
+    }
+
     res.json(newNews.rows[0]);
   } catch (err) {
     console.error(err);
@@ -141,17 +182,85 @@ app.delete('/api/noticias/:id', authenticateToken, async (req, res) => {
    }
 });
 
-app.get('/api/noticias/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await pool.query('SELECT * FROM noticias WHERE id = $1', [id]);
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Noticia no encontrada' });
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al obtener noticia' });
-  }
+/* GALERÍA / EVENTOS */
+
+app.get('/api/galeria', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM galeria_eventos ORDER BY fecha DESC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al obtener galería' });
+    }
 });
+
+app.get('/api/galeria/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const event = await pool.query('SELECT * FROM galeria_eventos WHERE id = $1', [id]);
+        if (event.rows.length === 0) return res.status(404).json({ error: 'Evento no encontrado' });
+
+        const photos = await pool.query('SELECT imagen_url FROM galeria_fotos WHERE evento_id = $1', [id]);
+        
+        const data = event.rows[0];
+        data.fotos = photos.rows.map(p => p.imagen_url);
+        
+        res.json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al obtener evento' });
+    }
+});
+
+app.post('/api/galeria', authenticateToken, upload.array('fotos', 50), async (req, res) => {
+    try {
+        const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
+        if (userResult.rows.length === 0 || userResult.rows[0].rol !== 'admin') return res.status(403).json({ error: 'Acceso denegado.' });
+
+        const { titulo, fecha } = req.body;
+        
+        let portada_url = null;
+        let fotos_urls = [];
+
+        if (req.files && req.files.length > 0) {
+            portada_url = `/uploads/${req.files[0].filename}`; // First one is cover
+            fotos_urls = req.files.map(f => `/uploads/${f.filename}`);
+        }
+
+        const newEvent = await pool.query(
+            'INSERT INTO galeria_eventos (titulo, fecha, portada_url) VALUES ($1, $2, $3) RETURNING *',
+            [titulo, fecha || new Date(), portada_url]
+        );
+        
+        const eventId = newEvent.rows[0].id;
+
+        for (const url of fotos_urls) {
+             await pool.query('INSERT INTO galeria_fotos (evento_id, imagen_url) VALUES ($1, $2)', [eventId, url]);
+        }
+
+        res.json(newEvent.rows[0]);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al crear evento' });
+    }
+});
+
+app.delete('/api/galeria/:id', authenticateToken, async (req, res) => {
+    try {
+        const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
+        if (userResult.rows.length === 0 || userResult.rows[0].rol !== 'admin') return res.status(403).json({ error: 'Acceso denegado.' });
+
+        const { id } = req.params;
+        // Postgres CASCADE deletes photos automatically
+        await pool.query('DELETE FROM galeria_eventos WHERE id = $1', [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al eliminar evento' });
+    }
+});
+
 
 app.get('/api/deportes', async (req, res) => {
   try {

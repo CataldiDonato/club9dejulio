@@ -200,6 +200,9 @@ const Socios = () => {
                     <button onClick={() => window.location.href='/admin/news'} className="whitespace-nowrap bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
                       Noticias +
                     </button>
+                    <button onClick={() => window.location.href='/admin/galeria'} className="whitespace-nowrap bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
+                      Galería +
+                    </button>
                     <button onClick={() => window.location.href='/admin/prode'} className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
                       Prode +
                     </button>
