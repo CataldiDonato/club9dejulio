@@ -2,13 +2,14 @@ import React from 'react';
 import { ArrowRight, Trophy, Users, Star, Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SponsorList from '../components/SponsorList';
+import ClubCalendar from '../components/ClubCalendar';
 
 const Home = () => {
   return (
     <div className="flex flex-col bg-white">
-      {/* Hero Section */}
+      {/* ... Hero Section ... */}
       <div className="relative h-[700px] bg-black text-white overflow-hidden">
-        {/* Abstract shapes for aggressive look */}
+        {/* ... Hero Content ... */}
         <div className="absolute top-0 right-0 w-2/3 h-full bg-club-dark -skew-x-12 translate-x-1/4 opacity-50 z-0"></div>
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1510051640316-543ee0fbf33c?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
         
@@ -45,6 +46,8 @@ const Home = () => {
           <Trophy size={40} className="text-white flex-shrink-0" />
         </div>
       </div>
+
+      <ClubCalendar />
 
       <div className="max-w-7xl mx-auto px-4 w-full">
          <SponsorList location="home" />

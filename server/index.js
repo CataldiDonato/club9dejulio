@@ -182,6 +182,44 @@ app.delete('/api/noticias/:id', authenticateToken, async (req, res) => {
    }
 });
 
+app.put('/api/noticias/:id', authenticateToken, upload.array('imagenes', 10), async (req, res) => {
+    try {
+        const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
+        if (userResult.rows.length === 0 || userResult.rows[0].rol !== 'admin') return res.status(403).json({ error: 'Acceso denegado.' });
+        
+        const { id } = req.params;
+        const { titulo, bajad, contenido } = req.body;
+        
+        // Obtener noticia actual
+        const currentNews = await pool.query('SELECT imagen_url FROM noticias WHERE id = $1', [id]);
+        if (currentNews.rows.length === 0) return res.status(404).json({ error: 'Noticia no encontrada' });
+        
+        let main_image_url = currentNews.rows[0].imagen_url;
+        let other_images = [];
+
+        if (req.files && req.files.length > 0) {
+            main_image_url = `/uploads/${req.files[0].filename}`;
+            other_images = req.files.slice(1).map(f => `/uploads/${f.filename}`);
+            
+            // Si hay nuevas imágenes, actualizamos las secundarias también
+            await pool.query('DELETE FROM noticias_imagenes WHERE noticia_id = $1', [id]);
+            for (const imgUrl of other_images) {
+                await pool.query('INSERT INTO noticias_imagenes (noticia_id, imagen_url) VALUES ($1, $2)', [id, imgUrl]);
+            }
+        }
+
+        const updatedNews = await pool.query(
+            'UPDATE noticias SET titulo = $1, bajad = $2, contenido = $3, imagen_url = $4 WHERE id = $5 RETURNING *',
+            [titulo, bajad, contenido, main_image_url, id]
+        );
+
+        res.json(updatedNews.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al actualizar noticia' });
+    }
+});
+
 /* GALERÍA / EVENTOS */
 
 app.get('/api/galeria', async (req, res) => {
@@ -297,6 +335,31 @@ app.delete('/api/deportes/:id', authenticateToken, async (req, res) => {
      console.error(err);
      res.status(500).json({ error: 'Error al eliminar deporte' });
    }
+});
+
+app.put('/api/deportes/:id', authenticateToken, upload.single('imagen'), async (req, res) => {
+    try {
+        const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
+        if (userResult.rows.length === 0 || userResult.rows[0].rol !== 'admin') return res.status(403).json({ error: 'Acceso denegado.' });
+        
+        const { id } = req.params;
+        const { nombre, dia_horario, profesor, descripcion } = req.body;
+        
+        const currentSport = await pool.query('SELECT imagen_url FROM deportes WHERE id = $1', [id]);
+        if (currentSport.rows.length === 0) return res.status(404).json({ error: 'Deporte no encontrado' });
+        
+        const imagen_url = req.file ? `/uploads/${req.file.filename}` : (req.body.imagen_url || currentSport.rows[0].imagen_url);
+
+        const updatedSport = await pool.query(
+            'UPDATE deportes SET nombre = $1, dia_horario = $2, profesor = $3, descripcion = $4, imagen_url = $5 WHERE id = $6 RETURNING *',
+            [nombre, dia_horario, profesor, descripcion, imagen_url, id]
+        );
+
+        res.json(updatedSport.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al actualizar deporte' });
+    }
 });
 
 app.put('/api/me/update', authenticateToken, upload.single('foto_perfil'), async (req, res) => {
