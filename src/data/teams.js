@@ -1,15 +1,14 @@
 export const TEAMS = [
-    'Arteaga', 
-    'Alianza', 
-    '9 de Julio', 
-    'Deportivo', 
-    'Cafferatense', 
-    'Carlos Dose', 
-    'Chañarense', 
-    'Independiente', 
-    'Gödeken', 
-    'Federación', 
-    'Huracán', 
-    'Belgrano', 
-    'Centenario'
+    '9dejulio',
+    'alianza',
+    'arteaga',
+    'belgrano',
+    'caferata',
+    'centenario',
+    'chanarence',
+    'deportivo',
+    'federacion',
+    'godeken',
+    'huracan',
+    'independiente'
 ];

@@ -204,11 +204,12 @@ const AdminProde = () => {
                     <div>
                         <label className="block text-sm font-bold mb-1">Temporada (Año)</label>
                         <input 
-                            type="text" 
+                            type="number" 
                             name="season"
-                            value={formData.season || new Date().getFullYear().toString()}
+                            value={formData.season || new Date().getFullYear()}
                             onChange={handleChange}
                             placeholder="2025"
+                            min="2024"
                             className="w-full border p-2 rounded"
                         />
                     </div>

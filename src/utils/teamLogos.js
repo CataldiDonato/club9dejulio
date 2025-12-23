@@ -11,25 +11,24 @@ import deportivo from '../images/clubes/deportivo.jpg';
 import federacion from '../images/clubes/federacion.jpg';
 import godeken from '../images/clubes/godeken.jpg';
 import huracan from '../images/clubes/huracan.jpg';
-import iac from '../images/clubes/iac.jpg'; // Independiente?
+import independiente from '../images/clubes/independiente.jpg';
 
 // Default placeholder if needed
 // const placeholder = ...
 
 const LOGO_MAP = {
-    '9 de Julio': club9dejulio,
-    'Alianza': alianza,
-    'Arteaga': arteaga,
-    'Belgrano': belgrano,
-    'Cafferatense': caferata,
-    'Centenario': centenario,
-    'Chañarense': chanarence,
-    'Deportivo Berabevú': deportivo,
-    'Federación': federacion,
-    'Gödeken': godeken,
-    'Huracán': huracan,
-    'Independiente': iac,
-    'Carlos Dose': null, // Missing? Or maybe map to one of the above if name mismatch?
+    '9dejulio': club9dejulio,
+    'alianza': alianza,
+    'arteaga': arteaga,
+    'belgrano': belgrano,
+    'caferata': caferata,
+    'centenario': centenario,
+    'chanarence': chanarence,
+    'deportivo': deportivo,
+    'federacion': federacion,
+    'godeken': godeken,
+    'huracan': huracan,
+    'independiente': independiente,
 };
 
 /**
