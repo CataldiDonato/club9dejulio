@@ -66,7 +66,7 @@ app.post('/api/login', async (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(401).json({ error: 'Credenciales inválidas' });
       delete user.password;
-      const token = jwt.sign({ id: user.id, dni: user.dni }, SECRET_KEY, { expiresIn: '1h' });
+      const token = jwt.sign({ id: user.id, dni: user.dni }, SECRET_KEY);
       res.json({ success: true, user, token });
     } else {
       res.status(401).json({ error: 'Credenciales inválidas' });
@@ -96,7 +96,7 @@ app.post('/api/register', upload.single('foto_perfil'), async (req, res) => {
     );
     const user = newUser.rows[0];
     delete user.password;
-    const token = jwt.sign({ id: user.id, dni: user.dni }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, dni: user.dni }, SECRET_KEY);
     res.json({ success: true, user, token });
   } catch (err) {
     console.error(err);
@@ -450,7 +450,7 @@ app.put('/api/matches/:id/result', authenticateToken, async (req, res) => {
 
 app.get('/api/predictions/my', authenticateToken, async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM predictions WHERE user_id = $1', [req.user.id]);
+        const result = await pool.query('SELECT p.*, m.season, m.matchday FROM predictions p JOIN matches m ON p.match_id = m.id WHERE p.user_id = $1', [req.user.id]);
         res.json(result.rows);
     } catch (err) {
         console.error(err);

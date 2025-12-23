@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import MatchCard from '../components/MatchCard';
 import ConfirmationModal from '../components/ConfirmationModal';
+import AlertModal from '../components/AlertModal';
+import ProdeRulesModal from '../components/ProdeRulesModal';
 import { API_URL } from '../config';
+import { HelpCircle } from 'lucide-react';
 
 const ProdeJugar = () => {
     const [matches, setMatches] = useState([]);
@@ -62,6 +65,12 @@ const ProdeJugar = () => {
     }, []);
 
     const [modal, setModal] = useState({ isOpen: false, data: null });
+    const [alertData, setAlertData] = useState({ isOpen: false, title: '', message: '' });
+    const [rulesOpen, setRulesOpen] = useState(false);
+
+    const showAlert = (title, message) => {
+        setAlertData({ isOpen: true, title, message });
+    };
 
     const handlePredictRequest = (matchId, homeScore, awayScore) => {
         setModal({
@@ -91,7 +100,7 @@ const ProdeJugar = () => {
     
                 if (!res.ok) {
                     const errorData = await res.json();
-                    alert(errorData.error || 'Error al guardar');
+                    showAlert('Error', errorData.error || 'Error al guardar');
                     return;
                 }
     
@@ -110,7 +119,7 @@ const ProdeJugar = () => {
                 // alert('¡Pronóstico guardado!'); // Optional if modal success needed, but maybe notification is enough or just close
             } catch (err) {
                 console.error(err);
-                alert('Error de conexión');
+                showAlert('Error', 'Error de conexión');
             }
         };
         save();
@@ -132,12 +141,35 @@ const ProdeJugar = () => {
                 message={modal.message}
             />
 
+            <AlertModal
+                isOpen={alertData.isOpen}
+                onClose={() => setAlertData({ ...alertData, isOpen: false })}
+                title={alertData.title}
+                message={alertData.message}
+            />
+            
+            <ProdeRulesModal 
+                isOpen={rulesOpen} 
+                onClose={() => setRulesOpen(false)} 
+            />
+
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-club-dark border-l-4 border-club-blue pl-4">
-                    Jugar Prode
-                </h1>
-                <div className="text-sm text-gray-500">
-                    <span className="font-bold">{myPredictions.length}</span> pronósticos realizados
+                <div>
+                    <h1 className="text-3xl font-bold text-club-dark border-l-4 border-club-blue pl-4">
+                        Jugar Prode
+                    </h1>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                    <button 
+                        onClick={() => setRulesOpen(true)}
+                        className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded-full transition-colors"
+                    >
+                        <HelpCircle size={16} />
+                        Cómo Jugar
+                    </button>
+                    <div className="text-sm text-gray-500">
+                        <span className="font-bold">{myPredictions.length}</span> pronósticos realizados
+                    </div>
                 </div>
             </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import { getImageUrl } from '../utils/imageUtils';
 import SponsorList from '../components/SponsorList';
 
 const ProdeRanking = () => {
@@ -93,7 +94,7 @@ const ProdeRanking = () => {
                                         <div className="flex-shrink-0 w-10 h-10">
                                             <img 
                                                 className="w-full h-full rounded-full object-cover border"
-                                                src={row.foto_perfil || "https://via.placeholder.com/150"}
+                                                src={getImageUrl(row.foto_perfil) || "https://via.placeholder.com/150"}
                                                 alt={row.nombre}
                                             />
                                         </div>

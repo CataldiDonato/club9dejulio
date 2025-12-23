@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, CreditCard, ShieldCheck, LogOut, Eye, EyeOff } from 'lucide-react';
+import { UserCheck, CreditCard, ShieldCheck, LogOut, Eye, EyeOff, Edit, Camera } from 'lucide-react';
+import ImageCropperModal from '../components/ImageCropperModal';
+import { getImageUrl } from '../utils/imageUtils';
 import { API_URL } from '../config';
 
 const Socios = () => {
+  // Helper for images imported from utils now
+
   // Estado local
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({ dni: '', password: '' });
@@ -11,6 +15,8 @@ const Socios = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegPassword, setShowRegPassword] = useState(false);
+  const [predictions, setPredictions] = useState([]);
+  const [stats, setStats] = useState([]);
 
   // Check for existing session
   useEffect(() => {
@@ -34,7 +40,31 @@ const Socios = () => {
       }
     };
     checkSession();
+    checkSession();
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+        fetch(`${API_URL}/predictions/my`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+            setPredictions(data);
+            // Calculate stats
+            const statsByYear = {};
+            data.forEach(p => {
+                const year = p.season || 'General';
+                if (!statsByYear[year]) statsByYear[year] = { points: 0, full: 0, total: 0 };
+                statsByYear[year].points += (p.points || 0);
+                if (p.points === 3) statsByYear[year].full += 1;
+                statsByYear[year].total += 1;
+            });
+            setStats(Object.entries(statsByYear).map(([year, data]) => ({ year, ...data })).sort((a,b) => b.year - a.year));
+        })
+        .catch(console.error);
+    }
+  }, [isLoggedIn]);
 
   // Toggle Register Mode
   const [isRegistering, setIsRegistering] = useState(false);
@@ -128,8 +158,11 @@ const Socios = () => {
     setFormData({ dni: '', password: '' });
   };
 
-  // Edit Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [selectedImageSrc, setSelectedImageSrc] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+
   const [editData, setEditData] = useState({
     telefono: '',
     email: '',
@@ -140,9 +173,30 @@ const Socios = () => {
     setEditData({
         telefono: userData.telefono || '',
         email: userData.email || '',
-        foto_perfil: null // Reset file input
+        foto_perfil: null 
     });
+
+    setPreviewImage(getImageUrl(userData.foto_perfil));
     setIsEditModalOpen(true);
+  };
+  
+  const handleFileChange = async (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.addEventListener('load', () => {
+              setSelectedImageSrc(reader.result?.toString() || '');
+              setCropModalOpen(true);
+          });
+          reader.readAsDataURL(file);
+      }
+  };
+
+  const handleCropComplete = (croppedBlob) => {
+      // Create a File object from Blob
+      const file = new File([croppedBlob], "profile_pic.jpg", { type: "image/jpeg" });
+      setEditData({ ...editData, foto_perfil: file });
+      setPreviewImage(URL.createObjectURL(croppedBlob));
   };
 
   const handleUpdate = async (e) => {
@@ -182,35 +236,14 @@ const Socios = () => {
 
   if (isLoggedIn && userData) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12 relative">
+      <div className="max-w-7xl mx-auto px-4 py-12 relative">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
           <div className="bg-black p-4 md:p-6 flex flex-col md:flex-row justify-between items-center text-white gap-4">
             <h2 className="text-2xl font-black uppercase flex items-center gap-2">
               <ShieldCheck /> Dashboard del Socio
             </h2>
             <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-               {userData.rol === 'admin' && (
-                  <>
-                    <button onClick={() => window.location.href='/admin/users'} className="whitespace-nowrap bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors flex items-center gap-2">
-                      <UserCheck size={18} /> Solicitudes
-                    </button>
-                    <button onClick={() => window.location.href='/admin/sports'} className="whitespace-nowrap bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
-                      Deportes +
-                    </button>
-                    <button onClick={() => window.location.href='/admin/news'} className="whitespace-nowrap bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
-                      Noticias +
-                    </button>
-                    <button onClick={() => window.location.href='/admin/galeria'} className="whitespace-nowrap bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
-                      Galería +
-                    </button>
-                    <button onClick={() => window.location.href='/admin/prode'} className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
-                      Prode +
-                    </button>
-                    <button onClick={() => window.location.href='/admin/sponsors'} className="whitespace-nowrap bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase transition-colors">
-                      Publicidad +
-                    </button>
-                  </>
-               )}
+
               <button  
                 onClick={handleLogout}
                 className="whitespace-nowrap flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors text-sm font-bold uppercase"
@@ -231,85 +264,166 @@ const Socios = () => {
             </div>
           )}
           
-          <div className="p-4 md:p-8 grid md:grid-cols-2 gap-8">
-            {/* Carnet Digital */}
-            <div className="flex flex-col items-center">
-              <div className="w-full max-w-sm bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white rounded-xl shadow-2xl overflow-hidden relative aspect-[1.586/1] border-2 border-white/10">
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-5 -mb-5"></div>
+          <div className="p-4 md:p-8">
+            <div className={`grid grid-cols-1 ${userData.rol === 'admin' ? 'lg:grid-cols-[1fr_300px]' : ''} gap-8`}>
                 
-                <div className="p-4 relative z-10 flex flex-col h-full justify-between">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-black text-lg tracking-wider uppercase">Club 9 de Julio</h3>
-                      <p className="text-xs text-gray-400 uppercase tracking-widest">Berabevú</p>
+                {/* Columna Izquierda: Contenido Socio (Grid 2x2) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 content-start">
+                    
+                    {/* 1. Carnet Digital */}
+                    <div className="flex flex-col items-center h-full">
+                        <div className="w-full bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white rounded-xl shadow-2xl overflow-hidden relative aspect-[1.586/1] border-2 border-white/10 group hover:scale-[1.02] transition-transform duration-300">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
+                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-5 -mb-5"></div>
+                            <div className="p-4 relative z-10 flex flex-col h-full justify-between">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-black text-lg tracking-wider uppercase">Club 9 de Julio</h3>
+                                        <p className="text-xs text-gray-400 uppercase tracking-widest">Berabevú</p>
+                                    </div>
+                                    <ShieldCheck className="text-white/80" size={28} />
+                                </div>
+                                <div className="text-center my-1">
+                                    <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto border-4 border-white/20 mb-2 overflow-hidden flex items-center justify-center relative">
+                                        {userData.foto_perfil ? (
+                                            <img src={getImageUrl(userData.foto_perfil)} alt="Perfil" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <UserCheck size={32} className="text-gray-400" />
+                                        )}
+                                    </div>
+                                    <p className="font-bold text-lg uppercase leading-tight">{userData.nombre} {userData.apellido}</p>
+                                    <p className="text-xs text-gray-300">{userData.tipo_socio}</p>
+                                </div>
+                                <div className="flex justify-between items-end">
+                                    <div>
+                                        <p className="text-[10px] uppercase text-gray-400 mb-1">Nº Socio</p>
+                                        <p className="font-mono text-lg text-white font-bold leading-none">{userData.nro_socio || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         <p className="mt-2 text-xs text-center text-gray-500">Carnet Digital Oficial</p>
                     </div>
-                    <ShieldCheck className="text-white/80" size={28} />
-                  </div>
-                  
-                  <div className="text-center my-1">
-                    <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto border-4 border-white/20 mb-2 overflow-hidden flex items-center justify-center relative">
-                       {userData.foto_perfil ? (
-                           <img src={userData.foto_perfil} alt="Perfil" className="w-full h-full object-cover" />
-                       ) : (
-                           <UserCheck size={32} className="text-gray-400" />
-                       )}
-                    </div>
-                    <p className="font-bold text-lg uppercase leading-tight">{userData.nombre} {userData.apellido}</p>
-                    <p className="text-xs text-gray-300">{userData.tipo_socio}</p>
-                  </div>
 
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-[10px] uppercase text-gray-400 mb-1">Nº Socio</p>
-                      <p className="font-mono text-lg text-white font-bold leading-none">{userData.nro_socio || 'N/A'}</p>
+                    {/* 2. Estado de Cuenta */}
+                    <div className={`border rounded-xl p-6 h-full flex flex-col justify-center ${userData.estado_cuota === 'Al Día' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className={`p-3 rounded-full ${userData.estado_cuota === 'Al Día' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                <CreditCard size={28} />
+                            </div>
+                            <div>
+                                <h4 className={`text-xl font-black uppercase ${userData.estado_cuota === 'Al Día' ? 'text-green-800' : 'text-red-800'}`}>
+                                    {userData.estado_cuota === 'Al Día' ? 'Cuota al Día' : 'Cuota Pendiente'}
+                                </h4>
+                                <p className={`font-bold ${userData.estado_cuota === 'Al Día' ? 'text-green-700' : 'text-red-700'} text-sm`}>
+                                    Vence: {userData.vencimiento_cuota ? new Date(userData.vencimiento_cuota).toLocaleDateString() : 'Consultar'}
+                                </p>
+                            </div>
+                        </div>
+                         <div className="mt-auto pt-4 border-t border-green-100/50">
+                             <button className={`w-full py-2 rounded-lg font-bold text-sm uppercase ${userData.estado_cuota === 'Al Día' ? 'bg-green-200 text-green-800 hover:bg-green-300' : 'bg-red-200 text-red-800 hover:bg-red-300'} transition-colors`}>
+                                 Ver Detalle de Pagos
+                             </button>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <p className="mt-4 text-sm text-gray-500">Tu carnet digital es válido para ingresar al club.</p>
-            </div>
 
-            {/* Estado de Cuenta */}
-            <div className="flex flex-col justify-center space-y-6">
-              <div className={`border rounded-xl p-6 ${userData.estado_cuota === 'Al Día' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                <div className="flex items-center gap-4 mb-2">
-                  <div className={`p-3 rounded-full ${userData.estado_cuota === 'Al Día' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                    <CreditCard size={24} />
-                  </div>
-                  <div>
-                    <h4 className={`text-lg font-bold ${userData.estado_cuota === 'Al Día' ? 'text-green-800' : 'text-red-800'}`}>
-                        {userData.estado_cuota === 'Al Día' ? 'Cuota al Día' : 'Cuota Pendiente'}
-                    </h4>
-                    <p className={`${userData.estado_cuota === 'Al Día' ? 'text-green-600' : 'text-red-600'} text-sm`}>
-                        Próximo vencimiento: {userData.vencimiento_cuota ? new Date(userData.vencimiento_cuota).toLocaleDateString() : 'Consultar'}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-green-100">
-                  <p className="text-sm text-green-700">
-                    Gracias por apoyar al club. Tu aporte es fundamental para que sigamos creciendo.
-                  </p>
-                </div>
-              </div>
-
-              {userData.account_status !== 'pending' && (
-                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                    <h4 className="font-bold text-slate-700 mb-4">Acciones Rápidas</h4>
-                    <div className="space-y-3">
-                      <button className="w-full text-left px-4 py-3 bg-white rounded-lg border border-slate-200 hover:border-black hover:text-black transition-colors shadow-sm text-sm font-medium">
-                        Ver historial de pagos
-                      </button>
-                      <button onClick={openEditModal} className="w-full text-left px-4 py-3 bg-white rounded-lg border border-slate-200 hover:border-black hover:text-black transition-colors shadow-sm text-sm font-medium">
-                        Actualizar datos personales
-                      </button>
-                      <button className="w-full text-left px-4 py-3 bg-white rounded-lg border border-slate-200 hover:border-black hover:text-black transition-colors shadow-sm text-sm font-medium">
-                        Reservar cancha / quincho
-                      </button>
+                    {/* 3. Estadísticas de Prode */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 -z-0"></div>
+                        <h4 className="font-bold text-gray-800 mb-4 uppercase flex items-center gap-2 relative z-10">
+                             <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg"><Eye size={18}/></div> Rendimiento Prode
+                        </h4>
+                        
+                        <div className="flex-1 overflow-y-auto max-h-48 scrollbar-hide relative z-10">
+                            {stats.length > 0 ? (
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="text-xs text-gray-500 uppercase border-b border-gray-100">
+                                            <th className="text-left pb-2">Temp.</th>
+                                            <th className="text-center pb-2">Pts</th>
+                                            <th className="text-center pb-2">Plenos</th>
+                                            <th className="text-right pb-2">PJ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-50">
+                                        {stats.map((s) => (
+                                            <tr key={s.year}>
+                                                <td className="py-2 font-bold text-gray-800">{s.year}</td>
+                                                <td className="py-2 text-center font-black text-blue-600 text-lg">{s.points}</td>
+                                                <td className="py-2 text-center text-gray-600">{s.full}</td>
+                                                <td className="py-2 text-right text-gray-500">{s.total}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400 text-center py-4">
+                                    <p>Sin datos aún.</p>
+                                    <a href="/prode/jugar" className="text-blue-600 font-bold text-xs mt-1 hover:underline">¡Jugá ahora!</a>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                  </div>
-              )}
+
+                    {/* 4. Opciones de Menu / Acciones Rápidas */}
+                     <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm h-full flex flex-col">
+                        <h4 className="font-bold text-gray-800 mb-4 uppercase flex items-center gap-2">
+                             <div className="p-1.5 bg-gray-100 text-gray-600 rounded-lg"><UserCheck size={18}/></div> Mi Club
+                        </h4>
+                        <div className="space-y-3 flex-1">
+                            <button onClick={openEditModal} className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-bold flex items-center justify-between group">
+                                Mis Datos
+                                <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                            </button>
+                            <button className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-bold flex items-center justify-between group">
+                                Reservas
+                                <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                            </button>
+                            <button className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-bold flex items-center justify-between group">
+                                Ayuda
+                                <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* Columna Derecha: Sidebar Admin */}
+                {userData.rol === 'admin' && (
+                    <div className="flex flex-col h-full">
+                        <div className="bg-black rounded-xl p-6 border border-gray-800 shadow-xl sticky top-8">
+                            <h4 className="font-bold text-white mb-6 uppercase flex items-center gap-2 border-b border-gray-800 pb-4">
+                                <ShieldCheck size={20} className="text-yellow-500" /> Administración
+                            </h4>
+                            <div className="space-y-3">
+                                <button onClick={() => window.location.href='/admin/users'} 
+                                    className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group">
+                                    <UserCheck size={18} className="group-hover:text-yellow-400 transition-colors"/> <span>Usuarios</span>
+                                </button>
+                                <button onClick={() => window.location.href='/admin/sports'} 
+                                    className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group">
+                                    <span>Deportes</span>
+                                </button>
+                                <button onClick={() => window.location.href='/admin/news'} 
+                                    className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group">
+                                    <span>Noticias</span>
+                                </button>
+                                <button onClick={() => window.location.href='/admin/galeria'} 
+                                    className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group">
+                                    <span>Galería</span>
+                                </button>
+                                <button onClick={() => window.location.href='/admin/prode'} 
+                                    className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group">
+                                    <span>Prode</span>
+                                </button>
+                                <button onClick={() => window.location.href='/admin/sponsors'} 
+                                    className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group">
+                                    <span>Publicidad</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
           </div>
         </div>
@@ -332,8 +446,22 @@ const Socios = () => {
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Foto de Perfil</label>
-                            <input type="file" accept="image/*" onChange={e => setEditData({...editData, foto_perfil: e.target.files[0]})}
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none" />
+                            
+                            <div className="flex items-center gap-4">
+                                <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
+                                    {previewImage ? (
+                                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400"><UserCheck/></div>
+                                    )}
+                                </div>
+                                <div>
+                                    <input type="file" id="photo_upload" accept="image/*" className="hidden" onChange={handleFileChange} />
+                                    <label htmlFor="photo_upload" className="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-2 px-4 rounded-lg inline-flex items-center gap-2 text-sm transition-colors">
+                                        <Camera size={16} /> Cambiar Foto
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <div className="flex justify-end gap-3 mt-6">
                             <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-bold">Cancelar</button>
@@ -345,6 +473,12 @@ const Socios = () => {
                 </div>
             </div>
         )}
+      <ImageCropperModal
+          isOpen={cropModalOpen}
+          onClose={() => setCropModalOpen(false)}
+          imageSrc={selectedImageSrc}
+          onCropComplete={handleCropComplete}
+      />
       </div>
     );
   }

@@ -2,7 +2,7 @@ export const TEAMS = [
     'Arteaga', 
     'Alianza', 
     '9 de Julio', 
-    'Deportivo Berabevú', 
+    'Deportivo', 
     'Cafferatense', 
     'Carlos Dose', 
     'Chañarense', 
