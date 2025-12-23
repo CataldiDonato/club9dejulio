@@ -21,9 +21,9 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 app.use(cors());
 app.use(express.json());
 
-// Servir Estáticos (Uploads)
-app.use('/uploads', express.static('uploads'));
-app.use('/api/uploads', express.static('uploads'));
+// Servir Estáticos (Uploads) - Ruta única y absoluta
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Configurar Multer
 const storage = multer.diskStorage({
@@ -620,9 +620,8 @@ app.post('/api/sponsors/:id/click', async (req, res) => {
     }
 });
 
-// --- INTEGRACIÃ“N FRONTEND ---
-app.use('/uploads', express.static('uploads'));
-app.use('/api/uploads', express.static('uploads'));
+// --- INTEGRACIÓN FRONTEND ---
+// (Estáticos de uploads ya configurados arriba)
 
 const distPath = path.join(__dirname, '../dist');
 const indexPath = path.join(distPath, 'index.html');
