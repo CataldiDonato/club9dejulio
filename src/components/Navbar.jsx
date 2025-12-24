@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Shield, User } from 'lucide-react';
 
-import logo from '../images/logo.jpg';
+import logo from '../images/clubes/9 de julio.jpg';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
