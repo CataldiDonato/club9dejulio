@@ -484,6 +484,28 @@ app.post('/api/matches', authenticateToken, async (req, res) => {
     }
 });
 
+app.delete('/api/matches/:id', authenticateToken, async (req, res) => {
+    try {
+        const userResult = await pool.query('SELECT rol FROM socios WHERE id = $1', [req.user.id]);
+        if (userResult.rows.length === 0 || userResult.rows[0].rol !== 'admin') return res.status(403).json({ error: 'Acceso denegado.' });
+        
+        const { id } = req.params;
+        
+        // Primero eliminamos las predicciones asociadas (aunque se podría usar CASCADE en la DB, lo hacemos explícito para seguridad)
+        await pool.query('DELETE FROM predictions WHERE match_id = $1', [id]);
+        
+        // Luego eliminamos el partido
+        const result = await pool.query('DELETE FROM matches WHERE id = $1 RETURNING *', [id]);
+        
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Partido no encontrado' });
+        
+        res.json({ success: true, message: 'Partido y predicciones eliminados correctamente' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al eliminar el partido' });
+    }
+});
+
 app.put('/api/matches/:id/result', authenticateToken, async (req, res) => {
     const client = await pool.connect();
     try {

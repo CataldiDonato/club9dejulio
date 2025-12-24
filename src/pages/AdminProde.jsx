@@ -60,6 +60,17 @@ const AdminProde = () => {
         });
     };
 
+    const requestDeleteMatch = (match) => {
+        setModal({
+            isOpen: true,
+            type: 'DELETE_MATCH',
+            data: { matchId: match.id },
+            title: 'Eliminar Partido',
+            message: `¿Estás seguro de eliminar el partido ${match.home_team} vs ${match.away_team}? Se borrarán todas las predicciones asociadas.`,
+            isDestructive: true
+        });
+    };
+
     const requestSetResult = (matchId, homeScore, awayScore) => {
         if (homeScore === undefined || awayScore === undefined) return;
         setModal({
@@ -78,6 +89,8 @@ const AdminProde = () => {
             await handleCreateMatch();
         } else if (modal.type === 'RESULT') {
             await handleSetResult();
+        } else if (modal.type === 'DELETE_MATCH') {
+            await handleDeleteMatch();
         }
     };
 
@@ -125,6 +138,27 @@ const AdminProde = () => {
             }
         } catch (err) {
             console.error(err);
+        }
+    };
+
+    const handleDeleteMatch = async () => {
+        const { matchId } = modal.data;
+        try {
+            const res = await fetch(`${API_URL}/matches/${matchId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (res.ok) {
+                fetchMatches();
+            } else {
+                alert('Error al eliminar el partido');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión');
         }
     };
 
@@ -256,12 +290,20 @@ const AdminProde = () => {
                                             ) : '-'}
                                         </td>
                                         <td className="px-4 py-2">
-                                            <ResultForm 
-                                                matchId={m.id} 
-                                                onSave={requestSetResult} 
-                                                initialHome={m.home_score}
-                                                initialAway={m.away_score}
-                                            />
+                                            <div className="flex flex-col gap-2">
+                                                <ResultForm 
+                                                    matchId={m.id} 
+                                                    onSave={requestSetResult} 
+                                                    initialHome={m.home_score}
+                                                    initialAway={m.away_score}
+                                                />
+                                                <button 
+                                                    onClick={() => requestDeleteMatch(m)}
+                                                    className="text-red-600 hover:text-red-800 text-xs font-bold border border-red-200 rounded px-2 py-1 bg-red-50"
+                                                >
+                                                    Eliminar Partido
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
