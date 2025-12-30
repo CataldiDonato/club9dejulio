@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ImageCarousel from '../components/ImageCarousel';
+import ChampionshipModal from '../components/ChampionshipModal';
+import { championships } from '../data/championships';
 import primerEquipo from '../images/historia/primerequipo.gif';
 import primerEquipoIA from '../images/historia/primerequipoIA.png';
 import ano1926 from '../images/historia/ano1926.gif';
@@ -14,8 +16,30 @@ import regional87 from '../images/historia/regional87.jpg';
 import regional87IA from '../images/historia/regional87IA.png';
 
 const Historia = () => {
+  const [selectedChampionship, setSelectedChampionship] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleChampionshipClick = (year) => {
+    const data = championships.find(c => c.year === year);
+    if (data) {
+      setSelectedChampionship(data);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedChampionship(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <ChampionshipModal 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+        championship={selectedChampionship} 
+      />
+
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-club-black via-gray-800 to-club-black text-white py-16">
         <div className="max-w-7xl mx-auto px-4">
@@ -342,20 +366,29 @@ const Historia = () => {
           <div className="bg-gradient-to-r from-club-black to-gray-800 text-white rounded-xl shadow-2xl p-8">
             <h2 className="text-4xl font-black mb-8 text-center">🏆 PALMARÉS HISTÓRICO</h2>
             <div className="flex flex-wrap gap-3 justify-center">
-              {[1932, 1933, 1935, 1963, 1973, 1974, 1975, 1984, 1986, 2011, 2016, 2018, 2023].map((year, index) => (
-                <div 
-                  key={year} 
-                  className="bg-yellow-500 text-black px-6 py-3 rounded-lg font-black text-xl shadow-lg transform hover:scale-110 transition-transform"
-                >
-                  🏆 {year}
-                </div>
-              ))}
+              {[1932, 1933, 1935, 1963, 1973, 1974, 1975, 1984, 1986, 2011, 2016, 2018, 2023].map((year) => {
+                 const hasData = championships.some(c => c.year === year);
+                 return (
+                  <div 
+                    key={year} 
+                    onClick={() => handleChampionshipClick(year)}
+                    className={`
+                      bg-yellow-500 text-black px-6 py-3 rounded-lg font-black text-xl shadow-lg 
+                      transform hover:scale-110 transition-transform cursor-pointer
+                      ${!hasData ? 'opacity-80 hover:scale-100 cursor-default' : ''}
+                    `}
+                    title={hasData ? "Ver detalles del campeonato" : "Información próximamente"}
+                  >
+                    🏆 {year}
+                  </div>
+                );
+              })}
             </div>
             <p className="text-center mt-8 text-xl font-semibold">
               13 CAMPEONATOS DE PRIMERA DIVISIÓN
             </p>
             <p className="text-center text-yellow-300 text-sm mt-2">
-              Incluye el histórico Tricampeonato '73-'74-'75 y la Copa Challenger
+              (Tocá cada año para ver fotos y detalles históricos)
             </p>
           </div>
         </section>
