@@ -352,6 +352,7 @@ const AdminProde = () => {
                 <tr>
                   <th className="px-4 py-2 text-left">ID</th>
                   <th className="px-4 py-2 text-left">Partido</th>
+                  <th className="px-4 py-2 text-left">Jornada</th>
                   <th className="px-4 py-2 text-left">Fecha</th>
                   <th className="px-4 py-2 text-left">Estado</th>
                   <th className="px-4 py-2 text-left">Resultado</th>
@@ -364,6 +365,11 @@ const AdminProde = () => {
                     <td className="px-4 py-2">{m.id}</td>
                     <td className="px-4 py-2 font-bold whitespace-nowrap">
                       {m.home_team} vs {m.away_team}
+                    </td>
+                    <td className="px-4 py-2">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+                        {m.matchday}
+                      </span>
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">
                       {new Date(m.start_time).toLocaleString()}

@@ -1001,6 +1001,180 @@ app.get("/api/seasons", async (req, res) => {
   }
 });
 
+// Top players by most recent matchday
+app.get("/api/top-players-by-matchday", async (req, res) => {
+  try {
+    const { season } = req.query;
+    
+    // Get the most recent matchday with finished matches
+    let matchdayQuery = `
+      SELECT DISTINCT matchday 
+      FROM matches 
+      WHERE status = 'finished'
+    `;
+    let matchdayParams = [];
+    
+    if (season) {
+      matchdayQuery += " AND season = $1";
+      matchdayParams.push(season);
+    }
+    
+    matchdayQuery += " ORDER BY matchday DESC LIMIT 1";
+    
+    const matchdayResult = await pool.query(matchdayQuery, matchdayParams);
+    
+    if (matchdayResult.rows.length === 0) {
+      return res.json({ matchday: null, topPlayers: [] });
+    }
+
+    const latestMatchday = matchdayResult.rows[0].matchday;
+
+    // Get top players for that matchday
+    let topPlayersQuery = `
+      SELECT 
+        s.nombre, 
+        s.apellido, 
+        s.foto_perfil, 
+        SUM(p.points) as matchday_points,
+        COUNT(CASE WHEN p.points = 3 THEN 1 END) as plenos,
+        COUNT(CASE WHEN p.points = 1 THEN 1 END) as aciertos_parciales
+      FROM predictions p 
+      JOIN socios s ON p.user_id = s.id 
+      JOIN matches m ON p.match_id = m.id
+      WHERE m.status = 'finished' 
+        AND m.matchday = $1
+    `;
+    
+    let topPlayersParams = [latestMatchday];
+    
+    if (season) {
+      topPlayersQuery += " AND m.season = $2";
+      topPlayersParams.push(season);
+    }
+    
+    topPlayersQuery += `
+      GROUP BY s.id, s.nombre, s.apellido, s.foto_perfil 
+      HAVING SUM(p.points) > 0
+      ORDER BY matchday_points DESC, plenos DESC
+      LIMIT 5
+    `;
+    
+    const topPlayersResult = await pool.query(topPlayersQuery, topPlayersParams);
+
+    res.json({
+      matchday: latestMatchday,
+      topPlayers: topPlayersResult.rows
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error fetching top players by matchday" });
+  }
+});
+
+// Team standings (league table)
+app.get("/api/team-standings", async (req, res) => {
+  try {
+    const { season } = req.query;
+    
+    let matchesQuery = `
+      SELECT home_team, away_team, home_score, away_score
+      FROM matches
+      WHERE status = 'finished'
+    `;
+    let params = [];
+    
+    if (season) {
+      matchesQuery += " AND season = $1";
+      params.push(season);
+    }
+    
+    const matchesResult = await pool.query(matchesQuery, params);
+    const matches = matchesResult.rows;
+    
+    // Calculate standings
+    const standings = {};
+    
+    matches.forEach(match => {
+      const { home_team, away_team, home_score, away_score } = match;
+      
+      // Initialize teams if not exists
+      if (!standings[home_team]) {
+        standings[home_team] = {
+          team: home_team,
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          goals_for: 0,
+          goals_against: 0,
+          goal_difference: 0,
+          points: 0
+        };
+      }
+      
+      if (!standings[away_team]) {
+        standings[away_team] = {
+          team: away_team,
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          goals_for: 0,
+          goals_against: 0,
+          goal_difference: 0,
+          points: 0
+        };
+      }
+      
+      // Update stats
+      standings[home_team].played++;
+      standings[away_team].played++;
+      
+      standings[home_team].goals_for += home_score;
+      standings[home_team].goals_against += away_score;
+      
+      standings[away_team].goals_for += away_score;
+      standings[away_team].goals_against += home_score;
+      
+      // Determine result
+      if (home_score > away_score) {
+        // Home win
+        standings[home_team].won++;
+        standings[home_team].points += 3;
+        standings[away_team].lost++;
+      } else if (home_score < away_score) {
+        // Away win
+        standings[away_team].won++;
+        standings[away_team].points += 3;
+        standings[home_team].lost++;
+      } else {
+        // Draw
+        standings[home_team].drawn++;
+        standings[away_team].drawn++;
+        standings[home_team].points += 1;
+        standings[away_team].points += 1;
+      }
+      
+      // Update goal difference
+      standings[home_team].goal_difference = standings[home_team].goals_for - standings[home_team].goals_against;
+      standings[away_team].goal_difference = standings[away_team].goals_for - standings[away_team].goals_against;
+    });
+    
+    // Convert to array and sort
+    const standingsArray = Object.values(standings).sort((a, b) => {
+      // Sort by points, then goal difference, then goals for
+      if (b.points !== a.points) return b.points - a.points;
+      if (b.goal_difference !== a.goal_difference) return b.goal_difference - a.goal_difference;
+      return b.goals_for - a.goals_for;
+    });
+    
+    res.json(standingsArray);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error fetching team standings" });
+  }
+});
+
 // Sponsors
 app.get("/api/sponsors", async (req, res) => {
   try {
