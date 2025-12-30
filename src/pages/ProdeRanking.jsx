@@ -155,7 +155,7 @@ const ProdeRanking = () => {
 
                 {/* Top Players by Matchday - Right Sidebar (1 column) */}
                 <div className="lg:col-span-1">
-                    <div className="bg-gradient-to-br from-blue-50 to-white shadow-lg rounded-lg border-2 border-club-blue p-4 sm:p-6 sticky top-4">
+                    <div className="bg-gradient-to-br from-blue-50 to-white shadow-lg rounded-lg border-2 border-club-blue p-4 sm:p-6">
                         <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-club-blue">
                             <span className="text-xl sm:text-2xl">🏆</span>
                             <h2 className="text-lg sm:text-xl font-black text-club-dark">
