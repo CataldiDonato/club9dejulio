@@ -325,5 +325,68 @@ export const championships = [
             { number: 7, name: "Larroca Carlos A.", goals: 2 }, { number: 8, name: "Grasso Alfredo D.", goals: 2 }, { number: 9, name: "Fernandez Juan C.", goals: 14 },
             { number: 10, name: "Pérez Laurentino E.", goals: 6 }, { number: 11, name: "Pizzicotti Sergio M.", goals: 12 }
         ]
+    },
+    {
+        year: 2023,
+        title: "Bicampeones: El Año Perfecto",
+        image: null,
+        description: "El club vivió uno de los años más gloriosos de su historia al coronarse bicampeón regional, obteniendo tanto el Torneo Apertura como el Torneo Clausura.",
+        fullText: `Bajo la dirección técnica de Gerardo Gasparini, 9 de Julio dominó la temporada 2023 de punta a punta. En el Apertura, el equipo demostró una solvencia impecable, finalizando primero en la fase regular y superando a Centenario en una final inolvidable: victoria 1-0 en la ida y una contundente goleada 4-1 como visitantes en San José de la Esquina. 
+
+La mística ganadora se extendió al Clausura, donde tras superar series durísimas ante Social Godeken y Centenario, "La Lana" venció a Huracán de Los Quirquinchos en la final con un global de 3-0. Este año consolidó un grupo de jugadores excepcionales, con una mezcla de experiencia en el arco con Alasia y una potencia ofensiva letal liderada por Hure, Ferrari y Barrios.`,
+        stats: { pj: 33, pg: 22, pe: 7, pp: 4, gf: 68, gc: 32 },
+        campaign: [
+            // Torneo Apertura
+            { date: "19/02/23", rival: "Centenario (F1)", result: "4 - 3", cond: "V", scorers: "M. Gomez, M. Hure, N. Piedra, M. Marchegiani" },
+            { date: "26/02/23", rival: "Social Godeken (F2)", result: "4 - 1", cond: "L", scorers: "J. Yagante, E. Ferrari (2), M. Hure" },
+            { date: "05/03/23", rival: "Federación (F3)", result: "3 - 0", cond: "V", scorers: "E. Ferrari (2), F. Milanesio" },
+            { date: "12/03/23", rival: "Deportivo (F4)", result: "1 - 0", cond: "L", scorers: "L. Gasparini" },
+            { date: "19/03/23", rival: "Independiente (F5)", result: "3 - 2", cond: "V", scorers: "E. Ferrari, N. Barrios (2)" },
+            { date: "26/03/23", rival: "Belgrano (F6)", result: "2 - 2", cond: "L", scorers: "J. Yagante, N. Barrios" },
+            { date: "31/03/23", rival: "Cafferatense (F7)", result: "2 - 0", cond: "V", scorers: "J. Yagante, M. Hure" },
+            { date: "09/04/23", rival: "Huracán FBC (F8)", result: "1 - 0", cond: "L", scorers: "M. Marchegiani" },
+            { date: "23/04/23", rival: "Alianza (F10)", result: "2 - 0", cond: "V", scorers: "E. Ferrari, J. Yagante" },
+            { date: "07/05/23", rival: "Social Godeken (CF Ida)", result: "1 - 0", cond: "L", scorers: "Emiliano Ferrari" },
+            { date: "12/05/23", rival: "Social Godeken (CF Vuelta)", result: "2 - 2", cond: "V", scorers: "F. Milanesio, N. Barrios" },
+            { date: "21/05/23", rival: "Independiente (SF Ida)", result: "3 - 0", cond: "V", scorers: "N. Barrios, G. Bellini, K. Garavelli" },
+            { date: "04/06/23", rival: "Independiente (SF Vuelta)", result: "3 - 2", cond: "L", scorers: "M. Hure, E. Ferrari (2)" },
+            { date: "11/06/23", rival: "Centenario (Final Ida)", result: "1 - 0", cond: "L", scorers: "Martin Hure" },
+            { date: "18/06/23", rival: "Centenario (Final Vuelta)", result: "4 - 1", cond: "V", scorers: "M. Hure (2), A. Uriarte, L. Gasparini" },
+            // Torneo Clausura
+            { date: "25/06/23", rival: "Centenario (F1)", result: "3 - 3", cond: "L", scorers: "M. Miguel, J. Yagante, E/C" },
+            { date: "02/07/23", rival: "Social Godeken (F2)", result: "1 - 2", cond: "V", scorers: "Martin Hure" },
+            { date: "07/07/23", rival: "Federación (F3)", result: "2 - 1", cond: "L", scorers: "M. Hure, B. Galeano" },
+            { date: "23/07/23", rival: "Deportivo (F4)", result: "1 - 0", cond: "V", scorers: "Emiliano Ferrari" },
+            { date: "30/07/23", rival: "Independiente (F5)", result: "3 - 2", cond: "L", scorers: "E. Ferrari, N. Barrios (2)" },
+            { date: "06/08/23", rival: "Belgrano (F6)", result: "3 - 3", cond: "V", scorers: "A. Uriarte, M. Marchegiani, F. Milanesio" },
+            { date: "20/08/23", rival: "Cafferatense (F7)", result: "1 - 0", cond: "L", scorers: "Emiliano Ferrari" },
+            { date: "06/09/23", rival: "Arteaga (F9)", result: "2 - 1", cond: "L", scorers: "M. Hure, N. Barrios" },
+            { date: "24/09/23", rival: "Chañarense (F11)", result: "2 - 5", cond: "V", scorers: "M. Hure, F. Milanesio" },
+            { date: "01/10/23", rival: "Social Godeken (CF Ida)", result: "1 - 1", cond: "V", scorers: "Emiliano Ferrari" },
+            { date: "08/10/23", rival: "Social Godeken (CF Vuelta)", result: "2 - 0", cond: "L", scorers: "M. Hure, E. Ferrari" },
+            { date: "14/10/23", rival: "Centenario (SF Ida)", result: "2 - 0", cond: "L", scorers: "Martin Hure (2)" },
+            { date: "29/10/23", rival: "Centenario (SF Vuelta)", result: "1 - 1", cond: "V", scorers: "Martin Hure" },
+            { date: "05/11/23", rival: "Huracán FBC (Final Ida)", result: "1 - 0", cond: "V", scorers: "Néstor Barrios" },
+            { date: "12/11/23", rival: "Huracán FBC (Final Vuelta)", result: "2 - 0", cond: "L", scorers: "A. Uriarte, N. Barrios" }
+        ],
+        squad: [
+            { name: "Matias Alasia", pos: "Arquero" }, 
+            { name: "Agustín Bossa" }, 
+            { name: "Mauro Marchegiani" }, 
+            { name: "Gianfranco Bellini" },
+            { name: "Matías Miguel" }, 
+            { name: "Franco Milanesio" }, 
+            { name: "Valentín Giuli" },
+            { name: "Joaquín Yagante" },
+            { name: "Mariano Gomez" },
+            { name: "Nahuel Piedra" },
+            { name: "Benjamín Giuli" },
+            { name: "Néstor Barrios" },
+            { name: "Kimey Garavelli" },
+            { name: "Emiliano Ferrari" },
+            { name: "Martin Hure" },
+            { name: "Andrés Uriarte" },
+            { name: "DT: Gerardo Gasparini" }
+        ]
     }
 ];
