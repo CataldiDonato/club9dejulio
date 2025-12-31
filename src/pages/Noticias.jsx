@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../config';
-import SponsorList from '../components/SponsorList';
+
 
 const Noticias = () => {
   const [noticias, setNoticias] = useState([]);
@@ -59,9 +59,7 @@ const Noticias = () => {
       
       {noticias.length === 0 && <p className="text-center text-gray-500">No hay noticias cargadas aún.</p>}
 
-      <div className="mt-20">
-        <SponsorList location="home" /> 
-      </div>
+
     </div>
   );
 };

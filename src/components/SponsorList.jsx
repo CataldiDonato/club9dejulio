@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 
-const SponsorList = ({ location = 'footer', className = '' }) => {
+const SponsorList = ({ location = 'footer', className = '', isSidebar = false }) => {
     const [sponsors, setSponsors] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
@@ -17,8 +17,21 @@ const SponsorList = ({ location = 'footer', className = '' }) => {
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
-                    const filtered = data.filter(s => s.ubicacion === location);
-                    setSponsors(filtered);
+                    let filtered = data.filter(s => s.activo !== false);
+
+                    // If 'prode' is requested but no sponsors found, fallback to 'home'
+                    let locationSponsors = filtered.filter(s => s.ubicacion === location);
+                    if (locationSponsors.length === 0 && location === 'prode') {
+                        locationSponsors = filtered.filter(s => s.ubicacion === 'home');
+                    }
+
+                    // Shuffle logic
+                    const shuffled = [...locationSponsors].sort(() => 0.5 - Math.random());
+                    
+                    // Limit logic: In sidebar show only 5, otherwise keep all (for carousels)
+                    const finalSponsors = isSidebar ? shuffled.slice(0, 5) : locationSponsors;
+
+                    setSponsors(finalSponsors);
                 } else {
                     console.error('Data is not an array:', data);
                     setSponsors([]);
@@ -89,6 +102,35 @@ const SponsorList = ({ location = 'footer', className = '' }) => {
     if (location === 'home' || location === 'prode') {
         const visibleItems = 3; // For Desktop logic mainly
         
+        if (isSidebar) {
+            return (
+                <div className={`space-y-4 ${className}`}>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 px-2">Publicidad</p>
+                    {sponsors.slice(0, 4).map(sponsor => (
+                        <a 
+                            key={sponsor.id} 
+                            href={sponsor.link || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleSponsorClick(sponsor.id)}
+                            className="block group relative overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                        >
+                            <div className="aspect-[2/3] md:aspect-[1/2] overflow-hidden bg-gray-50">
+                                <img 
+                                    src={`${API_URL}${sponsor.imagen_url}`} 
+                                    alt={sponsor.nombre} 
+                                    className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                                />
+                            </div>
+                            <div className="absolute top-2 right-2 bg-black/5 backdrop-blur-sm text-[8px] font-black uppercase px-2 py-0.5 rounded-full text-black/20">
+                                Ad
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            );
+        }
+
         return (
             <div className={`my-8 relative group ${className}`}>
                  {/* Carousel Container */}
@@ -105,7 +147,7 @@ const SponsorList = ({ location = 'footer', className = '' }) => {
                             // To handle responsive 'width' cleanly in transform:
                             // We will simply render items with strictly defined widths: w-full (mobile) vs w-1/3 (desktop).
                             // And the translateX will be -100% * currentIndex (mobile) or -33.33% * currentIndex (desktop).
-                            transform: `translateX(-${currentIndex * (isDesktop ? 33.33 : 100)}%)` 
+                            transform: `translateX(-${currentIndex * (isSidebar ? 100 : (isDesktop ? 33.33 : 100))}%)` 
                         }}
                     >
                          {/* 
@@ -115,7 +157,7 @@ const SponsorList = ({ location = 'footer', className = '' }) => {
                         {sponsors.map(sponsor => (
                             <div 
                                 key={sponsor.id} 
-                                className="w-full md:w-1/3 flex-shrink-0 px-2"
+                                className={`${isSidebar ? 'w-full' : 'w-full md:w-1/3'} flex-shrink-0 px-2`}
                             >
                                 <a 
                                     href={sponsor.link || '#'}

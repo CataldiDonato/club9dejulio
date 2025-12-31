@@ -78,9 +78,9 @@ const ProdeRanking = () => {
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                {/* Main Ranking - Left/Center (2 columns) */}
-                <div className="lg:col-span-2">
+            <div className="grid lg:grid-cols-5 gap-8">
+                {/* Main Ranking - Left/Center (4 columns) */}
+                <div className="lg:col-span-4">
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
                     <div className="overflow-x-auto">
                         <table className="min-w-full leading-normal">
@@ -289,11 +289,11 @@ const ProdeRanking = () => {
                             </p>
                         )}
                     </div>
-                </div>
-            </div>
 
-            <div className="mt-12">
-                <SponsorList location="prode" />
+                    <div className="mt-8">
+                        <SponsorList location="prode" isSidebar={true} />
+                    </div>
+                </div>
             </div>
         </div>
     );

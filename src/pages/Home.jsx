@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, Trophy, Users, Star, Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import SponsorList from '../components/SponsorList';
+
 import ClubCalendar from '../components/ClubCalendar';
 
 const Home = () => {
@@ -49,9 +49,7 @@ const Home = () => {
 
       <ClubCalendar />
 
-      <div className="max-w-7xl mx-auto px-4 w-full">
-         <SponsorList location="home" />
-      </div>
+
 
       {/* Gallery Grid */}
       <div className="py-24 bg-black text-white">

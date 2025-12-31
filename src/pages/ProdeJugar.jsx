@@ -3,6 +3,7 @@ import MatchCard from "../components/MatchCard";
 import ConfirmationModal from "../components/ConfirmationModal";
 import AlertModal from "../components/AlertModal";
 import ProdeRulesModal from "../components/ProdeRulesModal";
+import SponsorList from "../components/SponsorList";
 import { API_URL } from "../config";
 import { HelpCircle } from "lucide-react";
 
@@ -185,7 +186,7 @@ const ProdeJugar = () => {
     : finishedMatches;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 relative">
+    <div className="max-w-7xl mx-auto px-4 py-8 relative">
       <ConfirmationModal
         isOpen={modal.isOpen}
         onClose={() => setModal({ ...modal, isOpen: false })}
@@ -203,87 +204,99 @@ const ProdeJugar = () => {
 
       <ProdeRulesModal isOpen={rulesOpen} onClose={() => setRulesOpen(false)} />
 
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-club-dark border-l-4 border-club-blue pl-4">
-            Jugar Prode
-          </h1>
+      <div className="grid lg:grid-cols-5 gap-8">
+        {/* Main Content */}
+        <div className="lg:col-span-4">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-club-dark border-l-4 border-club-blue pl-4">
+                Jugar Prode
+              </h1>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={() => setRulesOpen(true)}
+                className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded-full transition-colors"
+              >
+                <HelpCircle size={16} />
+                Cómo Jugar
+              </button>
+              <div className="text-sm text-gray-500">
+                <span className="font-bold">{myPredictions.length}</span>{" "}
+                pronósticos realizados
+              </div>
+            </div>
+          </div>
+
+          {/* Filtro por Jornada */}
+          {allMatchdays.length > 0 && (
+            <div className="mb-6 bg-white p-4 rounded-lg shadow-md border border-gray-200">
+              <label className="block text-sm font-bold mb-2 text-gray-700">
+                Filtrar por Jornada:
+              </label>
+              <select
+                value={selectedMatchday}
+                onChange={(e) => setSelectedMatchday(e.target.value)}
+                className="w-full md:w-64 border-2 border-club-blue rounded px-3 py-2 font-bold text-club-dark bg-white"
+              >
+                <option value="">Todas las Jornadas</option>
+                {allMatchdays.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Partidos por Jugar */}
+          <h2 className="text-xl font-bold mb-4 text-gray-700">
+            Próximos Partidos
+          </h2>
+          {filteredActiveMatches.length === 0 ? (
+            <p className="text-gray-500 italic mb-8">
+              No hay partidos programados.
+            </p>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              {filteredActiveMatches.map((match) => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  prediction={myPredictions.find((p) => p.match_id === match.id)}
+                  onPredict={handlePredictRequest}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Partidos Finalizados */}
+          {filteredFinishedMatches.length > 0 && (
+            <>
+              <h2 className="text-xl font-bold mb-4 text-gray-700 border-t pt-8">
+                Resultados Anteriores
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {filteredFinishedMatches.map((match) => (
+                  <MatchCard
+                    key={match.id}
+                    match={match}
+                    prediction={myPredictions.find((p) => p.match_id === match.id)}
+                    onPredict={handlePredictRequest}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <button
-            onClick={() => setRulesOpen(true)}
-            className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded-full transition-colors"
-          >
-            <HelpCircle size={16} />
-            Cómo Jugar
-          </button>
-          <div className="text-sm text-gray-500">
-            <span className="font-bold">{myPredictions.length}</span>{" "}
-            pronósticos realizados
+
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-24">
+             <SponsorList location="prode" isSidebar={true} />
           </div>
         </div>
       </div>
-
-      {/* Filtro por Jornada */}
-      {allMatchdays.length > 0 && (
-        <div className="mb-6 bg-white p-4 rounded-lg shadow-md border border-gray-200">
-          <label className="block text-sm font-bold mb-2 text-gray-700">
-            Filtrar por Jornada:
-          </label>
-          <select
-            value={selectedMatchday}
-            onChange={(e) => setSelectedMatchday(e.target.value)}
-            className="w-full md:w-64 border-2 border-club-blue rounded px-3 py-2 font-bold text-club-dark bg-white"
-          >
-            <option value="">Todas las Jornadas</option>
-            {allMatchdays.map((day) => (
-              <option key={day} value={day}>
-                {day}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Partidos por Jugar */}
-      <h2 className="text-xl font-bold mb-4 text-gray-700">
-        Próximos Partidos
-      </h2>
-      {filteredActiveMatches.length === 0 ? (
-        <p className="text-gray-500 italic mb-8">
-          No hay partidos programados.
-        </p>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          {filteredActiveMatches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              prediction={myPredictions.find((p) => p.match_id === match.id)}
-              onPredict={handlePredictRequest}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Partidos Finalizados */}
-      {filteredFinishedMatches.length > 0 && (
-        <>
-          <h2 className="text-xl font-bold mb-4 text-gray-700 border-t pt-8">
-            Resultados Anteriores
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {filteredFinishedMatches.map((match) => (
-              <MatchCard
-                key={match.id}
-                match={match}
-                prediction={myPredictions.find((p) => p.match_id === match.id)}
-                onPredict={handlePredictRequest}
-              />
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 };
