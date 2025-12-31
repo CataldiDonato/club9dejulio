@@ -11,6 +11,9 @@ const ProdeRanking = () => {
     const [selectedSeason, setSelectedSeason] = useState('');
     const [loading, setLoading] = useState(true);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
     useEffect(() => {
         // Fetch seasons first
         fetch(`${API_URL}/seasons`)
@@ -26,6 +29,7 @@ const ProdeRanking = () => {
         if (!selectedSeason) return;
 
         setLoading(true);
+        setCurrentPage(1); // Reset to page 1 on season change
         
         // Fetch main ranking
         fetch(`${API_URL}/ranking?season=${selectedSeason}`)
@@ -56,6 +60,14 @@ const ProdeRanking = () => {
             });
     }, [selectedSeason]);
 
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentRanking = ranking.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(ranking.length / itemsPerPage);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     if (loading && !selectedSeason) return <div className="p-8 text-center">Cargando Ranking...</div>;
 
     return (
@@ -78,9 +90,9 @@ const ProdeRanking = () => {
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-8">
-                {/* Main Ranking - Left/Center (4 columns) */}
-                <div className="lg:col-span-4">
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Main Ranking - Left/Center (2 columns) */}
+                <div className="lg:col-span-2">
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
                     <div className="overflow-x-auto">
                         <table className="min-w-full leading-normal">
@@ -101,45 +113,48 @@ const ProdeRanking = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {ranking.map((row, index) => (
-                                    <tr key={index} className={`hover:bg-gray-50 ${index < 3 ? 'bg-yellow-50' : ''}`}>
-                                        <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
-                                            <div className={`
-                                                flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full font-bold text-xs sm:text-sm
-                                                ${index === 0 ? 'bg-yellow-400 text-white' : 
-                                                  index === 1 ? 'bg-gray-400 text-white' : 
-                                                  index === 2 ? 'bg-orange-400 text-white' : 'text-gray-500'}
-                                            `}>
-                                                {index + 1}
-                                            </div>
-                                        </td>
-                                        <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
-                                            <div className="flex items-center">
-                                                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
-                                                    <img 
-                                                        className="w-full h-full rounded-full object-cover border"
-                                                        src={getImageUrl(row.foto_perfil) || "https://via.placeholder.com/150"}
-                                                        alt={row.nombre}
-                                                    />
+                                {currentRanking.map((row, idx) => {
+                                    const index = indexOfFirstItem + idx;
+                                    return (
+                                        <tr key={index} className={`hover:bg-gray-50 ${index < 3 ? 'bg-yellow-50' : ''}`}>
+                                            <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
+                                                <div className={`
+                                                    flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full font-bold text-xs sm:text-sm
+                                                    ${index === 0 ? 'bg-yellow-400 text-white' : 
+                                                      index === 1 ? 'bg-gray-400 text-white' : 
+                                                      index === 2 ? 'bg-orange-400 text-white' : 'text-gray-500'}
+                                                `}>
+                                                    {index + 1}
                                                 </div>
-                                                <div className="ml-2 sm:ml-3">
-                                                    <p className="text-gray-900 whitespace-no-wrap font-bold truncate max-w-[120px] sm:max-w-none">
-                                                        {row.nombre} {row.apellido}
-                                                    </p>
+                                            </td>
+                                            <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
+                                                <div className="flex items-center">
+                                                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+                                                        <img 
+                                                            className="w-full h-full rounded-full object-cover border"
+                                                            src={getImageUrl(row.foto_perfil) || "https://via.placeholder.com/150"}
+                                                            alt={row.nombre}
+                                                        />
+                                                    </div>
+                                                    <div className="ml-2 sm:ml-3">
+                                                        <p className="text-gray-900 whitespace-no-wrap font-bold truncate max-w-[120px] sm:max-w-none">
+                                                            {row.nombre} {row.apellido}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-2 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
-                                            <span className="relative inline-block px-2 sm:px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                <span className="relative">{row.plenos}</span>
-                                            </span>
-                                        </td>
-                                        <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
-                                            <span className="text-lg sm:text-xl font-black text-club-dark">{row.total_points}</span>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            </td>
+                                            <td className="px-2 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
+                                                <span className="relative inline-block px-2 sm:px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                    <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                    <span className="relative">{row.plenos}</span>
+                                                </span>
+                                            </td>
+                                            <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
+                                                <span className="text-lg sm:text-xl font-black text-club-dark">{row.total_points}</span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                                 {ranking.length === 0 && (
                                     <tr>
                                         <td colSpan="4" className="px-5 py-5 text-center text-gray-500">
@@ -151,6 +166,29 @@ const ProdeRanking = () => {
                         </table>
                     </div>
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-4 mt-6">
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Anterior
+                        </button>
+                        <span className="text-sm font-medium text-gray-700">
+                            Página {currentPage} de {totalPages}
+                        </span>
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                )}
             </div>
 
                 {/* Top Players by Matchday - Right Sidebar (1 column) */}
@@ -289,11 +327,11 @@ const ProdeRanking = () => {
                             </p>
                         )}
                     </div>
-
-                    <div className="mt-8">
-                        <SponsorList location="prode" isSidebar={true} />
-                    </div>
                 </div>
+            </div>
+
+            <div className="mt-12">
+                <SponsorList location="prode" />
             </div>
         </div>
     );

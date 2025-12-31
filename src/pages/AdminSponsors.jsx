@@ -15,6 +15,9 @@ const AdminSponsors = () => {
         imagen: null
     });
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
     const fetchSponsors = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -39,9 +42,21 @@ const AdminSponsors = () => {
         fetchSponsors();
     }, []);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
     const filteredSponsors = sponsors.filter(s => 
         s.nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentSponsors = filteredSponsors.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredSponsors.length / itemsPerPage);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -135,6 +150,15 @@ const AdminSponsors = () => {
         setEditingSponsor(null);
     };
 
+    const getLocationLabel = (loc) => {
+        switch(loc) {
+            case 'home': return 'General / Respaldo';
+            case 'prode': return 'Prode (Sección)';
+            case 'footer': return 'Footer (Carrusel)';
+            default: return loc;
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
@@ -169,7 +193,9 @@ const AdminSponsors = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                        <Plus size={20} className="rotate-45" /> {/* Using Plus as search icon for simplicity here, or just let it be */}
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -179,7 +205,8 @@ const AdminSponsors = () => {
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
                 </div>
             ) : (
-                <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
+                <>
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden mb-6">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-100">
@@ -187,12 +214,12 @@ const AdminSponsors = () => {
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Sponsor</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Ubicación</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Clics</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Estado</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">Estado</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {filteredSponsors.map(sponsor => (
+                                {currentSponsors.map(sponsor => (
                                     <tr key={sponsor.id} className={`hover:bg-gray-50/50 transition-colors ${!sponsor.activo ? 'bg-gray-50/30' : ''}`}>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-4">
@@ -215,39 +242,41 @@ const AdminSponsors = () => {
                                                 sponsor.ubicacion === 'prode' ? 'bg-purple-100 text-purple-700' :
                                                 'bg-gray-100 text-gray-700'
                                             }`}>
-                                                {sponsor.ubicacion}
+                                                {getLocationLabel(sponsor.ubicacion)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-6 py-4">
                                             <div className="inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-lg">
                                                 <BarChart3 size={14} className="text-gray-400" />
                                                 <span className="font-black text-sm">{sponsor.clics}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button 
-                                                onClick={() => toggleStatus(sponsor)}
-                                                className={`flex items-center gap-2 font-black text-[10px] ${sponsor.activo ? 'text-green-600' : 'text-red-500'}`}
-                                            >
-                                                {sponsor.activo ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
-                                                {sponsor.activo ? 'ACTIVO' : 'PAUSADO'}
-                                            </button>
+                                           <div className="flex justify-center">
+                                                <button 
+                                                    onClick={() => toggleStatus(sponsor)}
+                                                    className={`flex items-center gap-2 font-black text-[10px] ${sponsor.activo ? 'text-green-600' : 'text-red-500'}`}
+                                                >
+                                                    {sponsor.activo ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}
+                                                    <span className="w-12 text-left">{sponsor.activo ? 'ACTIVO' : 'PAUSADO'}</span>
+                                                </button>
+                                           </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
                                                 <button 
                                                     onClick={() => openModal(sponsor)}
-                                                    className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-colors"
+                                                    className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition-colors"
                                                     title="Editar"
                                                 >
-                                                    <Save size={16} />
+                                                    <Save size={18} />
                                                 </button>
                                                 <button 
                                                     onClick={() => deleteSponsor(sponsor.id)}
-                                                    className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors"
+                                                    className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors"
                                                     title="Eliminar"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </td>
@@ -262,6 +291,30 @@ const AdminSponsors = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-4 mt-6">
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="px-6 py-3 bg-white border-2 border-gray-100 rounded-2xl text-sm font-bold text-gray-700 hover:border-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Anterior
+                        </button>
+                        <span className="text-sm font-black text-gray-900 bg-gray-100 px-4 py-2 rounded-xl">
+                            {currentPage} / {totalPages}
+                        </span>
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="px-6 py-3 bg-white border-2 border-gray-100 rounded-2xl text-sm font-bold text-gray-700 hover:border-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                )}
+                </>
             )}
 
             {/* MODAL FORM */}
@@ -303,15 +356,20 @@ const AdminSponsors = () => {
 
                             <div>
                                 <label className="block text-xs font-black uppercase text-gray-400 mb-1 tracking-widest">Ubicación</label>
-                                <select 
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-black outline-none transition-all appearance-none font-bold"
-                                    value={formData.ubicacion}
-                                    onChange={e => setFormData({...formData, ubicacion: e.target.value})}
-                                >
-                                    <option value="home">Home (Principal)</option>
-                                    <option value="prode">Prode (Ranking)</option>
-                                    <option value="footer">Footer (Carrusel inferior)</option>
-                                </select>
+                                <div className="relative">
+                                    <select 
+                                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-black outline-none transition-all appearance-none font-bold"
+                                        value={formData.ubicacion}
+                                        onChange={e => setFormData({...formData, ubicacion: e.target.value})}
+                                    >
+                                        <option value="home">General / Respaldo (Home)</option>
+                                        <option value="prode">Prode (Barra Lateral)</option>
+                                        <option value="footer">Footer (Carrusel Inferior)</option>
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <Plus size={16} className="rotate-45" />
+                                    </div>
+                                </div>
                             </div>
 
                             <div>
