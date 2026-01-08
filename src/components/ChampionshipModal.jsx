@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import ImageViewer from "./ImageViewer";
 
 const ChampionshipModal = ({ isOpen, onClose, championship }) => {
   const [activeTab, setActiveTab] = useState("resumen");
+  const [expandedImage, setExpandedImage] = useState(null);
 
   if (!isOpen || !championship) return null;
 
@@ -85,7 +87,11 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
               <div className="grid md:grid-cols-5 gap-8">
                 <div className="md:col-span-2 space-y-4">
                   {championship.image ? (
-                    <div className="rounded-lg overflow-hidden shadow-md border-4 border-white">
+                    <div
+                      className="rounded-lg overflow-hidden shadow-md border-4 border-white cursor-pointer hover:shadow-xl transition-shadow"
+                      onClick={() => setExpandedImage(championship.image)}
+                      title="Toca para agrandar"
+                    >
                       <img
                         src={championship.image}
                         alt={`Plantel ${championship.year}`}
@@ -335,6 +341,12 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
             Archivo Histórico Oficial - Club Atlético 9 de Julio - Berabevú
           </p>
         </div>
+
+        {/* Image Viewer for expanded photo */}
+        <ImageViewer
+          imageUrl={expandedImage}
+          onClose={() => setExpandedImage(null)}
+        />
       </div>
     </div>
   );
