@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import ImageCarousel from '../components/ImageCarousel';
-import ChampionshipModal from '../components/ChampionshipModal';
-import { championships } from '../data/championships';
-import primerEquipo from '../images/historia/primerequipo.gif';
-import primerEquipoIA from '../images/historia/primerequipoIA.png';
-import ano1926 from '../images/historia/ano1926.gif';
-import ano1926IA from '../images/historia/ano1926IA.png';
-import comision1963 from '../images/historia/comision 1963.jpg';
-import comision1963IA from '../images/historia/comision 1963 IA.png';
-import festejo30 from '../images/historia/Festejo30.jpg';
-import festejo30IA from '../images/historia/Festejo30IA.png';
-import challenger from '../images/historia/Challenguer1.jpg';
-import challengerIA from '../images/historia/Challenguer1IA.png';
-import regional87 from '../images/historia/regional87.jpg';
-import regional87IA from '../images/historia/regional87IA.png';
+import React, { useState } from "react";
+import ImageCarousel from "../components/ImageCarousel";
+import ChampionshipModal from "../components/ChampionshipModal";
+import { championships } from "../data/championships";
+import primerEquipo from "../images/historia/primerequipo.gif";
+import primerEquipoIA from "../images/historia/primerequipoIA.png";
+import ano1926 from "../images/historia/ano1926.gif";
+import ano1926IA from "../images/historia/ano1926IA.png";
+import comision1963 from "../images/historia/comision 1963.jpg";
+import comision1963IA from "../images/historia/comision 1963 IA.png";
+import festejo30 from "../images/historia/Festejo30.jpg";
+import festejo30IA from "../images/historia/Festejo30IA.png";
+import challenger from "../images/historia/Challenguer1.jpg";
+import challengerIA from "../images/historia/Challenguer1IA.png";
+import regional87 from "../images/historia/regional87.jpg";
+import regional87IA from "../images/historia/regional87IA.png";
 
 const Historia = () => {
   const [selectedChampionship, setSelectedChampionship] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleChampionshipClick = (year) => {
-    const data = championships.find(c => c.year === year);
+    const data = championships.find((c) => c.year === year);
     if (data) {
       setSelectedChampionship(data);
       setIsModalOpen(true);
@@ -34,10 +34,10 @@ const Historia = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <ChampionshipModal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-        championship={selectedChampionship} 
+      <ChampionshipModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        championship={selectedChampionship}
       />
 
       {/* Hero Section */}
@@ -53,7 +53,6 @@ const Historia = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
-        
         {/* Los Lanudos Section */}
         <section className="mb-16">
           <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-club-blue">
@@ -63,35 +62,42 @@ const Historia = () => {
             </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
-                El regreso a la actividad futbolística en 1953 trajo consigo el apodo con el que nuestra 
-                institución es conocida en toda la zona: <strong className="text-club-blue">"LOS LANUDOS"</strong>. 
-                El mismo no alude al color de camiseta, como ocurre generalmente en otros clubes, ni significa 
-                que en algún momento 9 de Julio haya salido a la cancha con un pulóver Blanquinegro hecho en 
-                ese material.
+                El regreso a la actividad futbolística en 1953 trajo consigo el
+                apodo con el que nuestra institución es conocida en toda la
+                zona: <strong className="text-club-blue">"LOS LANUDOS"</strong>.
+                El mismo no alude al color de camiseta, como ocurre generalmente
+                en otros clubes, ni significa que en algún momento 9 de Julio
+                haya salido a la cancha con un pulóver Blanquinegro hecho en ese
+                material.
               </p>
               <p>
-                Su verdadero origen data de 1953 y nació en la boca de nuestro nuevo archirival: Deportivo.
+                Su verdadero origen data de 1953 y nació en la boca de nuestro
+                nuevo archirival: Deportivo.
               </p>
               <div className="bg-blue-50 border-l-4 border-club-blue p-6 my-6">
                 <p className="italic">
-                  Cuenta la leyenda que ante la llegada de un nuevo clásico, el pueblo estaba alborotado. 
-                  En uno de esos domingos en que Berabevú estaba paralizado por el partido entre los dos equipos 
-                  locales, Deportivo logró empatar de forma agónica a 9 de Julio a segundos del final.
+                  Cuenta la leyenda que ante la llegada de un nuevo clásico, el
+                  pueblo estaba alborotado. En uno de esos domingos en que
+                  Berabevú estaba paralizado por el partido entre los dos
+                  equipos locales, Deportivo logró empatar de forma agónica a 9
+                  de Julio a segundos del final.
                 </p>
                 <p className="mt-4 font-bold text-club-blue text-xl text-center">
                   "¡¡¡Le cortamos La Lana a Los Lanudos!!!"
                 </p>
                 <p className="text-sm mt-2">
-                  - Felix Martinez, jugador de Deportivo, a través de una propaladora en los festejos que 
-                  duraron tres días.
+                  - Felix Martinez, jugador de Deportivo, a través de una
+                  propaladora en los festejos que duraron tres días.
                 </p>
               </div>
               <p>
-                Al principio los hinchas de 9 de Julio lo tomaron en forma despectiva, aunque con el correr 
-                de los años se hizo mucho más simpático, al punto tal de adoptarlo como propio. Quién diría 
-                que esta frase tirada al pasar un día como hoy, en pleno siglo XXI, adornaría los trapos y 
-                sonaría estruendosamente en las gargantas de todos los fanáticos que siguen a la Gloriosa 
-                Blanca y Negra a todas partes…
+                Al principio los hinchas de 9 de Julio lo tomaron en forma
+                despectiva, aunque con el correr de los años se hizo mucho más
+                simpático, al punto tal de adoptarlo como propio. Quién diría
+                que esta frase tirada al pasar un día como hoy, en pleno siglo
+                XXI, adornaría los trapos y sonaría estruendosamente en las
+                gargantas de todos los fanáticos que siguen a la Gloriosa Blanca
+                y Negra a todas partes…
               </p>
             </div>
           </div>
@@ -100,23 +106,29 @@ const Historia = () => {
         {/* Los Primeros Pasos */}
         <section className="mb-16">
           <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-gray-800">
-            <h2 className="text-4xl font-black text-club-black mb-6">LOS PRIMEROS PASOS</h2>
+            <h2 className="text-4xl font-black text-club-black mb-6">
+              LOS PRIMEROS PASOS
+            </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p className="text-xl font-semibold text-club-blue">
-                9 de Julio de 1913. Feriado Nacional y jornada festiva en todo el país.
+                9 de Julio de 1913. Feriado Nacional y jornada festiva en todo
+                el país.
               </p>
               <p>
-                Las calles de tierra del joven Berabevú recibiendo el sol tibio de una tarde de invierno, 
-                y la juventud futbolera de la época reunida en la canchita de la hoy Escuela Primaria: ese 
-                día recibían la visita de Chañarense. Los visionarios e inolvidables once jugadores que 
-                integraron aquel primer equipo fueron:
+                Las calles de tierra del joven Berabevú recibiendo el sol tibio
+                de una tarde de invierno, y la juventud futbolera de la época
+                reunida en la canchita de la hoy Escuela Primaria: ese día
+                recibían la visita de Chañarense. Los visionarios e inolvidables
+                once jugadores que integraron aquel primer equipo fueron:
               </p>
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="font-bold text-xl mb-6">1º EQUIPO DE 9 DE JULIO</h3>
+                <h3 className="font-bold text-xl mb-6">
+                  1º EQUIPO DE 9 DE JULIO
+                </h3>
                 <ImageCarousel
                   images={[
-                    { src: primerEquipo, label: '📷 Foto Original' },
-                    { src: primerEquipoIA, label: '🤖 Mejorada con IA' }
+                    { src: primerEquipo, label: "📷 Foto Original" },
+                    { src: primerEquipoIA, label: "🤖 Mejorada con IA" },
                   ]}
                   altText="Primer equipo de 9 de Julio - 1913"
                   caption="Primer equipo de 9 de Julio (1913)"
@@ -146,32 +158,54 @@ const Historia = () => {
                 </div>
               </div>
               <p>
-                Rápidamente, después de este encuentro decidieron darle formalidad a la cuestión. Y en la 
-                fecha de la Independencia Patria nació el <strong>C. A. 9 de Julio</strong>.
+                Rápidamente, después de este encuentro decidieron darle
+                formalidad a la cuestión. Y en la fecha de la Independencia
+                Patria nació el <strong>C. A. 9 de Julio</strong>.
               </p>
               <div className="bg-blue-50 border-l-4 border-club-blue p-6 my-6">
-                <h3 className="font-bold text-lg mb-2">Primera Comisión Directiva (1913)</h3>
+                <h3 className="font-bold text-lg mb-2">
+                  Primera Comisión Directiva (1913)
+                </h3>
                 <div className="grid md:grid-cols-2 gap-2 text-sm">
-                  <p><strong>Presidente:</strong> Fermín De Gaspari</p>
-                  <p><strong>Vice:</strong> Jose Noguera</p>
-                  <p><strong>Secretario:</strong> Víctor Dalmagro</p>
-                  <p><strong>Pro-Secretario:</strong> Eliseo Conde</p>
-                  <p><strong>Tesorero:</strong> Ramón Sorribas</p>
-                  <p><strong>Pro-Tesorero:</strong> Angel Negrini</p>
+                  <p>
+                    <strong>Presidente:</strong> Fermín De Gaspari
+                  </p>
+                  <p>
+                    <strong>Vice:</strong> Jose Noguera
+                  </p>
+                  <p>
+                    <strong>Secretario:</strong> Víctor Dalmagro
+                  </p>
+                  <p>
+                    <strong>Pro-Secretario:</strong> Eliseo Conde
+                  </p>
+                  <p>
+                    <strong>Tesorero:</strong> Ramón Sorribas
+                  </p>
+                  <p>
+                    <strong>Pro-Tesorero:</strong> Angel Negrini
+                  </p>
                 </div>
               </div>
               <p>
-                Sus fundadores fueron un desprendimiento del Club Social Berabevú y resolvieron que los 
-                colores de su camiseta fueran el <strong className="text-white bg-black px-2 py-1">blanco</strong> 
-                {' '}y el <strong className="bg-white border border-black px-2 py-1">negro</strong> en rayas 
-                verticales: blanco, que despertaba esperanza y progreso; y el negro, por la total incertidumbre 
-                que generaba el proyecto.
+                Sus fundadores fueron un desprendimiento del Club Social
+                Berabevú y resolvieron que los colores de su camiseta fueran el{" "}
+                <strong className="text-white bg-black px-2 py-1">
+                  blanco
+                </strong>{" "}
+                y el{" "}
+                <strong className="bg-white border border-black px-2 py-1">
+                  negro
+                </strong>{" "}
+                en rayas verticales: blanco, que despertaba esperanza y
+                progreso; y el negro, por la total incertidumbre que generaba el
+                proyecto.
               </p>
               <div className="mt-6">
                 <ImageCarousel
                   images={[
-                    { src: ano1926, label: '📷 Foto Original' },
-                    { src: ano1926IA, label: '🤖 Mejorada con IA' }
+                    { src: ano1926, label: "📷 Foto Original" },
+                    { src: ano1926IA, label: "🤖 Mejorada con IA" },
                   ]}
                   altText="Equipo de 9 de Julio en 1926"
                   caption="Equipo de 1926"
@@ -189,10 +223,12 @@ const Historia = () => {
             </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
-                El campeonato de <strong className="text-yellow-600">1932</strong> marcó el inicio de la 
-                Liga Interprovincial, y desde el comienzo nuestro equipo se perfiló como serio candidato 
-                al título. Quizás como un feliz augurio de la grandeza que conseguiría con el paso del tiempo, 
-                9 de Julio se quedó con el primer torneo que se disputó.
+                El campeonato de{" "}
+                <strong className="text-yellow-600">1932</strong> marcó el
+                inicio de la Liga Interprovincial, y desde el comienzo nuestro
+                equipo se perfiló como serio candidato al título. Quizás como un
+                feliz augurio de la grandeza que conseguiría con el paso del
+                tiempo, 9 de Julio se quedó con el primer torneo que se disputó.
               </p>
               <div className="flex flex-wrap gap-3 my-6">
                 <span className="bg-yellow-500 text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg">
@@ -206,14 +242,15 @@ const Historia = () => {
                 </span>
               </div>
               <p className="font-semibold text-lg">
-                Sólo se habían disputado 4 temporadas en nuestra Liga, y el 9 (como se lo llamaba en aquella 
-                época), ya había dado 3 vueltas olímpicas.
+                Sólo se habían disputado 4 temporadas en nuestra Liga, y el 9
+                (como se lo llamaba en aquella época), ya había dado 3 vueltas
+                olímpicas.
               </p>
               <div className="mt-6">
                 <ImageCarousel
                   images={[
-                    { src: festejo30, label: '📷 Foto Original' },
-                    { src: festejo30IA, label: '🤖 Mejorada con IA' }
+                    { src: festejo30, label: "📷 Foto Original" },
+                    { src: festejo30IA, label: "🤖 Mejorada con IA" },
                   ]}
                   altText="Festejo de campeonato en la década del 30"
                   caption="Nuestra gente festeja un nuevo título en la década del 30"
@@ -231,16 +268,20 @@ const Historia = () => {
             </h2>
             <div className="prose prose-lg max-w-none text-gray-100 space-y-4">
               <p className="text-xl">
-                En la década del '70, el Club Atlético 9 de Julio escribió, tal como los Granaderos a Caballo, 
+                En la década del '70, el Club Atlético 9 de Julio escribió, tal
+                como los Granaderos a Caballo,
                 <strong className="text-yellow-300">"su página mejor"</strong>.
               </p>
               <p>
-                El Club crecía de manera constante y era una institución modelo para la región. Su agitada 
-                actividad social, deportiva y cultural lo demostraban, basado en un fuerte, austero y eficaz 
+                El Club crecía de manera constante y era una institución modelo
+                para la región. Su agitada actividad social, deportiva y
+                cultural lo demostraban, basado en un fuerte, austero y eficaz
                 trabajo dirigencial.
               </p>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 my-6">
-                <h3 className="text-2xl font-bold mb-4 text-yellow-300">El Tricampeonato Histórico</h3>
+                <h3 className="text-2xl font-bold mb-4 text-yellow-300">
+                  El Tricampeonato Histórico
+                </h3>
                 <div className="flex flex-wrap gap-4 justify-center">
                   <div className="bg-yellow-500 text-black px-8 py-4 rounded-lg text-center">
                     <div className="text-3xl font-black">1973</div>
@@ -263,16 +304,17 @@ const Historia = () => {
                 </p>
               </div>
               <p>
-                En 1975 conquistamos en forma invicta el tercer campeonato consecutivo y el cumplimiento 
-                del sueño que todos los clubes tenían y que ninguno había logrado: 
-                <strong className="text-yellow-300"> La Copa Challenger</strong>, siendo nuestra institución 
-                la primera en obtenerlo.
+                En 1975 conquistamos en forma invicta el tercer campeonato
+                consecutivo y el cumplimiento del sueño que todos los clubes
+                tenían y que ninguno había logrado:
+                <strong className="text-yellow-300"> La Copa Challenger</strong>
+                , siendo nuestra institución la primera en obtenerlo.
               </p>
               <div className="mt-6">
                 <ImageCarousel
                   images={[
-                    { src: challenger, label: '📷 Foto Original' },
-                    { src: challengerIA, label: '🤖 Mejorada con IA' }
+                    { src: challenger, label: "📷 Foto Original" },
+                    { src: challengerIA, label: "🤖 Mejorada con IA" },
                   ]}
                   altText="Copa Challenger Dr. Ramón F. Pereyra"
                   caption="Copa Challenger Dr. Ramón F. Pereyra"
@@ -286,7 +328,9 @@ const Historia = () => {
         {/* Década del 80 */}
         <section className="mb-16">
           <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-club-blue">
-            <h2 className="text-4xl font-black text-club-black mb-6">DÉCADA DEL '80</h2>
+            <h2 className="text-4xl font-black text-club-black mb-6">
+              DÉCADA DEL '80
+            </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
                 Dos nuevos lauros futboleros llegarían en la década del '80:
@@ -295,31 +339,35 @@ const Historia = () => {
                 <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-600">
                   <h3 className="font-bold text-2xl mb-2">🏆 1984</h3>
                   <p className="text-sm">
-                    Una pésima actuación en el Apertura hacía imposible presagiar lo que sucedería: 
-                    el equipo funcionó hasta la consagración, aportando la Octava estrella.
+                    Una pésima actuación en el Apertura hacía imposible
+                    presagiar lo que sucedería: el equipo funcionó hasta la
+                    consagración, aportando la Octava estrella.
                   </p>
                 </div>
                 <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-600">
                   <h3 className="font-bold text-2xl mb-2">🏆 1986</h3>
                   <p className="text-sm">
-                    La Novena estrella llegó apenas dos años después, en otra de las más recordadas 
-                    celebraciones.
+                    La Novena estrella llegó apenas dos años después, en otra de
+                    las más recordadas celebraciones.
                   </p>
                 </div>
               </div>
               <div className="bg-red-50 border-l-4 border-red-500 p-6 my-6">
-                <h3 className="font-bold text-lg text-red-800">29 de Octubre de 1985 - El Incendio</h3>
+                <h3 className="font-bold text-lg text-red-800">
+                  29 de Octubre de 1985 - El Incendio
+                </h3>
                 <p className="text-sm">
-                  Un fuego implacable destruyó casi totalmente el Salón Mayor y el Microcine. 
-                  Poco tiempo después, se produjo la quiebra de la mutual, iniciando un retroceso 
-                  económico que frenó aquel avance impetuoso.
+                  Un fuego implacable destruyó casi totalmente el Salón Mayor y
+                  el Microcine. Poco tiempo después, se produjo la quiebra de la
+                  mutual, iniciando un retroceso económico que frenó aquel
+                  avance impetuoso.
                 </p>
               </div>
               <div className="mt-6">
                 <ImageCarousel
                   images={[
-                    { src: regional87, label: '📷 Foto Original' },
-                    { src: regional87IA, label: '🤖 Mejorada con IA' }
+                    { src: regional87, label: "📷 Foto Original" },
+                    { src: regional87IA, label: "🤖 Mejorada con IA" },
                   ]}
                   altText="Equipo del Regional 1987"
                   caption="Regional 1987 - Participación en el Torneo Regional del Consejo Federal"
@@ -337,25 +385,32 @@ const Historia = () => {
             </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
-                Los años más duros fueron entre 1995 al 2001, llegando en el 2000 al extremo de no 
-                participar en el campeonato de la Liga.
+                Los años más duros fueron entre 1995 al 2001, llegando en el
+                2000 al extremo de no participar en el campeonato de la Liga.
               </p>
               <div className="bg-green-100 border-l-4 border-green-600 p-6 my-6">
-                <h3 className="font-bold text-xl text-green-800 mb-2">Clausura 2002</h3>
+                <h3 className="font-bold text-xl text-green-800 mb-2">
+                  Clausura 2002
+                </h3>
                 <p>
-                  Tras una pésima actuación en el Apertura, ni el más fanático se hubiera atrevido a 
-                  soñar con el título del Clausura. Pero lentamente, con un equipo que mezcló experiencia 
-                  con juventud local, renació aquella garra y hambre de gloria que parecían olvidados.
+                  Tras una pésima actuación en el Apertura, ni el más fanático
+                  se hubiera atrevido a soñar con el título del Clausura. Pero
+                  lentamente, con un equipo que mezcló experiencia con juventud
+                  local, renació aquella garra y hambre de gloria que parecían
+                  olvidados.
                 </p>
                 <p className="font-semibold mt-2">
-                  12 de Enero de 2003: Vuelta olímpica en territorio de Chañarense después de 11 años.
+                  12 de Enero de 2003: Vuelta olímpica en territorio de
+                  Chañarense después de 11 años.
                 </p>
               </div>
               <p>
-                El nuevo regreso de la Fiesta Provincial del Maíz en 2004, la reedición del Baile del Vino, 
-                los eventos culturales, la remodelación del salón mayor, la gran fiesta del 90º Aniversario, 
-                son producto del arrojo de gente nueva junto a gente de experiencia que anhela ubicar al 
-                club en la posición de la que nunca debió salir.
+                El nuevo regreso de la Fiesta Provincial del Maíz en 2004, la
+                reedición del Baile del Vino, los eventos culturales, la
+                remodelación del salón mayor, la gran fiesta del 90º
+                Aniversario, son producto del arrojo de gente nueva junto a
+                gente de experiencia que anhela ubicar al club en la posición de
+                la que nunca debió salir.
               </p>
             </div>
           </div>
@@ -364,20 +419,33 @@ const Historia = () => {
         {/* Palmarés Completo */}
         <section className="mb-16">
           <div className="bg-gradient-to-r from-club-black to-gray-800 text-white rounded-xl shadow-2xl p-8">
-            <h2 className="text-4xl font-black mb-8 text-center">🏆 PALMARÉS HISTÓRICO</h2>
+            <h2 className="text-4xl font-black mb-8 text-center">
+              🏆 PALMARÉS HISTÓRICO
+            </h2>
             <div className="flex flex-wrap gap-3 justify-center">
-              {[1932, 1933, 1935, 1963, 1973, 1974, 1975, 1984, 1986, 2011, 2016, 2018, 2023].map((year) => {
-                 const hasData = championships.some(c => c.year === year);
-                 return (
-                  <div 
-                    key={year} 
+              {[
+                1932, 1933, 1935, 1963, 1973, 1974, 1975, 1984, 1986, 2011,
+                2016, 2018, 2023,
+              ].map((year) => {
+                const hasData = championships.some((c) => c.year === year);
+                return (
+                  <div
+                    key={year}
                     onClick={() => handleChampionshipClick(year)}
                     className={`
                       bg-yellow-500 text-black px-6 py-3 rounded-lg font-black text-xl shadow-lg 
                       transform hover:scale-110 transition-transform cursor-pointer
-                      ${!hasData ? 'opacity-80 hover:scale-100 cursor-default' : ''}
+                      ${
+                        !hasData
+                          ? "opacity-80 hover:scale-100 cursor-default"
+                          : ""
+                      }
                     `}
-                    title={hasData ? "Ver detalles del campeonato" : "Información próximamente"}
+                    title={
+                      hasData
+                        ? "Ver detalles del campeonato"
+                        : "Información próximamente"
+                    }
                   >
                     🏆 {year}
                   </div>
@@ -396,18 +464,21 @@ const Historia = () => {
         {/* Comisión Directiva 1963 */}
         <section className="mb-16">
           <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-yellow-500">
-            <h2 className="text-4xl font-black text-club-black mb-6">CAMPEONATO 1963 - 50 AÑOS DEL CLUB</h2>
+            <h2 className="text-4xl font-black text-club-black mb-6">
+              CAMPEONATO 1963 - 50 AÑOS DEL CLUB
+            </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
-                Con mayoría de jugadores de la localidad, no solo se pegó el grito en la primera división, 
-                sino que fue acompañado por el título de Reserva. Un festejo a lo Grande, coincidiendo con 
-                los primeros 50 años de vida de un Club con espíritu de Campeón.
+                Con mayoría de jugadores de la localidad, no solo se pegó el
+                grito en la primera división, sino que fue acompañado por el
+                título de Reserva. Un festejo a lo Grande, coincidiendo con los
+                primeros 50 años de vida de un Club con espíritu de Campeón.
               </p>
               <div className="mt-6">
                 <ImageCarousel
                   images={[
-                    { src: comision1963, label: '📷 Foto Original' },
-                    { src: comision1963IA, label: '🤖 Mejorada con IA' }
+                    { src: comision1963, label: "📷 Foto Original" },
+                    { src: comision1963IA, label: "🤖 Mejorada con IA" },
                   ]}
                   altText="Comisión Directiva año 1963"
                   caption="Comisión Directiva año 1963"
@@ -420,27 +491,38 @@ const Historia = () => {
         {/* Época Reciente */}
         <section className="mb-16">
           <div className="bg-white rounded-xl shadow-xl p-8">
-            <h2 className="text-4xl font-black text-club-black mb-8">ÉPOCA RECIENTE</h2>
+            <h2 className="text-4xl font-black text-club-black mb-8">
+              ÉPOCA RECIENTE
+            </h2>
             <div className="space-y-6">
               <div className="border-l-4 border-yellow-500 pl-6">
-                <h3 className="text-2xl font-bold text-yellow-600 mb-2">2023 - CAMPEÓN ABSOLUTO 🏆</h3>
+                <h3 className="text-2xl font-bold text-yellow-600 mb-2">
+                  2023 - CAMPEÓN ABSOLUTO 🏆
+                </h3>
                 <p className="text-gray-700">
-                  Año histórico bajo la dirección de Gasparini. El club se consagró Campeón Anual Absoluto 
-                  ganando Apertura y Clausura. Final vs Huracán (Los Quirquinchos): 3-0 global.
+                  Año histórico bajo la dirección de Gasparini. El club se
+                  consagró Campeón Anual Absoluto ganando Apertura y Clausura.
+                  Final vs Huracán (Los Quirquinchos): 3-0 global.
                 </p>
               </div>
               <div className="border-l-4 border-gray-400 pl-6">
-                <h3 className="text-2xl font-bold text-gray-600 mb-2">2024 - Subcampeón 🥈</h3>
+                <h3 className="text-2xl font-bold text-gray-600 mb-2">
+                  2024 - Subcampeón 🥈
+                </h3>
                 <p className="text-gray-700">
-                  Protagonista llegando a la final anual. Empate en el global contra Centenario, 
-                  definición por penales. Dignísimo subcampeonato tras temporada brillante.
+                  Protagonista llegando a la final anual. Empate en el global
+                  contra Centenario, definición por penales. Dignísimo
+                  subcampeonato tras temporada brillante.
                 </p>
               </div>
               <div className="border-l-4 border-club-blue pl-6">
-                <h3 className="text-2xl font-bold text-club-blue mb-2">2025 - Actualidad ⚽</h3>
+                <h3 className="text-2xl font-bold text-club-blue mb-2">
+                  2025 - Actualidad ⚽
+                </h3>
                 <p className="text-gray-700">
-                  El club sigue siendo gran animador de torneos superiores. Inferiores (Séptima División) 
-                  con campeonatos Apertura/Clausura, asegurando el semillero del club.
+                  El club sigue siendo gran animador de torneos superiores.
+                  Inferiores (Séptima División) con campeonatos
+                  Apertura/Clausura, asegurando el semillero del club.
                 </p>
               </div>
             </div>
@@ -564,7 +646,6 @@ const Historia = () => {
             </p>
           </div>
         </section>
-
       </div>
     </div>
   );
