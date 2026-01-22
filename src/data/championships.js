@@ -4,7 +4,10 @@ import img1963 from "../images/campeonatos/campeones 1963.gif";
 import img1975 from "../images/campeonatos/campeon 1975.gif";
 import img1984 from "../images/campeonatos/Campeon 1984.jpg";
 import img1986 from "../images/campeonatos/campeon1986.gif";
+import img2011 from "../images/campeonatos/Campeon 2011.jpg";
+import img2016 from "../images/campeonatos/2016.jpeg";
 import img2018 from "../images/campeonatos/2018.jpeg";
+import img2023 from "../images/campeonatos/2023.jpeg";
 
 export const championships = [
   {
@@ -1528,7 +1531,7 @@ export const championships = [
   {
     year: 2023,
     title: "Bicampeones: El Año Perfecto",
-    image: null,
+    image: img2023,
     description:
       "El club vivió uno de los años más gloriosos de su historia al coronarse bicampeón regional, obteniendo tanto el Torneo Apertura como el Torneo Clausura.",
     fullText: `Bajo la dirección técnica de Gerardo Gasparini, 9 de Julio dominó la temporada 2023 de punta a punta. En el Apertura, el equipo demostró una solvencia impecable, finalizando primero en la fase regular y superando a Centenario en una final inolvidable: victoria 1-0 en la ida y una contundente goleada 4-1 como visitantes en San José de la Esquina. 
@@ -1773,7 +1776,7 @@ La mística ganadora se extendió al Clausura, donde tras superar series durísi
   {
     year: 2011,
     title: "La Décima tras 25 Años",
-    image: null,
+    image: img2011,
     description:
       "Después de 25 años, 9 de Julio vuelve a gritar campeón. El año glorioso donde domina en Apertura y en la Final del Año frente a Arteaga.",
     fullText: `Se hizo esperar la décima. Tuvieron que pasar 25 años para volver a gritar Campeón. Y el glorioso blanquinegro de Berabevú lo hizo como se debe; a lo Grande.
@@ -2075,7 +2078,7 @@ La campaña fue la siguiente: 16 victorias, 12 empates y 7 derrotas, con 52 gole
   {
     year: 2016,
     title: "Campeón del Año 2016",
-    image: null,
+    image: img2016,
     description:
       "Bajo la dirección técnica de Abel Caminos (Apertura) y Mauricio Ciani (Clausura), 9 de Julio se consagró Campeón del Año tras una inolvidable definición frente a Arteaga.",
     fullText: `Temporada inolvidable. El año comenzó con Abel Caminos en el banco, pero tras un Apertura irregular (eliminados con 12 puntos), Mauricio Ciani tomó el mando en el Clausura. El equipo creció, clasificó 3ro con 24 puntos y se hizo fuerte en los cruces. 
