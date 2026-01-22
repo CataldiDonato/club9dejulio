@@ -8,27 +8,27 @@ const Instalaciones = () => {
   const facilities = [
     {
       title: "Estadio 'El Lanudo'",
-      desc: "Nuestro campo de juego principal, con capacidad para 3000 espectadores. Cuenta con iluminación LED de última generación inaugurada en 2022, permitiendo la disputa de encuentros nocturnos de primer nivel. El césped es orgullo de la región.",
+      desc: "Nuestro campo de juego principal. Ignagurada entre los años 1938 y 1940 en terrenjos donador por ramon sorribas, uno de los funbdadores. el nombre fue elegido en homenaje a un grna deportista y presidente del club en ese momneto",
       image: estadio
     },
     {
       title: "Sede Social",
-      desc: "El corazón de la vida social del club. Un espacio renovado que incluye secretaría administrativa, salón de trofeos y un buffet restaurante abierto a toda la comunidad. Punto de encuentro obligado para los socios.",
+      desc: "El corazón de la vida social del club. Un espacio renovado que incluye secretaría administrativa y bar abierto a toda la comunidad. Punto de encuentro obligado para los socios.",
       image: sede
     },
     {
       title: "Complejo Natatorio",
-      desc: "Disfrutá del verano en nuestras tres piletas: semi-olímpica para nadadores, recreativa para la familia y pileta para niños. Rodeado de un amplio parque arbolado con asadores y quinchos.",
+      desc: "La pileta del pueblo, con 25 metros de largo y 3 de profundidad es concurrrida por todos en temporada de verano. el club cuenta con colonia de vacaciones para niños.",
       image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=2670&auto=format&fit=crop"
     },
     {
       title: "Gimnasio",
-      desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico, Voley, Básquet y Futsal. Escenario también de grandes eventos sociales, fiestas y cenas multitudinarias.",
+      desc: "Incorporado recientemente, el gimnasio es un espacio de entrenamiento y fitness para todos los miembros.",
       image: gimnasio
     },
     {
       title: "Salón",
-      desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico, Voley, Básquet y Futsal. Escenario también de grandes eventos sociales, fiestas y cenas multitudinarias.",
+      desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico y danzas. Escenario también de grandes eventos sociales, fiestas, graduaciones,festivales y cenas multitudinarias.",
       image: salon
     },
     
@@ -43,7 +43,7 @@ const Instalaciones = () => {
         <div className="max-w-7xl mx-auto">
             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">Nuestras <br/> <span className="text-gray-500">Instalaciones</span></h1>
             <p className="text-xl max-w-2xl text-gray-300">
-                Infraestructura de primer nivel al servicio del socio y del deportista. Conocé los espacios donde late la pasión del 9 de Julio.
+                Conocé los espacios donde late la pasión del 9 de Julio.
             </p>
         </div>
       </div>
