@@ -7,3 +7,22 @@
     @apply font-sans antialiased text-slate-800;
   }
 }
+
+/* 3D Logo Rotation Animation */
+@keyframes rotate3D {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+.logo-3d-container {
+  perspective: 1000px;
+}
+
+.logo-3d-rotate {
+  animation: rotate3D 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-style: preserve-3d;
+}

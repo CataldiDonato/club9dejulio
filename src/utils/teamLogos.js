@@ -1,6 +1,6 @@
 
 // Import images explicitly for Vite/Webpack to process them
-import club9dejulio from '../images/clubes/9 de julio.jpg';
+const club9dejulio = '/9dejulio.svg';
 import alianza from '../images/clubes/Alianza.jpg';
 import arteaga from '../images/clubes/Arteaga.jpg';
 import belgrano from '../images/clubes/Belgrano.jpg';
