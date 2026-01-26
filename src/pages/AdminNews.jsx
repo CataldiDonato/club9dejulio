@@ -146,13 +146,13 @@ const AdminNews = () => {
                         </label>
                         <input type="file" multiple className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-black file:text-white hover:file:bg-gray-800" accept="image/*" onChange={e => setFormData({...formData, imagenes: Array.from(e.target.files)})} />
                         {formData.imagenes.length > 0 && (
-                            <div className="text-sm font-bold text-blue-600 mt-2">
+                            <div className="text-sm font-bold text-gray-800 mt-2">
                                 {formData.imagenes.length} archivos seleccionados
                             </div>
                         )}
                     </div>
 
-                    <button type="submit" className={`w-full flex justify-center items-center gap-2 text-white px-6 py-4 rounded-lg font-black uppercase text-lg shadow-lg transition-all transform hover:scale-[1.02] ${isEditing ? 'bg-blue-600 hover:bg-blue-700' : 'bg-black hover:bg-gray-800'}`}>
+                    <button type="submit" className={`w-full flex justify-center items-center gap-2 text-white px-6 py-4 rounded-lg font-black uppercase text-lg shadow-lg transition-all transform hover:scale-[1.02] ${isEditing ? 'bg-gray-800' : 'bg-black hover:bg-gray-800'}`}>
                         {isEditing ? <Edit size={20} /> : <Send size={20} />}
                         {isEditing ? 'Guardar Cambios' : 'Publicar Noticia'}
                     </button>
@@ -164,7 +164,7 @@ const AdminNews = () => {
                 {news.map(n => (
                     <div key={n.id} className="group flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all gap-4">
                         <div className="flex-grow">
-                            <h4 className="font-bold text-lg text-gray-800 group-hover:text-blue-600 transition-colors uppercase">{n.titulo}</h4>
+                            <h4 className="font-bold text-lg text-gray-800 group-hover:text-black transition-colors uppercase">{n.titulo}</h4>
                             <div className="flex items-center gap-3 mt-1">
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{new Date(n.fecha).toLocaleDateString()}</p>
                                 <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
@@ -174,7 +174,7 @@ const AdminNews = () => {
                         <div className="flex items-center gap-2 w-full md:w-auto">
                             <button 
                                 onClick={() => handleEdit(n)} 
-                                className="flex-1 md:flex-none flex items-center justify-center gap-1 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-bold hover:bg-blue-600 hover:text-white transition-all text-xs uppercase"
+                                className="flex-1 md:flex-none flex items-center justify-center gap-1 bg-gray-100 text-black px-4 py-2 rounded-lg font-bold hover:bg-black hover:text-white transition-all text-xs uppercase"
                             >
                                 <Edit size={14} /> Editar
                             </button>

@@ -229,7 +229,7 @@ const AdminSponsors = () => {
                                                 <div>
                                                     <p className="font-bold text-gray-900">{sponsor.nombre}</p>
                                                     {sponsor.link && (
-                                                        <a href={sponsor.link} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 font-bold hover:underline flex items-center gap-1">
+                                                        <a href={sponsor.link} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-500 font-bold hover:underline flex items-center gap-1">
                                                             <ExternalLink size={10} /> VER LINK
                                                         </a>
                                                     )}
@@ -238,7 +238,7 @@ const AdminSponsors = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${
-                                                sponsor.ubicacion === 'home' ? 'bg-blue-100 text-blue-700' :
+                                                sponsor.ubicacion === 'home' ? 'bg-gray-200 text-gray-800' :
                                                 sponsor.ubicacion === 'prode' ? 'bg-purple-100 text-purple-700' :
                                                 'bg-gray-100 text-gray-700'
                                             }`}>

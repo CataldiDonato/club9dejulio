@@ -476,9 +476,9 @@ const Socios = () => {
 
                 {/* 3. Estadísticas de Prode */}
                 <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 -z-0"></div>
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gray-50 rounded-bl-full -mr-4 -mt-4 -z-0"></div>
                   <h4 className="font-bold text-gray-800 mb-4 uppercase flex items-center gap-2 relative z-10">
-                    <div className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
+                    <div className="p-1.5 bg-gray-100 text-black rounded-lg">
                       <Eye size={18} />
                     </div>{" "}
                     Rendimiento Prode
@@ -501,7 +501,7 @@ const Socios = () => {
                               <td className="py-2 font-bold text-gray-800">
                                 {s.year}
                               </td>
-                              <td className="py-2 text-center font-black text-blue-600 text-lg">
+                              <td className="py-2 text-center font-black text-black text-lg">
                                 {s.points}
                               </td>
                               <td className="py-2 text-center text-gray-600">
@@ -519,7 +519,7 @@ const Socios = () => {
                         <p>Sin datos aún.</p>
                         <a
                           href="/prode/jugar"
-                          className="text-blue-600 font-bold text-xs mt-1 hover:underline"
+                          className="text-black font-bold text-xs mt-1 hover:underline bg-gray-100 px-2 py-1 rounded"
                         >
                           ¡Jugá ahora!
                         </a>
@@ -751,8 +751,8 @@ const Socios = () => {
               {/* TAB 2: Cambiar Contraseña */}
               {activeTab === "password" && (
                 <form onSubmit={handleChangePassword} className="space-y-4">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                    <p className="text-xs text-blue-600 font-bold">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-gray-600 font-bold">
                       Por favor ingresa tu contraseña actual y la nueva
                       contraseña dos veces para confirmar.
                     </p>

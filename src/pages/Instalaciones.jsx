@@ -3,12 +3,13 @@ import estadio from '../images/estadio.jpg';
 import sede from '../images/sede.png';
 import gimnasio from '../images/gimnasio.png';
 import salon from '../images/salon.png';
+import padel from '../images/padel.png';
 
 const Instalaciones = () => {
   const facilities = [
     {
       title: "Estadio 'El Lanudo'",
-      desc: "Nuestro campo de juego principal. Ignagurada entre los años 1938 y 1940 en terrenjos donador por ramon sorribas, uno de los funbdadores. el nombre fue elegido en homenaje a un grna deportista y presidente del club en ese momneto",
+      desc: "Nuestro campo de juego principal. Inaugurado entre los años 1938 y 1940 en terrenos donados por Ramón Sorribas, uno de los fundadores. El nombre fue elegido en homenaje a un gran deportista y presidente del club en ese momento.",
       image: estadio
     },
     {
@@ -17,8 +18,13 @@ const Instalaciones = () => {
       image: sede
     },
     {
+      title: "Canchas de Padel",
+      desc: "Nuestras canchas de padel de última generación, con superficie de césped sintético y paredes de vidrio, ofrecen el mejor espacio para la práctica de este deporte que crece día a día en nuestro club.",
+      image: padel
+    },
+    {
       title: "Complejo Natatorio",
-      desc: "La pileta del pueblo, con 25 metros de largo y 3 de profundidad es concurrrida por todos en temporada de verano. el club cuenta con colonia de vacaciones para niños.",
+      desc: "La pileta del pueblo, con 25 metros de largo y 3 de profundidad es concurrida por todos en temporada de verano. El club cuenta con colonia de vacaciones para niños.",
       image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=2670&auto=format&fit=crop"
     },
     {
@@ -28,7 +34,7 @@ const Instalaciones = () => {
     },
     {
       title: "Salón",
-      desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico y danzas. Escenario también de grandes eventos sociales, fiestas, graduaciones,festivales y cenas multitudinarias.",
+      desc: "Multiespacio cubierto donde se practican disciplinas como Patín Artístico y danzas. Escenario también de grandes eventos sociales, fiestas, graduaciones, festivales y cenas multitudinarias.",
       image: salon
     },
     

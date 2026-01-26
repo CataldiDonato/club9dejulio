@@ -17,21 +17,21 @@ const Home = () => {
   return (
     <div className="flex flex-col bg-white">
       {/* Abstract Background Elements */}
-      <div className="relative h-[700px] bg-black text-white overflow-hidden">
+      <div className="relative min-h-[700px] lg:h-[700px] bg-black text-white overflow-hidden py-12 lg:py-0">
         {/* Abstract Background Elements */}
         <div className="absolute top-0 right-0 w-2/3 h-full bg-club-dark -skew-x-12 translate-x-1/4 opacity-50 z-0"></div>
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1510051640316-543ee0fbf33c?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
         
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12">
           <div className="flex-1">
-            <div className="border-l-8 border-white pl-6 mb-8 mt-12">
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">
+            <div className="border-l-8 border-white pl-6 mb-6 lg:mb-8 mt-4 lg:mt-12">
+              <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-none">
                 Pasión <br />
                 <span className="text-gray-400">En Blanco</span> <br />
                 Y Negro
               </h1>
             </div>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mb-12 font-medium tracking-wide">
+            <p className="text-lg md:text-2xl text-gray-300 max-w-2xl mb-8 lg:mb-12 font-medium tracking-wide">
               Más de 110 años escribiendo la historia de Berabevú. <br />
               <strong>El Lanudo es familia.</strong>
             </p>
@@ -45,20 +45,20 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="hidden lg:flex flex-1 justify-center items-center">
+          <div className="flex flex-1 justify-center items-center w-full max-w-sm lg:max-w-none">
             {heroAsset === 'logo' ? (
               <div className="logo-3d-container">
                 <img 
                   src="/9dejulio.svg" 
                   alt="Club 9 de Julio 3D Logo" 
-                  className="w-64 h-64 md:w-80 md:h-80 object-contain logo-3d-rotate drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                  className="w-48 h-48 md:w-80 md:h-80 object-contain logo-3d-rotate drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                 />
               </div>
             ) : (
               <img 
                 src="/jugadores.png" 
                 alt="Jugadores Club 9 de Julio" 
-                className="w-full h-auto max-h-[750px] scale-110 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] animate-in fade-in duration-1000"
+                className="w-full h-auto max-h-[400px] lg:max-h-[750px] scale-110 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] animate-in fade-in duration-1000"
               />
             )}
           </div>

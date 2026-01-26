@@ -178,7 +178,7 @@ const AdminSports = () => {
                         <input type="file" className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-black file:text-white hover:file:bg-gray-800" accept="image/*" onChange={e => setFormData({...formData, imagen: e.target.files[0]})} />
                     </div>
 
-                    <button type="submit" className={`w-full flex justify-center items-center gap-2 text-white px-6 py-4 rounded-lg font-black uppercase text-lg shadow-lg transition-all transform hover:scale-[1.02] ${isEditing ? 'bg-blue-600 hover:bg-blue-700' : 'bg-black hover:bg-gray-800'}`}>
+                    <button type="submit" className={`w-full flex justify-center items-center gap-2 text-white px-6 py-4 rounded-lg font-black uppercase text-lg shadow-lg transition-all transform hover:scale-[1.02] ${isEditing ? 'bg-gray-800' : 'bg-black hover:bg-gray-800'}`}>
                         {isEditing ? <Edit size={20} /> : <Plus size={20} />}
                         {isEditing ? 'Guardar Cambios' : 'Agregar Deporte'}
                     </button>
@@ -190,12 +190,12 @@ const AdminSports = () => {
                 {sports.map(s => (
                     <div key={s.id} className="group flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all gap-4">
                         <div className="flex-grow">
-                            <h4 className="font-bold text-xl text-gray-800 uppercase group-hover:text-blue-600 transition-colors">{s.nombre}</h4>
+                            <h4 className="font-bold text-xl text-gray-800 uppercase group-hover:text-black transition-colors">{s.nombre}</h4>
                             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 mt-1">
                                 <p className="text-sm font-bold text-gray-600 flex items-center gap-1">
                                     <User size={14} className="text-gray-400" /> {s.profesor || 'Sin asignar'}
                                 </p>
-                                <p className="text-sm font-bold text-blue-600 flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded">
+                                <p className="text-sm font-bold text-black flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded">
                                     <Clock size={14} /> {formatDateTime(s.dia_horario)}
                                 </p>
                             </div>
@@ -203,7 +203,7 @@ const AdminSports = () => {
                         <div className="flex items-center gap-2 w-full md:w-auto">
                             <button 
                                 onClick={() => handleEdit(s)} 
-                                className="flex-1 md:flex-none flex items-center justify-center gap-1 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-bold hover:bg-blue-600 hover:text-white transition-all text-xs uppercase"
+                                className="flex-1 md:flex-none flex items-center justify-center gap-1 bg-gray-100 text-black px-4 py-2 rounded-lg font-bold hover:bg-black hover:text-white transition-all text-xs uppercase"
                             >
                                 <Edit size={14} /> Editar
                             </button>

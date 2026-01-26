@@ -69,7 +69,7 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
                                 flex items-center gap-2 px-6 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap
                                 ${
                                   activeTab === tab.id
-                                    ? "border-club-blue text-club-blue bg-white"
+                                    ? "border-black text-black bg-white"
                                     : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                                 }
                             `}
@@ -110,7 +110,7 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
                   )}
 
                   {championship.stats && (
-                    <div className="bg-blue-900 text-white p-4 rounded-xl shadow-lg">
+                    <div className="bg-club-dark text-white p-4 rounded-xl shadow-lg">
                       <h4 className="font-black text-center mb-3 text-yellow-500 uppercase tracking-widest text-xs">
                         Números Finales
                       </h4>
@@ -154,7 +154,7 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
                   )}
                 </div>
                 <div className="md:col-span-3">
-                  <h3 className="text-2xl font-black text-club-blue mb-4 leading-tight italic">
+                  <h3 className="text-2xl font-black text-black mb-4 leading-tight italic">
                     "{championship.title}"
                   </h3>
                   <div className="prose prose-sm md:prose-base text-gray-700 leading-relaxed text-justify space-y-4">
@@ -169,14 +169,14 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
 
           {activeTab === "campania" && (
             <div className="max-w-6xl mx-auto animate-fadeIn">
-              <h3 className="text-xl font-bold text-club-dark mb-4 border-b-2 border-club-blue inline-block pb-1">
+              <h3 className="text-xl font-bold text-club-dark mb-4 border-b-2 border-black inline-block pb-1">
                 El Camino al Título
               </h3>
               <div className="space-y-3">
                 {championship.campaign.map((match, idx) => (
                   <div
                     key={idx}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:bg-blue-50/50 transition-all"
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:bg-gray-50 transition-all"
                   >
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-2">
                       <div>
@@ -202,7 +202,7 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
                         <span
                           className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
                             match.cond === "L"
-                              ? "bg-blue-100 text-blue-700"
+                              ? "bg-gray-800 text-white"
                               : "bg-gray-100 text-gray-600"
                           }`}
                         >
@@ -217,7 +217,7 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
                         <p className="text-[10px] uppercase text-gray-400 font-bold">
                           Resultado
                         </p>
-                        <p className="font-black text-lg text-club-blue">
+                        <p className="font-black text-lg text-black">
                           {match.result}
                         </p>
                       </div>
@@ -280,7 +280,7 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
 
           {activeTab === "plantel" && (
             <div className="max-w-3xl mx-auto animate-fadeIn">
-              <h3 className="text-xl font-bold text-club-dark mb-6 border-b-2 border-club-blue inline-block pb-1">
+              <h3 className="text-xl font-bold text-club-dark mb-6 border-b-2 border-black inline-block pb-1">
                 Los Héroes del Campeón
               </h3>
               <div className="grid sm:grid-cols-2 gap-x-12 gap-y-2">
@@ -292,12 +292,12 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
                     >
                       <div className="flex items-center gap-3">
                         {player.number && (
-                          <span className="w-6 h-6 flex items-center justify-center bg-club-blue text-white rounded-full text-[10px] font-bold">
+                          <span className="w-6 h-6 flex items-center justify-center bg-black text-white rounded-full text-[10px] font-bold">
                             {player.number}
                           </span>
                         )}
                         <div>
-                          <p className="font-bold text-gray-800 text-sm group-hover:text-club-blue transition-colors">
+                          <p className="font-bold text-gray-800 text-sm group-hover:text-black transition-colors">
                             {player.name}
                           </p>
                           {player.pos && (

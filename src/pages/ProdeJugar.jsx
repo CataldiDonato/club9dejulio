@@ -209,14 +209,14 @@ const ProdeJugar = () => {
         <div className="lg:col-span-4">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-club-dark border-l-4 border-club-blue pl-4">
+              <h1 className="text-3xl font-bold text-club-dark border-l-4 border-black pl-4">
                 Jugar Prode
               </h1>
             </div>
             <div className="flex flex-col items-end gap-2">
               <button
                 onClick={() => setRulesOpen(true)}
-                className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded-full transition-colors"
+                className="flex items-center gap-2 text-sm font-bold text-black border-2 border-black hover:bg-gray-100 px-3 py-1 rounded-full transition-colors"
               >
                 <HelpCircle size={16} />
                 Cómo Jugar
@@ -237,7 +237,7 @@ const ProdeJugar = () => {
               <select
                 value={selectedMatchday}
                 onChange={(e) => setSelectedMatchday(e.target.value)}
-                className="w-full md:w-64 border-2 border-club-blue rounded px-3 py-2 font-bold text-club-dark bg-white"
+                className="w-full md:w-64 border-2 border-black rounded px-3 py-2 font-bold text-club-dark bg-white outline-none"
               >
                 <option value="">Todas las Jornadas</option>
                 {allMatchdays.map((day) => (

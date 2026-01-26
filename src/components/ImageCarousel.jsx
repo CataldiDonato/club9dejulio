@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ImageCarousel = ({ images, altText, caption, maxWidth = 'max-w-3xl' }) => {
+const ImageCarousel = ({ images, altText, caption, maxWidth = 'max-w-3xl', onImageClick }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = () => {
@@ -18,7 +18,10 @@ const ImageCarousel = ({ images, altText, caption, maxWidth = 'max-w-3xl' }) => 
   return (
     <div className={`relative w-full ${maxWidth} mx-auto`}>
       {/* Imagen */}
-      <div className="relative overflow-hidden rounded-lg shadow-xl">
+      <div 
+        className={`relative overflow-hidden rounded-lg shadow-xl ${onImageClick ? 'cursor-pointer' : ''}`}
+        onClick={() => onImageClick && onImageClick(images[currentIndex].src)}
+      >
         <img
           src={images[currentIndex].src}
           alt={`${altText} - ${images[currentIndex].label}`}
@@ -55,7 +58,7 @@ const ImageCarousel = ({ images, altText, caption, maxWidth = 'max-w-3xl' }) => 
               onClick={() => setCurrentIndex(index)}
               className={`w-3 h-3 rounded-full transition-all ${
                 index === currentIndex 
-                  ? 'bg-club-blue w-8' 
+                  ? 'bg-black w-8' 
                   : 'bg-gray-300 hover:bg-gray-400'
               }`}
               aria-label={`Ir a imagen ${index + 1}`}

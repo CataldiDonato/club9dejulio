@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ImageCarousel from "../components/ImageCarousel";
 import ChampionshipModal from "../components/ChampionshipModal";
+import ImageViewer from "../components/ImageViewer";
 import { championships } from "../data/championships";
 import primerEquipo from "../images/historia/primerequipo.gif";
 import primerEquipoIA from "../images/historia/primerequipoIA.png";
@@ -18,6 +19,7 @@ import regional87IA from "../images/historia/regional87IA.png";
 const Historia = () => {
   const [selectedChampionship, setSelectedChampionship] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [expandedImage, setExpandedImage] = useState(null);
 
   const handleChampionshipClick = (year) => {
     const data = championships.find((c) => c.year === year);
@@ -55,16 +57,16 @@ const Historia = () => {
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Los Lanudos Section */}
         <section className="mb-16">
-          <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-club-blue">
+            <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-club-dark">
             <h2 className="text-4xl font-black text-club-black mb-6 flex items-center gap-3">
-              <span className="text-club-blue">🏆</span>
+              <span className="text-club-dark">🏆</span>
               LOS LANUDOS
             </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
                 El regreso a la actividad futbolística en 1953 trajo consigo el
                 apodo con el que nuestra institución es conocida en toda la
-                zona: <strong className="text-club-blue">"LOS LANUDOS"</strong>.
+                zona: <strong className="text-club-dark">"LOS LANUDOS"</strong>.
                 El mismo no alude al color de camiseta, como ocurre generalmente
                 en otros clubes, ni significa que en algún momento 9 de Julio
                 haya salido a la cancha con un pulóver Blanquinegro hecho en ese
@@ -74,7 +76,7 @@ const Historia = () => {
                 Su verdadero origen data de 1953 y nació en la boca de nuestro
                 nuevo archirival: Deportivo.
               </p>
-              <div className="bg-blue-50 border-l-4 border-club-blue p-6 my-6">
+              <div className="bg-white border-l-4 border-club-dark p-6 my-6 shadow-sm">
                 <p className="italic">
                   Cuenta la leyenda que ante la llegada de un nuevo clásico, el
                   pueblo estaba alborotado. En uno de esos domingos en que
@@ -82,7 +84,7 @@ const Historia = () => {
                   equipos locales, Deportivo logró empatar de forma agónica a 9
                   de Julio a segundos del final.
                 </p>
-                <p className="mt-4 font-bold text-club-blue text-xl text-center">
+                <p className="mt-4 font-bold text-club-dark text-xl text-center">
                   "¡¡¡Le cortamos La Lana a Los Lanudos!!!"
                 </p>
                 <p className="text-sm mt-2">
@@ -110,7 +112,7 @@ const Historia = () => {
               LOS PRIMEROS PASOS
             </h2>
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
-              <p className="text-xl font-semibold text-club-blue">
+              <p className="text-xl font-semibold text-club-dark">
                 9 de Julio de 1913. Feriado Nacional y jornada festiva en todo
                 el país.
               </p>
@@ -132,6 +134,8 @@ const Historia = () => {
                   ]}
                   altText="Primer equipo de 9 de Julio - 1913"
                   caption="Primer equipo de 9 de Julio (1913)"
+                  maxWidth="max-w-xl"
+                  onImageClick={setExpandedImage}
                 />
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
@@ -162,7 +166,7 @@ const Historia = () => {
                 formalidad a la cuestión. Y en la fecha de la Independencia
                 Patria nació el <strong>C. A. 9 de Julio</strong>.
               </p>
-              <div className="bg-blue-50 border-l-4 border-club-blue p-6 my-6">
+              <div className="bg-white border-l-4 border-club-dark p-6 my-6 shadow-sm">
                 <h3 className="font-bold text-lg mb-2">
                   Primera Comisión Directiva (1913)
                 </h3>
@@ -209,6 +213,8 @@ const Historia = () => {
                   ]}
                   altText="Equipo de 9 de Julio en 1926"
                   caption="Equipo de 1926"
+                  maxWidth="max-w-xl"
+                  onImageClick={setExpandedImage}
                 />
               </div>
             </div>
@@ -254,6 +260,8 @@ const Historia = () => {
                   ]}
                   altText="Festejo de campeonato en la década del 30"
                   caption="Nuestra gente festeja un nuevo título en la década del 30"
+                  maxWidth="max-w-xl"
+                  onImageClick={setExpandedImage}
                 />
               </div>
             </div>
@@ -262,7 +270,7 @@ const Historia = () => {
 
         {/* El Más Gigante de Todos: Tricampeón */}
         <section className="mb-16">
-          <div className="bg-gradient-to-br from-blue-900 to-black text-white rounded-xl shadow-2xl p-8">
+          <div className="bg-gradient-to-br from-gray-900 to-black text-white rounded-xl shadow-2xl p-8">
             <h2 className="text-4xl md:text-5xl font-black mb-6">
               👑 EL MÁS GIGANTE DE TODOS: PRIMER TRICAMPEÓN
             </h2>
@@ -319,6 +327,7 @@ const Historia = () => {
                   altText="Copa Challenger Dr. Ramón F. Pereyra"
                   caption="Copa Challenger Dr. Ramón F. Pereyra"
                   maxWidth="max-w-xl"
+                  onImageClick={setExpandedImage}
                 />
               </div>
             </div>
@@ -327,7 +336,7 @@ const Historia = () => {
 
         {/* Década del 80 */}
         <section className="mb-16">
-          <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-club-blue">
+          <div className="bg-white rounded-xl shadow-xl p-8 border-t-4 border-gray-800">
             <h2 className="text-4xl font-black text-club-black mb-6">
               DÉCADA DEL '80
             </h2>
@@ -336,7 +345,7 @@ const Historia = () => {
                 Dos nuevos lauros futboleros llegarían en la década del '80:
               </p>
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-600">
+                <div className="bg-white p-6 rounded-lg border-l-4 border-gray-400 shadow-sm">
                   <h3 className="font-bold text-2xl mb-2">🏆 1984</h3>
                   <p className="text-sm">
                     Una pésima actuación en el Apertura hacía imposible
@@ -344,7 +353,7 @@ const Historia = () => {
                     consagración, aportando la Octava estrella.
                   </p>
                 </div>
-                <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-600">
+                <div className="bg-white p-6 rounded-lg border-l-4 border-gray-400 shadow-sm">
                   <h3 className="font-bold text-2xl mb-2">🏆 1986</h3>
                   <p className="text-sm">
                     La Novena estrella llegó apenas dos años después, en otra de
@@ -352,8 +361,8 @@ const Historia = () => {
                   </p>
                 </div>
               </div>
-              <div className="bg-red-50 border-l-4 border-red-500 p-6 my-6">
-                <h3 className="font-bold text-lg text-red-800">
+              <div className="bg-white border-l-4 border-red-500 p-6 my-6 shadow-sm">
+                <h3 className="font-bold text-lg text-red-600">
                   29 de Octubre de 1985 - El Incendio
                 </h3>
                 <p className="text-sm">
@@ -371,6 +380,8 @@ const Historia = () => {
                   ]}
                   altText="Equipo del Regional 1987"
                   caption="Regional 1987 - Participación en el Torneo Regional del Consejo Federal"
+                  maxWidth="max-w-xl"
+                  onImageClick={setExpandedImage}
                 />
               </div>
             </div>
@@ -388,8 +399,8 @@ const Historia = () => {
                 Los años más duros fueron entre 1995 al 2001, llegando en el
                 2000 al extremo de no participar en el campeonato de la Liga.
               </p>
-              <div className="bg-green-100 border-l-4 border-green-600 p-6 my-6">
-                <h3 className="font-bold text-xl text-green-800 mb-2">
+              <div className="bg-white border-l-4 border-green-600 p-6 my-6 shadow-sm">
+                <h3 className="font-bold text-xl text-green-700 mb-2">
                   Clausura 2002
                 </h3>
                 <p>
@@ -482,6 +493,8 @@ const Historia = () => {
                   ]}
                   altText="Comisión Directiva año 1963"
                   caption="Comisión Directiva año 1963"
+                  maxWidth="max-w-xl"
+                  onImageClick={setExpandedImage}
                 />
               </div>
             </div>
@@ -515,8 +528,8 @@ const Historia = () => {
                   subcampeonato tras temporada brillante.
                 </p>
               </div>
-              <div className="border-l-4 border-club-blue pl-6">
-                <h3 className="text-2xl font-bold text-club-blue mb-2">
+              <div className="border-l-4 border-gray-800 pl-6">
+                <h3 className="text-2xl font-bold text-club-dark mb-2">
                   2025 - Actualidad ⚽
                 </h3>
                 <p className="text-gray-700">
@@ -634,7 +647,7 @@ const Historia = () => {
 
         {/* Mensaje Final */}
         <section className="mb-16">
-          <div className="bg-gradient-to-r from-club-blue to-blue-600 text-white rounded-xl shadow-2xl p-8 text-center">
+          <div className="bg-gradient-to-r from-club-black to-gray-800 text-white rounded-xl shadow-2xl p-8 text-center">
             <h2 className="text-3xl md:text-5xl font-black mb-6">
               ¡Salud 9 de Julio!
             </h2>
@@ -647,6 +660,12 @@ const Historia = () => {
           </div>
         </section>
       </div>
+      
+      {/* Visualización de Imágenes a pantalla completa */}
+      <ImageViewer 
+        imageUrl={expandedImage} 
+        onClose={() => setExpandedImage(null)} 
+      />
     </div>
   );
 };

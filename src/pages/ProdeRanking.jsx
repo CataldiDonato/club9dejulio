@@ -73,7 +73,7 @@ const ProdeRanking = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8 border-b pb-4">
-                 <h1 className="text-3xl font-bold text-club-dark border-l-4 border-club-blue pl-4">
+                 <h1 className="text-3xl font-bold text-club-dark border-l-4 border-black pl-4">
                     Tabla de Posiciones
                 </h1>
                 
@@ -83,7 +83,7 @@ const ProdeRanking = () => {
                     <select 
                         value={selectedSeason}
                         onChange={(e) => setSelectedSeason(e.target.value)}
-                        className="border-2 border-club-blue rounded px-3 py-1 font-bold text-club-dark bg-white"
+                        className="border-2 border-black rounded px-3 py-1 font-bold text-club-dark bg-white outline-none"
                     >
                         {seasons.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
@@ -107,7 +107,7 @@ const ProdeRanking = () => {
                                     <th className="px-2 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                         Plenos <span className="hidden sm:inline">(3pts)</span>
                                     </th>
-                                    <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-club-blue uppercase tracking-wider">
+                                    <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black uppercase tracking-wider">
                                         Pts <span className="hidden sm:inline">Totales</span>
                                     </th>
                                 </tr>
@@ -193,8 +193,8 @@ const ProdeRanking = () => {
 
                 {/* Top Players by Matchday - Right Sidebar (1 column) */}
                 <div className="lg:col-span-1">
-                    <div className="bg-gradient-to-br from-blue-50 to-white shadow-lg rounded-lg border-2 border-club-blue p-4 sm:p-6">
-                        <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-club-blue">
+                    <div className="bg-white shadow-lg rounded-lg border-2 border-black p-4 sm:p-6">
+                        <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-black">
                             <span className="text-xl sm:text-2xl">🏆</span>
                             <h2 className="text-lg sm:text-xl font-black text-club-dark">
                                 Mejores de la Fecha
@@ -242,7 +242,7 @@ const ProdeRanking = () => {
                                                 </div>
                                             </div>
                                             <div className="flex-shrink-0">
-                                                <div className="bg-club-blue text-white rounded-full w-10 h-10 flex items-center justify-center font-black text-sm">
+                                            <div className="bg-black text-white rounded-full w-10 h-10 flex items-center justify-center font-black text-sm">
                                                     {player.matchday_points}
                                                 </div>
                                             </div>
@@ -280,7 +280,7 @@ const ProdeRanking = () => {
                                             <th className="px-2 py-2 text-center font-semibold text-gray-700">GF</th>
                                             <th className="px-2 py-2 text-center font-semibold text-gray-700">GC</th>
                                             <th className="px-2 py-2 text-center font-semibold text-gray-700">DIF</th>
-                                            <th className="px-2 py-2 text-center font-bold text-club-blue">PTS</th>
+                                            <th className="px-2 py-2 text-center font-bold text-black">PTS</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
@@ -289,13 +289,13 @@ const ProdeRanking = () => {
                                                 key={index} 
                                                 className={`hover:bg-gray-50 ${
                                                     index === 0 ? 'bg-green-50' : 
-                                                    index < 4 ? 'bg-blue-50' : ''
+                                                    index < 4 ? 'bg-gray-50' : ''
                                                 }`}
                                             >
                                                 <td className="px-2 py-2 text-center">
                                                     <span className={`font-bold ${
                                                         index === 0 ? 'text-green-600' : 
-                                                        index < 4 ? 'text-blue-600' : 'text-gray-600'
+                                                        index < 4 ? 'text-black font-black' : 'text-gray-600'
                                                     }`}>
                                                         {index + 1}
                                                     </span>
@@ -314,7 +314,7 @@ const ProdeRanking = () => {
                                                     {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
                                                 </td>
                                                 <td className="px-2 py-2 text-center">
-                                                    <span className="font-black text-club-blue text-base">{team.points}</span>
+                                                    <span className="font-black text-black text-base">{team.points}</span>
                                                 </td>
                                             </tr>
                                         ))}

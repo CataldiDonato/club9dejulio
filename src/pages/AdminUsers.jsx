@@ -309,7 +309,7 @@ const AdminUsers = () => {
                                                                 <span className="font-bold text-gray-900">{user.nro_socio || 'N/A'}</span>
                                                                 <button 
                                                                     onClick={() => setEditingNroSocio({ userId: user.id, value: user.nro_socio || '' })}
-                                                                    className="opacity-0 group-hover:opacity-100 text-blue-600 text-[10px] font-black hover:underline transition-opacity"
+                                                                    className="opacity-0 group-hover:opacity-100 text-black text-[10px] font-black hover:underline transition-opacity"
                                                                 >
                                                                     ASIGNAR
                                                                 </button>
@@ -395,7 +395,7 @@ const AdminUsers = () => {
                                                                 <span className="font-bold text-gray-900">{user.nro_socio || 'N/A'}</span>
                                                                 <button 
                                                                     onClick={() => setEditingNroSocio({ userId: user.id, value: user.nro_socio || '' })}
-                                                                    className="opacity-0 group-hover:opacity-100 text-blue-600 text-[10px] font-black hover:underline transition-opacity"
+                                                                    className="opacity-0 group-hover:opacity-100 text-black text-[10px] font-black hover:underline transition-opacity"
                                                                 >
                                                                     EDITAR
                                                                 </button>

@@ -229,9 +229,9 @@ const AdminProde = () => {
       </div>
 
       {/* Create Match Form - Protected for Admin Only on Frontend too */}
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-        <p className="font-bold text-blue-700">Gestión de Temporadas</p>
-        <p className="text-sm text-blue-600">
+      <div className="bg-gray-100 border-l-4 border-black p-4 mb-6 shadow-sm">
+        <p className="font-bold text-black uppercase tracking-tight">Gestión de Temporadas</p>
+        <p className="text-sm text-gray-600">
           El sistema detecta automáticamente la temporada actual basada en los
           partidos creados. Para <strong>finalizar la temporada actual</strong>{" "}
           e iniciar una nueva (ej: 2026), simplemente cree el primer partido
@@ -367,7 +367,7 @@ const AdminProde = () => {
                       {m.home_team} vs {m.away_team}
                     </td>
                     <td className="px-4 py-2">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+                      <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded text-xs font-semibold">
                         {m.matchday}
                       </span>
                     </td>
@@ -398,7 +398,7 @@ const AdminProde = () => {
                       <div className="flex flex-col gap-2">
                         <button
                           onClick={() => requestEditMatch(m)}
-                          className="text-blue-600 hover:text-blue-800 text-xs font-bold border border-blue-200 rounded px-2 py-1 bg-blue-50"
+                          className="text-black hover:bg-black hover:text-white text-xs font-bold border border-gray-300 rounded px-2 py-1 bg-white transition-colors"
                         >
                           Editar Partido
                         </button>
@@ -559,7 +559,7 @@ const AdminProde = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold"
+                  className="px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-lg font-bold"
                 >
                   Guardar Cambios
                 </button>
@@ -607,7 +607,7 @@ const ResultForm = ({ matchId, onSave, initialHome, initialAway }) => {
       />
       <button
         type="submit"
-        className="bg-blue-600 text-white text-xs px-2 py-1 rounded"
+        className="bg-black text-white text-xs px-2 py-1 rounded"
       >
         Finalizar
       </button>
