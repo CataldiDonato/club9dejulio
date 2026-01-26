@@ -8,7 +8,7 @@ import padel from '../images/padel.png';
 const Instalaciones = () => {
   const facilities = [
     {
-      title: "Estadio 'El Lanudo'",
+      title: "Estadio Felipe Priotti",
       desc: "Nuestro campo de juego principal. Inaugurado entre los años 1938 y 1940 en terrenos donados por Ramón Sorribas, uno de los fundadores. El nombre fue elegido en homenaje a un gran deportista y presidente del club en ese momento.",
       image: estadio
     },
@@ -23,7 +23,7 @@ const Instalaciones = () => {
       image: padel
     },
     {
-      title: "Complejo Natatorio",
+      title: "Pileta",
       desc: "La pileta del pueblo, con 25 metros de largo y 3 de profundidad es concurrida por todos en temporada de verano. El club cuenta con colonia de vacaciones para niños.",
       image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=2670&auto=format&fit=crop"
     },
