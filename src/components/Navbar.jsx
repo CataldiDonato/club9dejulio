@@ -27,7 +27,9 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center gap-2">
-              <img src={logo} alt="Club Logo" className="h-16 w-16 object-contain rounded-full bg-white p-1" />
+              <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center p-1.5 overflow-visible shadow-sm">
+                 <img src={logo} alt="Club Logo" className="h-full w-full object-contain scale-110" />
+              </div>
               <div className="flex flex-col">
                 <span className="text-xl font-black tracking-tight uppercase">Club 9 de Julio</span>
                 <span className="text-xs font-bold text-gray-400 tracking-widest">BERABEVÚ</span>

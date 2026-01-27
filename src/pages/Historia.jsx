@@ -654,8 +654,8 @@ const Historia = () => {
             <p className="text-xl md:text-2xl font-semibold">
               Naciste grande y grande por siempre serás
             </p>
-            <p className="text-lg mt-4 opacity-90">
-              1913 - 9 de Julio - {new Date().getFullYear()}
+            <p className="text-4xl mt-4 opacity-90 flex items-center justify-center gap-2 font-bold">
+              1913 - <span className="text-6xl leading-none -translate-y-1">∞</span>
             </p>
           </div>
         </section>
