@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
+const { optimizeImage, saveOptimizedImage } = require("./lib/imageOptimizer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -92,7 +93,17 @@ app.post("/api/register", upload.single("foto_perfil"), async (req, res) => {
     telefono,
     fecha_nacimiento,
   } = req.body;
-  const foto_perfil = req.file ? `/uploads/${req.file.filename}` : null;
+
+  let foto_perfil = null;
+  if (req.file) {
+    try {
+      const buffer = await optimizeImage(req.file.path, 'profile');
+      foto_perfil = await saveOptimizedImage(buffer, req.file.path);
+    } catch (error) {
+      console.error("Error optimizando imagen de perfil:", error);
+      foto_perfil = `/uploads/${req.file.filename}`;
+    }
+  }
   if (!dni || !password || !nombre || !apellido || !fecha_nacimiento)
     return res.status(400).json({ error: "Faltan datos obligatorios" });
   const finalNroSocio = nro_socio && nro_socio.trim() !== "" ? nro_socio : null;
@@ -195,8 +206,17 @@ app.post(
       let other_images = [];
 
       if (req.files && req.files.length > 0) {
-        main_image_url = `/uploads/${req.files[0].filename}`;
-        other_images = req.files.slice(1).map((f) => `/uploads/${f.filename}`);
+        const processedImages = await Promise.all(req.files.map(async (file) => {
+          try {
+            const buffer = await optimizeImage(file.path, 'gallery');
+            return await saveOptimizedImage(buffer, file.path);
+          } catch (error) {
+            console.error(`Error optimizando imagen noticia ${file.originalname}:`, error);
+            return `/uploads/${file.filename}`;
+          }
+        }));
+        main_image_url = processedImages[0];
+        other_images = processedImages.slice(1);
       }
 
       // Insert News
@@ -268,8 +288,17 @@ app.put(
       let other_images = [];
 
       if (req.files && req.files.length > 0) {
-        main_image_url = `/uploads/${req.files[0].filename}`;
-        other_images = req.files.slice(1).map((f) => `/uploads/${f.filename}`);
+        const processedImages = await Promise.all(req.files.map(async (file) => {
+          try {
+            const buffer = await optimizeImage(file.path, 'gallery');
+            return await saveOptimizedImage(buffer, file.path);
+          } catch (error) {
+            console.error(`Error optimizando imagen noticia ${file.originalname}:`, error);
+            return `/uploads/${file.filename}`;
+          }
+        }));
+        main_image_url = processedImages[0];
+        other_images = processedImages.slice(1);
 
         // Si hay nuevas imágenes, actualizamos las secundarias también
         await pool.query(
@@ -355,8 +384,18 @@ app.post(
       let fotos_urls = [];
 
       if (req.files && req.files.length > 0) {
-        portada_url = `/uploads/${req.files[0].filename}`; // First one is cover
-        fotos_urls = req.files.map((f) => `/uploads/${f.filename}`);
+        const processedImages = await Promise.all(req.files.map(async (file) => {
+          try {
+            const buffer = await optimizeImage(file.path, 'gallery');
+            return await saveOptimizedImage(buffer, file.path);
+          } catch (error) {
+            console.error(`Error optimizando imagen ${file.originalname}:`, error);
+            return `/uploads/${file.filename}`;
+          }
+        }));
+        
+        portada_url = processedImages[0]; // First one is cover
+        fotos_urls = processedImages;
       }
 
       const newEvent = await pool.query(
@@ -425,9 +464,16 @@ app.post(
       if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
         return res.status(403).json({ error: "Acceso denegado." });
       const { nombre, dia_horario, profesor, descripcion } = req.body;
-      const imagen_url = req.file
-        ? `/uploads/${req.file.filename}`
-        : req.body.imagen_url;
+      let imagen_url = req.body.imagen_url;
+      if (req.file) {
+        try {
+          const buffer = await optimizeImage(req.file.path, 'gallery');
+          imagen_url = await saveOptimizedImage(buffer, req.file.path);
+        } catch (error) {
+          console.error("Error optimizando imagen deporte:", error);
+          imagen_url = `/uploads/${req.file.filename}`;
+        }
+      }
       const newSport = await pool.query(
         "INSERT INTO deportes (nombre, dia_horario, profesor, descripcion, imagen_url) VALUES ($1, $2, $3, $4, $5) RETURNING *",
         [nombre, dia_horario, profesor, descripcion, imagen_url]
@@ -480,9 +526,16 @@ app.put(
       if (currentSport.rows.length === 0)
         return res.status(404).json({ error: "Deporte no encontrado" });
 
-      const imagen_url = req.file
-        ? `/uploads/${req.file.filename}`
-        : req.body.imagen_url || currentSport.rows[0].imagen_url;
+      let imagen_url = req.body.imagen_url || currentSport.rows[0].imagen_url;
+      if (req.file) {
+        try {
+          const buffer = await optimizeImage(req.file.path, 'gallery');
+          imagen_url = await saveOptimizedImage(buffer, req.file.path);
+        } catch (error) {
+          console.error("Error optimizando imagen deporte:", error);
+          imagen_url = `/uploads/${req.file.filename}`;
+        }
+      }
 
       const updatedSport = await pool.query(
         "UPDATE deportes SET nombre = $1, dia_horario = $2, profesor = $3, descripcion = $4, imagen_url = $5 WHERE id = $6 RETURNING *",
@@ -510,9 +563,16 @@ app.put(
         [userId]
       );
       const currentPhoto = currentUserRes.rows[0].foto_perfil;
-      const foto_perfil = req.file
-        ? `/uploads/${req.file.filename}`
-        : req.body.foto_perfil || currentPhoto;
+      let foto_perfil = req.body.foto_perfil || currentPhoto;
+      if (req.file) {
+        try {
+          const buffer = await optimizeImage(req.file.path, 'profile');
+          foto_perfil = await saveOptimizedImage(buffer, req.file.path);
+        } catch (error) {
+           console.error("Error optimizando imagen de perfil:", error);
+           foto_perfil = `/uploads/${req.file.filename}`;
+        }
+      }
       const result = await pool.query(
         "UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3, fecha_nacimiento = COALESCE($5, fecha_nacimiento) WHERE id = $4 RETURNING *",
         [telefono, email, foto_perfil, userId, fecha_nacimiento]
