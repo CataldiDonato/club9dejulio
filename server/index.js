@@ -90,9 +90,10 @@ app.post("/api/register", upload.single("foto_perfil"), async (req, res) => {
     tipo_socio,
     email,
     telefono,
+    fecha_nacimiento,
   } = req.body;
   const foto_perfil = req.file ? `/uploads/${req.file.filename}` : null;
-  if (!dni || !password || !nombre || !apellido)
+  if (!dni || !password || !nombre || !apellido || !fecha_nacimiento)
     return res.status(400).json({ error: "Faltan datos obligatorios" });
   const finalNroSocio = nro_socio && nro_socio.trim() !== "" ? nro_socio : null;
   try {
@@ -113,7 +114,7 @@ app.post("/api/register", upload.single("foto_perfil"), async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await pool.query(
-      "INSERT INTO socios (dni, password, nombre, apellido, nro_socio, tipo_socio, email, telefono, foto_perfil, rol, fecha_alta, estado_cuota, vencimiento_cuota, account_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', CURRENT_DATE, 'Al Día', CURRENT_DATE + INTERVAL '1 month', 'pending') RETURNING *",
+        "INSERT INTO socios (dni, password, nombre, apellido, nro_socio, tipo_socio, email, telefono, foto_perfil, rol, fecha_alta, estado_cuota, vencimiento_cuota, account_status, fecha_nacimiento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', CURRENT_DATE, 'Al Día', CURRENT_DATE + INTERVAL '1 month', 'pending', $10) RETURNING *",
       [
         dni,
         hashedPassword,
@@ -124,6 +125,7 @@ app.post("/api/register", upload.single("foto_perfil"), async (req, res) => {
         email,
         telefono,
         foto_perfil,
+        fecha_nacimiento,
       ]
     );
     const user = newUser.rows[0];
@@ -501,7 +503,7 @@ app.put(
   upload.single("foto_perfil"),
   async (req, res) => {
     try {
-      const { telefono, email } = req.body;
+      const { telefono, email, fecha_nacimiento } = req.body;
       const userId = req.user.id;
       const currentUserRes = await pool.query(
         "SELECT foto_perfil FROM socios WHERE id = $1",
@@ -512,8 +514,8 @@ app.put(
         ? `/uploads/${req.file.filename}`
         : req.body.foto_perfil || currentPhoto;
       const result = await pool.query(
-        "UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3 WHERE id = $4 RETURNING *",
-        [telefono, email, foto_perfil, userId]
+        "UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3, fecha_nacimiento = COALESCE($5, fecha_nacimiento) WHERE id = $4 RETURNING *",
+        [telefono, email, foto_perfil, userId, fecha_nacimiento]
       );
       if (result.rows.length === 0)
         return res.status(404).json({ error: "Usuario no encontrado" });
@@ -720,8 +722,19 @@ app.get("/api/matches", authenticateToken, async (req, res) => {
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Error fetching matches" });
+  }
+});
+
+app.get("/api/birthdays", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT nombre, apellido, foto_perfil FROM socios WHERE EXTRACT(MONTH FROM fecha_nacimiento) = EXTRACT(MONTH FROM CURRENT_DATE) AND EXTRACT(DAY FROM fecha_nacimiento) = EXTRACT(DAY FROM CURRENT_DATE)"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error fetching birthdays" });
   }
 });
 
@@ -1324,8 +1337,110 @@ if (fs.existsSync(distPath) && fs.existsSync(indexPath)) {
 }
 
 const initDb = async () => {
-  console.log("Iniciando verificaciÃ³n de base de datos...");
+  console.log("Iniciando verificación de base de datos...");
   try {
+    // 1. Socios
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS socios (
+        id SERIAL PRIMARY KEY,
+        dni VARCHAR(20) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        nombre VARCHAR(100) NOT NULL,
+        apellido VARCHAR(100) NOT NULL,
+        nro_socio VARCHAR(50),
+        tipo_socio VARCHAR(50),
+        email VARCHAR(100),
+        telefono VARCHAR(50),
+        foto_perfil TEXT,
+        rol VARCHAR(20) DEFAULT 'user',
+        fecha_alta DATE DEFAULT CURRENT_DATE,
+        estado_cuota VARCHAR(20) DEFAULT 'Al Día',
+        vencimiento_cuota DATE,
+        account_status VARCHAR(20) DEFAULT 'pending',
+        fecha_nacimiento DATE
+      );
+    `);
+
+    // 2. Noticias
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS noticias (
+        id SERIAL PRIMARY KEY,
+        titulo VARCHAR(255) NOT NULL,
+        bajad TEXT,
+        contenido TEXT,
+        imagen_url TEXT,
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // 3. Noticias Imagenes
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS noticias_imagenes (
+        id SERIAL PRIMARY KEY,
+        noticia_id INTEGER REFERENCES noticias(id) ON DELETE CASCADE,
+        imagen_url TEXT NOT NULL
+      );
+    `);
+
+    // 4. Galeria Eventos
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS galeria_eventos (
+        id SERIAL PRIMARY KEY,
+        titulo VARCHAR(255) NOT NULL,
+        fecha DATE DEFAULT CURRENT_DATE,
+        portada_url TEXT
+      );
+    `);
+
+    // 5. Galeria Fotos
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS galeria_fotos (
+        id SERIAL PRIMARY KEY,
+        evento_id INTEGER REFERENCES galeria_eventos(id) ON DELETE CASCADE,
+        imagen_url TEXT NOT NULL
+      );
+    `);
+
+    // 6. Deportes
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS deportes (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL,
+        dia_horario VARCHAR(255),
+        profesor VARCHAR(100),
+        descripcion TEXT,
+        imagen_url TEXT
+      );
+    `);
+
+    // 7. Matches (Prode)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS matches (
+        id SERIAL PRIMARY KEY,
+        home_team VARCHAR(100) NOT NULL,
+        away_team VARCHAR(100) NOT NULL,
+        start_time TIMESTAMP NOT NULL,
+        matchday INTEGER,
+        season VARCHAR(20),
+        home_score INTEGER,
+        away_score INTEGER
+      );
+    `);
+
+    // 8. Predictions (Prode)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS predictions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES socios(id) ON DELETE CASCADE,
+        match_id INTEGER REFERENCES matches(id) ON DELETE CASCADE,
+        home_score INTEGER NOT NULL,
+        away_score INTEGER NOT NULL,
+        points INTEGER DEFAULT 0,
+        UNIQUE(user_id, match_id)
+      );
+    `);
+
+    // 9. Sponsors
     await pool.query(`
       CREATE TABLE IF NOT EXISTS sponsors (
         id SERIAL PRIMARY KEY,
@@ -1338,9 +1453,10 @@ const initDb = async () => {
         fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    console.log("Tabla sponsors verificada correctamente.");
+
+    console.log("Tablas de base de datos verificadas/creadas correctamente.");
   } catch (err) {
-    console.error("ERROR CRÃTICO en initDb:", err.message);
+    console.error("ERROR CRÍTICO en initDb:", err.message);
     throw err;
   }
 };

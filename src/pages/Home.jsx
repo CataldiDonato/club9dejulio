@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Trophy, Users, Star, Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_URL } from "../config";
+import { getImageUrl } from "../utils/imageUtils";
 
 import ClubCalendar from '../components/ClubCalendar';
 
 const Home = () => {
   const [heroAsset, setHeroAsset] = useState('logo'); // 'logo' or 'players'
+  const [birthdays, setBirthdays] = useState([]);
 
   useEffect(() => {
+    // Fetch birthdays
+    fetch(`${API_URL}/birthdays`)
+      .then((res) => res.json())
+      .then((data) => setBirthdays(data))
+      .catch((err) => console.error("Error fetching birthdays:", err));
+      
     // Randomize on mount
     const assets = ['logo', 'players'];
     const randomAsset = assets[Math.floor(Math.random() * assets.length)];
@@ -75,6 +84,47 @@ const Home = () => {
           <Trophy size={40} className="text-white flex-shrink-0" />
         </div>
       </div>
+
+      {/* Sección Cumpleaños */}
+      {birthdays.length > 0 && (
+        <div className="bg-white py-12 border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-black uppercase tracking-tighter mb-2 flex items-center justify-center gap-3">
+                <span className="text-4xl">🎂</span> ¡Feliz Cumpleaños!
+              </h2>
+              <p className="text-gray-500 font-bold uppercase tracking-widest text-sm">
+                Saludamos a los socios que celebran hoy
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-8">
+              {birthdays.map((user, index) => (
+                <div key={index} className="flex flex-col items-center group">
+                  <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-yellow-400 to-red-500 mb-3 group-hover:scale-105 transition-transform duration-300">
+                    <div className="w-full h-full rounded-full border-4 border-white overflow-hidden bg-gray-100">
+                      {user.foto_perfil ? (
+                        <img 
+                          src={getImageUrl(user.foto_perfil)} 
+                          alt={`${user.nombre} ${user.apellido}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                          <Users size={32} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-lg uppercase leading-tight text-center">
+                    {user.nombre} <br /> {user.apellido}
+                  </h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <ClubCalendar />
     </div>

@@ -92,6 +92,7 @@ const Socios = () => {
     password: "",
     email: "",
     telefono: "",
+    fecha_nacimiento: "",
     foto_perfil: null, // File object
   });
 
@@ -108,6 +109,7 @@ const Socios = () => {
     data.append("password", regData.password);
     data.append("email", regData.email);
     data.append("telefono", regData.telefono);
+    data.append("fecha_nacimiento", regData.fecha_nacimiento);
     if (regData.foto_perfil) {
       data.append("foto_perfil", regData.foto_perfil);
     }
@@ -184,6 +186,7 @@ const Socios = () => {
   const [editData, setEditData] = useState({
     telefono: "",
     email: "",
+    fecha_nacimiento: "",
     foto_perfil: null, // File object or null
   });
 
@@ -197,6 +200,7 @@ const Socios = () => {
     setEditData({
       telefono: userData.telefono || "",
       email: userData.email || "",
+      fecha_nacimiento: userData.fecha_nacimiento ? userData.fecha_nacimiento.split('T')[0] : "",
       foto_perfil: null,
     });
 
@@ -231,7 +235,9 @@ const Socios = () => {
 
     const data = new FormData();
     data.append("telefono", editData.telefono);
+    data.append("telefono", editData.telefono);
     data.append("email", editData.email);
+    data.append("fecha_nacimiento", editData.fecha_nacimiento);
     if (editData.foto_perfil) {
       data.append("foto_perfil", editData.foto_perfil);
     }
@@ -415,64 +421,7 @@ const Socios = () => {
                   </p>
                 </div>
 
-                {/* 2. Estado de Cuenta */}
-                <div
-                  className={`border rounded-xl p-6 h-full flex flex-col justify-center ${
-                    userData.estado_cuota === "Al Día"
-                      ? "bg-green-50 border-green-200"
-                      : "bg-red-50 border-red-200"
-                  }`}
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div
-                      className={`p-3 rounded-full ${
-                        userData.estado_cuota === "Al Día"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-red-100 text-red-600"
-                      }`}
-                    >
-                      <CreditCard size={28} />
-                    </div>
-                    <div>
-                      <h4
-                        className={`text-xl font-black uppercase ${
-                          userData.estado_cuota === "Al Día"
-                            ? "text-green-800"
-                            : "text-red-800"
-                        }`}
-                      >
-                        {userData.estado_cuota === "Al Día"
-                          ? "Cuota al Día"
-                          : "Cuota Pendiente"}
-                      </h4>
-                      <p
-                        className={`font-bold ${
-                          userData.estado_cuota === "Al Día"
-                            ? "text-green-700"
-                            : "text-red-700"
-                        } text-sm`}
-                      >
-                        Vence:{" "}
-                        {userData.vencimiento_cuota
-                          ? new Date(
-                              userData.vencimiento_cuota
-                            ).toLocaleDateString()
-                          : "Consultar"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-auto pt-4 border-t border-green-100/50">
-                    <button
-                      className={`w-full py-2 rounded-lg font-bold text-sm uppercase ${
-                        userData.estado_cuota === "Al Día"
-                          ? "bg-green-200 text-green-800 hover:bg-green-300"
-                          : "bg-red-200 text-red-800 hover:bg-red-300"
-                      } transition-colors`}
-                    >
-                      Ver Detalle de Pagos
-                    </button>
-                  </div>
-                </div>
+
 
                 {/* 3. Estadísticas de Prode */}
                 <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm h-full flex flex-col relative overflow-hidden">
@@ -691,6 +640,19 @@ const Socios = () => {
                       }
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
                       placeholder="Sin 0 y sin 15"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">
+                      Fecha de Nacimiento
+                    </label>
+                    <input
+                      type="date"
+                      value={editData.fecha_nacimiento}
+                      onChange={(e) =>
+                        setEditData({ ...editData, fecha_nacimiento: e.target.value })
+                      }
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
                     />
                   </div>
                   <div>
@@ -939,6 +901,20 @@ const Socios = () => {
               value={regData.dni}
               onChange={(e) => setRegData({ ...regData, dni: e.target.value })}
             />
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase ml-1">
+                Fecha de Nacimiento
+              </label>
+              <input
+                type="date"
+                required
+                className="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
+                value={regData.fecha_nacimiento}
+                onChange={(e) =>
+                  setRegData({ ...regData, fecha_nacimiento: e.target.value })
+                }
+              />
+            </div>
             <input
               type="text"
               placeholder="Nro Socio (Si tenés)"
