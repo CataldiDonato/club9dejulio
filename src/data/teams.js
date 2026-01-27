@@ -5,7 +5,7 @@ export const TEAMS = [
     'Belgrano',
     'Caferata',
     'Centenario',
-    'Chanarence',
+    'Chañarense',
     'Deportivo',
     'Federacion',
     'Godeken',
