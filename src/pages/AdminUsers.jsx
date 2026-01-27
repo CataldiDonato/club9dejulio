@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { Check, X, User, Search, Download } from 'lucide-react';
+import { Check, X, User, Search, Download, Key } from 'lucide-react';
 import { API_URL } from '../config';
 
 const AdminUsers = () => {
@@ -8,6 +8,7 @@ const AdminUsers = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [modal, setModal] = useState({ isOpen: false, type: null, userId: null, userName: null });
+    const [passwordModal, setPasswordModal] = useState({ isOpen: false, userId: null, userName: null, newPassword: '' });
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchUsers = async () => {
@@ -155,6 +156,48 @@ const AdminUsers = () => {
                 fetchUsers();
             } else {
                 alert(data.error || 'Error al actualizar');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión');
+        }
+    };
+    
+    const openPasswordModal = (user) => {
+        setPasswordModal({
+            isOpen: true,
+            userId: user.id,
+            userName: `${user.nombre} ${user.apellido}`,
+            newPassword: ''
+        });
+    };
+
+    const handlePasswordReset = async (e) => {
+        e.preventDefault();
+        const { userId, newPassword } = passwordModal;
+        
+        if (!newPassword || newPassword.length < 6) {
+            alert('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/admin/users/${userId}/password`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ newPassword })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                alert(`Contraseña actualizada correctamente para ${passwordModal.userName}`);
+                setPasswordModal({ isOpen: false, userId: null, userName: null, newPassword: '' });
+            } else {
+                alert(data.error || 'Error al restablecer contraseña');
             }
         } catch (err) {
             console.error(err);
@@ -413,6 +456,9 @@ const AdminUsers = () => {
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                         {user.rol !== 'admin' && ( 
                                                             <div className="flex gap-2 justify-end">
+                                                                <button onClick={() => openPasswordModal(user)} className="text-gray-600 hover:bg-gray-100 border border-gray-200 rounded-lg px-3 py-1 text-[10px] font-black uppercase transition-colors flex items-center gap-1">
+                                                                    <Key size={14} /> Reset
+                                                                </button>
                                                                 <button onClick={() => confirmRevoke(user)} className="text-yellow-600 hover:bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1 text-[10px] font-black uppercase transition-colors">Revocar</button>
                                                                 <button onClick={() => confirmDelete(user)} className="text-red-600 hover:bg-red-50 border border-red-200 rounded-lg px-3 py-1 text-[10px] font-black uppercase transition-colors">Eliminar</button>
                                                             </div>
@@ -426,6 +472,42 @@ const AdminUsers = () => {
                             </div>
                         )}
                      </div>
+                </div>
+            )}
+
+            {/* Modal Reset Password */}
+            {passwordModal.isOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
+                        <h3 className="text-lg font-bold mb-2 uppercase">Restablecer Contraseña</h3>
+                        <p className="text-sm text-gray-500 mb-4">Ingresá la nueva contraseña para <b>{passwordModal.userName}</b>.</p>
+                        
+                        <form onSubmit={handlePasswordReset}>
+                            <input 
+                                type="text"
+                                className="w-full border-2 border-gray-200 rounded-lg p-2 mb-4 focus:border-black outline-none"
+                                placeholder="Nueva contraseña"
+                                value={passwordModal.newPassword}
+                                onChange={(e) => setPasswordModal({...passwordModal, newPassword: e.target.value})}
+                                autoFocus
+                            />
+                            <div className="flex justify-end gap-2">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setPasswordModal({...passwordModal, isOpen: false})}
+                                    className="px-4 py-2 text-gray-600 font-bold text-sm hover:bg-gray-100 rounded-lg"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className="px-4 py-2 bg-black text-white font-bold text-sm hover:bg-gray-800 rounded-lg"
+                                >
+                                    Guardar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
         </div>

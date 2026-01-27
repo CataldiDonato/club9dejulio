@@ -745,6 +745,41 @@ app.delete("/api/admin/users/:id", authenticateToken, async (req, res) => {
   }
 });
 
+app.put(
+  "/api/admin/users/:id/password",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userResult = await pool.query(
+        "SELECT rol FROM socios WHERE id = $1",
+        [req.user.id]
+      );
+      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+        return res.status(403).json({ error: "Acceso denegado." });
+
+      const { id } = req.params;
+      const { newPassword } = req.body;
+
+      if (!newPassword || newPassword.length < 6) {
+        return res
+          .status(400)
+          .json({ error: "La contraseña debe tener al menos 6 caracteres" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await pool.query("UPDATE socios SET password = $1 WHERE id = $2", [
+        hashedPassword,
+        id,
+      ]);
+
+      res.json({ success: true, message: "Contraseña actualizada" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error updating password" });
+    }
+  }
+);
+
 app.get("/api/socios/:id?", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id || req.user.id;

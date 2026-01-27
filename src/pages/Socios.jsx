@@ -95,6 +95,8 @@ const Socios = () => {
     fecha_nacimiento: "",
     foto_perfil: null, // File object
   });
+  
+  const [regPreviewImage, setRegPreviewImage] = useState(null);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -222,11 +224,17 @@ const Socios = () => {
 
   const handleCropComplete = (croppedBlob) => {
     // Create a File object from Blob
-    const file = new File([croppedBlob], "profile_pic.jpg", {
-      type: "image/jpeg",
+    const file = new File([croppedBlob], "profile_pic.webp", {
+      type: "image/webp",
     });
-    setEditData({ ...editData, foto_perfil: file });
-    setPreviewImage(URL.createObjectURL(croppedBlob));
+    
+    if (isLoggedIn) {
+      setEditData({ ...editData, foto_perfil: file });
+      setPreviewImage(URL.createObjectURL(croppedBlob));
+    } else {
+      setRegData({ ...regData, foto_perfil: file });
+      setRegPreviewImage(URL.createObjectURL(croppedBlob));
+    }
   };
 
   const handleUpdate = async (e) => {
@@ -944,18 +952,41 @@ const Socios = () => {
                 setRegData({ ...regData, telefono: e.target.value })
               }
             />
-            <div className="space-y-1">
+            <div className="space-y-2">
               <label className="text-xs font-bold text-gray-500 uppercase ml-1">
                 Foto de Perfil
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                className="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-black focus:border-black sm:text-sm"
-                onChange={(e) =>
-                  setRegData({ ...regData, foto_perfil: e.target.files[0] })
-                }
-              />
+              
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0">
+                  {regPreviewImage ? (
+                    <img
+                      src={regPreviewImage}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <UserCheck />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <input
+                    type="file"
+                    id="reg_photo_upload"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <label
+                    htmlFor="reg_photo_upload"
+                    className="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-2 px-4 rounded-lg inline-flex items-center gap-2 text-sm transition-colors"
+                  >
+                    <Camera size={16} /> Subir Foto
+                  </label>
+                </div>
+              </div>
             </div>
 
             <div className="relative">

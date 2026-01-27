@@ -1,10 +1,10 @@
-import { MapPin } from 'lucide-react';
+import { MapPin, Instagram } from 'lucide-react';
 import estadio from '../images/estadio.jpg';
 import sede from '../images/sede.png';
 import gimnasio from '../images/gimnasio.png';
 import salon from '../images/salon.png';
 import padel from '../images/padel.png';
-
+import pileta from '../images/pileta.png';
 const Instalaciones = () => {
   const facilities = [
     {
@@ -19,13 +19,15 @@ const Instalaciones = () => {
     },
     {
       title: "Canchas de Padel",
-      desc: "Nuestras canchas de padel de última generación, con superficie de césped sintético y paredes de vidrio, ofrecen el mejor espacio para la práctica de este deporte que crece día a día en nuestro club.",
-      image: padel
+      desc: "Nuestra cancha de padel de última generación, con superficie de césped sintético, ofrecen el mejor espacio para la práctica de este deporte que crece día a día en nuestro club.",
+      image: padel,
+      instagram: "https://www.instagram.com/padel_club.9dejulioberabevu/"
     },
     {
       title: "Pileta",
       desc: "La pileta del pueblo, con 25 metros de largo y 3 de profundidad es concurrida por todos en temporada de verano. El club cuenta con colonia de vacaciones para niños.",
-      image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=2670&auto=format&fit=crop"
+      image: pileta,
+      instagram: "https://www.instagram.com/lacolodelnueve/"
     },
     {
       title: "Gimnasio",
@@ -74,6 +76,12 @@ const Instalaciones = () => {
                         <p className="text-lg text-gray-600 leading-relaxed mb-6">
                             {item.desc}
                         </p>
+                        {item.instagram && (
+                            <a href={item.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-6 py-2 rounded-full font-bold uppercase tracking-wider text-sm hover:scale-105 transition-transform shadow-lg">
+                                <Instagram size={20} />
+                                Seguinos
+                            </a>
+                        )}
                     </div>
                 </div>
             ))}
