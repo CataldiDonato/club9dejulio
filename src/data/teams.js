@@ -3,7 +3,7 @@ export const TEAMS = [
     'Alianza',
     'Arteaga',
     'Belgrano',
-    'Caferata',
+    'Cafferata',
     'Centenario',
     'Chañarense',
     'Deportivo',

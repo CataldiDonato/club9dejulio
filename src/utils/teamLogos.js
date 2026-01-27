@@ -4,7 +4,7 @@ const club9dejulio = '/9dejulio.svg';
 import alianza from '../images/clubes/Alianza.jpg';
 import arteaga from '../images/clubes/Arteaga.jpg';
 import belgrano from '../images/clubes/Belgrano.jpg';
-import caferata from '../images/clubes/Caferata.jpg';
+import cafferata from '../images/clubes/Cafferata.jpg';
 import centenario from '../images/clubes/Centenario.jpg';
 import chanarense from '../images/clubes/Chanarense.jpg';
 import deportivo from '../images/clubes/Deportivo.jpg';
@@ -21,7 +21,7 @@ const LOGO_MAP = {
     'Alianza': alianza,
     'Arteaga': arteaga,
     'Belgrano': belgrano,
-    'Caferata': caferata,
+    'Cafferata': cafferata,
     'Centenario': centenario,
     'Chañarense': chanarense,
     'Deportivo': deportivo,
