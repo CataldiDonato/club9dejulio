@@ -77,11 +77,11 @@ const Home = () => {
       {/* Banner Campeón */}
       <div className="bg-black text-white py-6 border-y-4 border-white/20">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-6 overflow-hidden">
-          <Trophy size={40} className="text-white flex-shrink-0" />
-          <span className="font-black text-2xl md:text-4xl uppercase tracking-[0.2em] text-center whitespace-nowrap">
+          <Trophy size={24} className="text-white flex-shrink-0 md:w-10 md:h-10" />
+          <span className="font-black text-lg md:text-4xl uppercase tracking-widest md:tracking-[0.2em] text-center leading-tight px-2">
             Campeón Liga Interprovincial 2023
           </span>
-          <Trophy size={40} className="text-white flex-shrink-0" />
+          <Trophy size={24} className="text-white flex-shrink-0 md:w-10 md:h-10" />
         </div>
       </div>
 

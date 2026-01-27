@@ -32,7 +32,7 @@ const ChampionshipModal = ({ isOpen, onClose, championship }) => {
               <span className="text-yellow-400 font-bold text-xs tracking-wider uppercase">
                 CAMPEÓN
               </span>
-              <h2 className="text-lg md:text-xl font-bold truncate max-w-[200px] md:max-w-none">
+              <h2 className="text-lg md:text-xl font-bold leading-tight">
                 {championship.title}
               </h2>
             </div>
