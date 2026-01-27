@@ -199,8 +199,14 @@ const Socios = () => {
   });
 
   const openEditModal = () => {
+    // Sanitize phone number if it got corrupted (e.g. "{"3465668393","3465668393"}")
+    let cleanTelefono = userData.telefono || "";
+    if (cleanTelefono.startsWith("{") && cleanTelefono.endsWith("}")) {
+      cleanTelefono = cleanTelefono.replace(/[{"]/g, "").split(",")[0];
+    }
+
     setEditData({
-      telefono: userData.telefono || "",
+      telefono: cleanTelefono,
       email: userData.email || "",
       fecha_nacimiento: userData.fecha_nacimiento ? userData.fecha_nacimiento.split('T')[0] : "",
       foto_perfil: null,
@@ -242,7 +248,6 @@ const Socios = () => {
     setIsLoading(true);
 
     const data = new FormData();
-    data.append("telefono", editData.telefono);
     data.append("telefono", editData.telefono);
     data.append("email", editData.email);
     data.append("fecha_nacimiento", editData.fecha_nacimiento);
