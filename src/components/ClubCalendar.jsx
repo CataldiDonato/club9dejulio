@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Newspaper, Camera, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Newspaper, Camera, X, Search } from 'lucide-react';
 import { getImageUrl } from '../utils/imageUtils';
+import ImageViewer from './ImageViewer';
 
 const ClubCalendar = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -13,6 +14,7 @@ const ClubCalendar = () => {
     const [selectedNews, setSelectedNews] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loadingNews, setLoadingNews] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -198,7 +200,7 @@ const ClubCalendar = () => {
                         ) : selectedNews ? (
                             <div>
                                 {/* Header del Modal */}
-                                <div className="relative h-64 md:h-96 bg-black">
+                                <div className="relative h-96 md:h-[500px] bg-black group cursor-zoom-in overflow-hidden" onClick={() => setSelectedImage(getImageUrl(selectedNews.imagen_url))}>
                                     <img 
                                         src={getImageUrl(selectedNews.imagen_url)} 
                                         className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-30" 
@@ -206,23 +208,29 @@ const ClubCalendar = () => {
                                     />
                                     <img 
                                         src={getImageUrl(selectedNews.imagen_url)} 
-                                        className="relative z-10 w-full h-full object-contain" 
+                                        className="relative z-10 w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" 
                                         alt={selectedNews.titulo} 
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent z-20"></div>
+                                    
                                     <button 
-                                        onClick={() => setIsModalOpen(false)}
-                                        className="absolute top-4 right-4 z-30 bg-black/50 text-white p-2 rounded-full hover:bg-black transition-colors border-2 border-white/20"
+                                        onClick={(e) => { e.stopPropagation(); setIsModalOpen(false); }}
+                                        className="absolute top-4 right-4 z-40 bg-black/50 text-white p-2 rounded-full hover:bg-black transition-colors border-2 border-white/20"
                                     >
                                         <X size={24} />
                                     </button>
-                                    <div className="absolute bottom-6 left-6 right-6">
-                                        <span className="bg-white text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block">Noticia</span>
-                                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase leading-tight">{selectedNews.titulo}</h2>
+
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 text-white px-4 py-2 rounded-full backdrop-blur-md flex items-center gap-2 pointer-events-none border border-white/20">
+                                        <Search size={18} />
+                                        <span className="text-xs font-bold uppercase tracking-widest">Ver pantalla completa</span>
                                     </div>
                                 </div>
                                 
                                 <div className="p-6 md:p-10">
+                                    <div className="mb-6">
+                                        <span className="bg-black text-white text-[10px] font-black px-3 py-1 rounded mb-3 inline-block uppercase tracking-widest">NoVedades</span>
+                                        <h2 className="text-3xl md:text-5xl font-black text-gray-900 uppercase leading-none tracking-tighter">{selectedNews.titulo}</h2>
+                                    </div>
                                     <p className="text-gray-400 font-bold text-sm uppercase mb-6 tracking-widest flex items-center gap-2">
                                         <CalendarIcon size={16} /> {new Date(selectedNews.fecha).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
                                     </p>
@@ -245,7 +253,11 @@ const ClubCalendar = () => {
                                             <h3 className="font-black uppercase tracking-widest text-sm mb-4">Más imágenes</h3>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                                 {selectedNews.imagenes.map((img, idx) => (
-                                                    <div key={idx} className="aspect-video rounded-xl overflow-hidden shadow-md bg-gray-50">
+                                                    <div 
+                                                        key={idx} 
+                                                        className="aspect-video rounded-xl overflow-hidden shadow-md bg-gray-50 cursor-pointer hover:shadow-xl transition-shadow border border-gray-100"
+                                                        onClick={() => setSelectedImage(getImageUrl(img))}
+                                                    >
                                                         <img src={getImageUrl(img)} className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" alt={`Imagen ${idx + 1}`} />
                                                     </div>
                                                 ))}
@@ -259,6 +271,11 @@ const ClubCalendar = () => {
                     </div>
                 </div>
             )}
+
+            <ImageViewer 
+                imageUrl={selectedImage} 
+                onClose={() => setSelectedImage(null)} 
+            />
 
             <div className="max-w-7xl mx-auto px-4">
                 <div className="grid md:grid-cols-5 gap-12 items-start">

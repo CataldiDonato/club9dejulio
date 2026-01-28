@@ -26,7 +26,7 @@ const ImageViewer = ({ imageUrl, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[150] bg-black/95 flex items-center justify-center p-4">
             <button 
                 onClick={onClose}
                 className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors bg-white/10 p-2 rounded-full"
