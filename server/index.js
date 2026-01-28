@@ -1235,6 +1235,34 @@ app.get("/api/team-standings", async (req, res) => {
     matches.forEach(match => {
       const { home_team, away_team, home_score, away_score } = match;
       
+      // Safety check: ensure teams exist in standings (handles case mismatch or unknown teams)
+      if (!standings[home_team]) {
+        standings[home_team] = {
+          team: home_team,
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          goals_for: 0,
+          goals_against: 0,
+          goal_difference: 0,
+          points: 0
+        };
+      }
+      if (!standings[away_team]) {
+        standings[away_team] = {
+          team: away_team,
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          goals_for: 0,
+          goals_against: 0,
+          goal_difference: 0,
+          points: 0
+        };
+      }
+
       // Update stats
       standings[home_team].played++;
       standings[away_team].played++;
