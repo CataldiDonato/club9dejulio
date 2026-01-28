@@ -1,7 +1,23 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const app = express();
 const pool = require("./db");
+
+const TEAMS = [
+  '9 de julio',
+  'Alianza',
+  'Arteaga',
+  'Belgrano',
+  'Cafferata',
+  'Centenario',
+  'Chañarense',
+  'Deportivo',
+  'Federacion',
+  'Godeken',
+  'Huracan',
+  'Independiente'
+];
 const multer = require("multer");
 const bcrypt = require("bcryptjs");
 const path = require("path");
@@ -9,7 +25,6 @@ const fs = require("fs");
 require("dotenv").config();
 const { optimizeImage, saveOptimizedImage } = require("./lib/imageOptimizer");
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.JWT_SECRET || "dev_secret_only_for_local_dev";
 
@@ -916,7 +931,7 @@ app.put("/api/matches/:id", authenticateToken, async (req, res) => {
         away_team,
         start_time,
         matchday,
-        season || new Date().getFullYear(),
+        season || new Date().getFullYear().toString(),
         id,
       ]
     );
@@ -1201,38 +1216,24 @@ app.get("/api/team-standings", async (req, res) => {
     
     // Calculate standings
     const standings = {};
+
+    // Initialize ALL teams with 0 stats
+    TEAMS.forEach(team => {
+      standings[team] = {
+        team: team,
+        played: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        goals_for: 0,
+        goals_against: 0,
+        goal_difference: 0,
+        points: 0
+      };
+    });
     
     matches.forEach(match => {
       const { home_team, away_team, home_score, away_score } = match;
-      
-      // Initialize teams if not exists
-      if (!standings[home_team]) {
-        standings[home_team] = {
-          team: home_team,
-          played: 0,
-          won: 0,
-          drawn: 0,
-          lost: 0,
-          goals_for: 0,
-          goals_against: 0,
-          goal_difference: 0,
-          points: 0
-        };
-      }
-      
-      if (!standings[away_team]) {
-        standings[away_team] = {
-          team: away_team,
-          played: 0,
-          won: 0,
-          drawn: 0,
-          lost: 0,
-          goals_for: 0,
-          goals_against: 0,
-          goal_difference: 0,
-          points: 0
-        };
-      }
       
       // Update stats
       standings[home_team].played++;

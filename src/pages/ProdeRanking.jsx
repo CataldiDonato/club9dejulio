@@ -35,23 +35,29 @@ const ProdeRanking = () => {
         fetch(`${API_URL}/ranking?season=${selectedSeason}`)
             .then(res => res.json())
             .then(data => {
-                setRanking(data);
+                setRanking(Array.isArray(data) ? data : []);
             })
-            .catch(console.error);
+            .catch(err => {
+                console.error(err);
+                setRanking([]);
+            });
 
         // Fetch top players by matchday
         fetch(`${API_URL}/top-players-by-matchday?season=${selectedSeason}`)
             .then(res => res.json())
             .then(data => {
-                setTopByMatchday(data);
+                setTopByMatchday(data && data.topPlayers ? data : { matchday: null, topPlayers: [] });
             })
-            .catch(console.error);
+            .catch(err => {
+                console.error(err);
+                setTopByMatchday({ matchday: null, topPlayers: [] });
+            });
 
         // Fetch team standings
         fetch(`${API_URL}/team-standings?season=${selectedSeason}`)
             .then(res => res.json())
             .then(data => {
-                setTeamStandings(data);
+                setTeamStandings(Array.isArray(data) ? data : []);
                 setLoading(false);
             })
             .catch(err => {
@@ -61,10 +67,11 @@ const ProdeRanking = () => {
     }, [selectedSeason]);
 
     // Pagination logic
+    const safeRanking = Array.isArray(ranking) ? ranking : [];
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentRanking = ranking.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(ranking.length / itemsPerPage);
+    const currentRanking = safeRanking.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(safeRanking.length / itemsPerPage);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
