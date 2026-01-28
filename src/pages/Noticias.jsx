@@ -27,11 +27,11 @@ const Noticias = () => {
         {noticias.map((item) => (
           <Link to={`/noticias/${item.id}`} key={item.id} className="group cursor-pointer block">
             <article>
-              <div className="relative overflow-hidden rounded-xl aspect-[4/3] mb-4">
+              <div className="relative overflow-hidden rounded-xl aspect-[4/3] mb-4 bg-gray-50">
                 <img 
                   src={item.imagen_url ? `${API_URL}${item.imagen_url}` : "https://images.unsplash.com/photo-1504450758481-7338eba7524a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"} 
                   alt={item.titulo} 
-                  className="object-cover w-full h-full transform transition-transform duration-700 group-hover:scale-110"
+                  className="object-contain w-full h-full transform transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase rounded">
                   Novedades

@@ -5,7 +5,7 @@ import { Edit, Trash2, X, Plus, Calendar, Clock, User } from 'lucide-react';
 
 const AdminSports = () => {
     const [sports, setSports] = useState([]);
-    const [formData, setFormData] = useState({ nombre: '', dia_horario: '', profesor: '', descripcion: '', imagen: null });
+    const [formData, setFormData] = useState({ nombre: '', dia_horario: new Date().toISOString().slice(0, 16), descripcion: '', imagen: null });
     const [message, setMessage] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -39,7 +39,6 @@ const AdminSports = () => {
         setFormData({
             nombre: deporte.nombre || '',
             dia_horario: dateVal,
-            profesor: deporte.profesor || '',
             descripcion: deporte.descripcion || '',
             imagen: null
         });
@@ -49,7 +48,7 @@ const AdminSports = () => {
     const cancelEdit = () => {
         setIsEditing(false);
         setEditId(null);
-        setFormData({ nombre: '', dia_horario: '', profesor: '', descripcion: '', imagen: null });
+        setFormData({ nombre: '', dia_horario: '', descripcion: '', imagen: null });
     };
 
     const handleSubmit = async (e) => {
@@ -58,9 +57,12 @@ const AdminSports = () => {
         
         const data = new FormData();
         data.append('nombre', formData.nombre);
-        data.append('dia_horario', formData.dia_horario);
-        data.append('profesor', formData.profesor);
-        data.append('descripcion', formData.descripcion);
+        if (formData.dia_horario) {
+            data.append('dia_horario', formData.dia_horario);
+        }
+        if (formData.descripcion) {
+            data.append('descripcion', formData.descripcion);
+        }
         if (formData.imagen) {
             data.append('imagen', formData.imagen);
         }
@@ -143,19 +145,13 @@ const AdminSports = () => {
                 </div>
 
                 <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1 uppercase">Nombre del Deporte</label>
-                            <input className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors" placeholder="ej: Fútbol, Padel..." value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} required />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1 uppercase">Profesor / Encargado</label>
-                            <input className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors" placeholder="Nombre del Profe..." value={formData.profesor} onChange={e => setFormData({...formData, profesor: e.target.value})} />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase text-club-red">Nombre del Deporte</label>
+                        <input className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors" placeholder="ej: Fútbol, Padel..." value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} required />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase">Fecha y Hora de Práctica</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase text-club-red">Fecha (Opcional - para el calendario)</label>
                         <div className="relative">
                             <Calendar className="absolute left-3 top-3.5 text-gray-400" size={18} />
                             <input 
@@ -163,7 +159,6 @@ const AdminSports = () => {
                                 className="w-full border-2 p-3 pl-10 rounded-lg focus:border-black outline-none transition-colors" 
                                 value={formData.dia_horario} 
                                 onChange={e => setFormData({...formData, dia_horario: e.target.value})} 
-                                required 
                             />
                         </div>
                     </div>
@@ -192,12 +187,11 @@ const AdminSports = () => {
                         <div className="flex-grow">
                             <h4 className="font-bold text-xl text-gray-800 uppercase group-hover:text-black transition-colors">{s.nombre}</h4>
                             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 mt-1">
-                                <p className="text-sm font-bold text-gray-600 flex items-center gap-1">
-                                    <User size={14} className="text-gray-400" /> {s.profesor || 'Sin asignar'}
-                                </p>
-                                <p className="text-sm font-bold text-black flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded">
-                                    <Clock size={14} /> {formatDateTime(s.dia_horario)}
-                                </p>
+                                {s.dia_horario && (
+                                    <p className="text-sm font-bold text-black flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded">
+                                        <Clock size={14} /> {formatDateTime(s.dia_horario)}
+                                    </p>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center gap-2 w-full md:w-auto">

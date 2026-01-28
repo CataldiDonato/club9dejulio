@@ -198,16 +198,21 @@ const ClubCalendar = () => {
                         ) : selectedNews ? (
                             <div>
                                 {/* Header del Modal */}
-                                <div className="relative h-64 md:h-96">
+                                <div className="relative h-64 md:h-96 bg-black">
                                     <img 
                                         src={getImageUrl(selectedNews.imagen_url)} 
-                                        className="w-full h-full object-cover" 
+                                        className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-30" 
+                                        alt="" 
+                                    />
+                                    <img 
+                                        src={getImageUrl(selectedNews.imagen_url)} 
+                                        className="relative z-10 w-full h-full object-contain" 
                                         alt={selectedNews.titulo} 
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                                     <button 
                                         onClick={() => setIsModalOpen(false)}
-                                        className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black transition-colors"
+                                        className="absolute top-4 right-4 z-30 bg-black/50 text-white p-2 rounded-full hover:bg-black transition-colors border-2 border-white/20"
                                     >
                                         <X size={24} />
                                     </button>
@@ -222,13 +227,17 @@ const ClubCalendar = () => {
                                         <CalendarIcon size={16} /> {new Date(selectedNews.fecha).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
                                     </p>
                                     
-                                    <p className="text-xl font-bold text-gray-600 mb-8 border-l-4 border-black pl-4 leading-relaxed italic">
-                                        {selectedNews.bajad}
-                                    </p>
+                                    {selectedNews.bajad && selectedNews.bajad !== "undefined" && (
+                                        <p className="text-xl font-bold text-gray-600 mb-8 border-l-4 border-black pl-4 leading-relaxed italic">
+                                            {selectedNews.bajad}
+                                        </p>
+                                    )}
                                     
-                                    <div className="prose prose-lg max-w-none text-gray-800 leading-loose whitespace-pre-line font-medium">
-                                        {selectedNews.contenido}
-                                    </div>
+                                    {selectedNews.contenido && selectedNews.contenido !== "undefined" && (
+                                        <div className="prose prose-lg max-w-none text-gray-800 leading-loose whitespace-pre-line font-medium text-justify">
+                                            {selectedNews.contenido}
+                                        </div>
+                                    )}
 
                                     {/* Galería Adicional */}
                                     {selectedNews.imagenes && selectedNews.imagenes.length > 0 && (
@@ -236,22 +245,14 @@ const ClubCalendar = () => {
                                             <h3 className="font-black uppercase tracking-widest text-sm mb-4">Más imágenes</h3>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                                 {selectedNews.imagenes.map((img, idx) => (
-                                                    <div key={idx} className="aspect-video rounded-xl overflow-hidden shadow-md">
-                                                        <img src={getImageUrl(img)} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt={`Imagen ${idx + 1}`} />
+                                                    <div key={idx} className="aspect-video rounded-xl overflow-hidden shadow-md bg-gray-50">
+                                                        <img src={getImageUrl(img)} className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" alt={`Imagen ${idx + 1}`} />
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                     )}
 
-                                    <div className="mt-12 pt-8 border-t flex justify-center">
-                                        <button 
-                                            onClick={() => setIsModalOpen(false)}
-                                            className="bg-black text-white px-10 py-4 rounded-xl font-black uppercase text-sm tracking-widest hover:bg-gray-800 transition-all shadow-xl"
-                                        >
-                                            Cerrar Lectura
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         ) : null}

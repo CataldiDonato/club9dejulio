@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { Check, X, User, Search, Download, Key } from 'lucide-react';
+import { Check, X, User, Search, Download, Key, Calendar } from 'lucide-react';
 import { API_URL } from '../config';
+import { getImageUrl } from '../utils/imageUtils';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -313,6 +314,7 @@ const AdminUsers = () => {
                                         <thead className="bg-gray-50 uppercase text-[10px] font-black tracking-widest text-gray-500">
                                             <tr>
                                                 <th className="px-6 py-4 text-left">Usuario</th>
+                                                <th className="px-6 py-4 text-left">Nacimiento</th>
                                                 <th className="px-6 py-4 text-left">DNI</th>
                                                 <th className="px-6 py-4 text-left">Nro Socio</th>
                                                 <th className="px-6 py-4 text-left">Contacto</th>
@@ -325,12 +327,19 @@ const AdminUsers = () => {
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="flex items-center gap-3">
                                                             {user.foto_perfil ? (
-                                                                <img src={user.foto_perfil} className="w-8 h-8 rounded-full object-cover border" />
+                                                                <img 
+                                                                    src={getImageUrl(user.foto_perfil)} 
+                                                                    loading="lazy"
+                                                                    className="w-10 h-10 rounded-full object-cover border shadow-sm" 
+                                                                />
                                                             ) : (
-                                                                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><User size={16} /></div>
+                                                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 border"><User size={20} /></div>
                                                             )}
                                                             <div className="text-sm font-bold text-gray-900">{user.nombre} {user.apellido}</div>
                                                         </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        {user.fecha_nacimiento ? new Date(user.fecha_nacimiento).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : '-'}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.dni}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -398,6 +407,7 @@ const AdminUsers = () => {
                                         <thead className="bg-gray-50 uppercase text-[10px] font-black tracking-widest text-gray-500">
                                             <tr>
                                                 <th className="px-6 py-4 text-left">Usuario</th>
+                                                <th className="px-6 py-4 text-left">Nacimiento</th>
                                                 <th className="px-6 py-4 text-left">DNI</th>
                                                 <th className="px-6 py-4 text-left">Nro Socio</th>
                                                 <th className="px-6 py-4 text-left">Estado</th>
@@ -411,12 +421,19 @@ const AdminUsers = () => {
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="flex items-center gap-3">
                                                             {user.foto_perfil ? (
-                                                                <img src={user.foto_perfil} className="w-8 h-8 rounded-full object-cover border" />
+                                                                <img 
+                                                                    src={getImageUrl(user.foto_perfil)} 
+                                                                    loading="lazy"
+                                                                    className="w-10 h-10 rounded-full object-cover border shadow-sm" 
+                                                                />
                                                             ) : (
-                                                                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><User size={16} /></div>
+                                                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 border"><User size={20} /></div>
                                                             )}
                                                             <div className="text-sm font-bold text-gray-900">{user.nombre} {user.apellido}</div>
                                                         </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        {user.fecha_nacimiento ? new Date(user.fecha_nacimiento).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : '-'}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.dni}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

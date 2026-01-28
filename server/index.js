@@ -140,7 +140,7 @@ app.post("/api/register", upload.single("foto_perfil"), async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await pool.query(
-        "INSERT INTO socios (dni, password, nombre, apellido, nro_socio, tipo_socio, email, telefono, foto_perfil, rol, fecha_alta, estado_cuota, vencimiento_cuota, account_status, fecha_nacimiento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', CURRENT_DATE, 'Al Día', CURRENT_DATE + INTERVAL '1 month', 'pending', $10) RETURNING *",
+      "INSERT INTO socios (dni, password, nombre, apellido, nro_socio, tipo_socio, email, telefono, foto_perfil, rol, fecha_alta, estado_cuota, vencimiento_cuota, account_status, fecha_nacimiento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', CURRENT_DATE, 'Al Día', CURRENT_DATE + INTERVAL '1 month', 'pending', $10) RETURNING *",
       [
         dni,
         hashedPassword,
@@ -215,7 +215,7 @@ app.post(
       );
       if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
         return res.status(403).json({ error: "Acceso denegado." });
-      const { titulo, bajad, contenido } = req.body;
+      const { titulo, bajad, contenido, fecha } = req.body;
 
       let main_image_url = null;
       let other_images = [];
@@ -235,9 +235,13 @@ app.post(
       }
 
       // Insert News
+      const finalFecha = (fecha && fecha !== "undefined" && fecha.trim() !== "") ? fecha : null;
+      const finalBajad = (bajad === "undefined") ? null : bajad;
+      const finalContenido = (contenido === "undefined") ? null : contenido;
+
       const newNews = await pool.query(
-        "INSERT INTO noticias (titulo, bajad, contenido, imagen_url) VALUES ($1, $2, $3, $4) RETURNING *",
-        [titulo, bajad, contenido, main_image_url]
+        "INSERT INTO noticias (titulo, bajad, contenido, imagen_url, fecha) VALUES ($1, $2, $3, $4, COALESCE($5, CURRENT_TIMESTAMP)) RETURNING *",
+        [titulo, finalBajad || null, finalContenido || null, main_image_url, finalFecha]
       );
 
       const noticiaId = newNews.rows[0].id;
@@ -289,7 +293,7 @@ app.put(
         return res.status(403).json({ error: "Acceso denegado." });
 
       const { id } = req.params;
-      const { titulo, bajad, contenido } = req.body;
+      const { titulo, bajad, contenido, fecha } = req.body;
 
       // Obtener noticia actual
       const currentNews = await pool.query(
@@ -328,9 +332,13 @@ app.put(
         }
       }
 
+      const finalFecha = (fecha && fecha !== "undefined" && fecha.trim() !== "") ? fecha : null;
+      const finalBajad = (bajad === "undefined") ? null : bajad;
+      const finalContenido = (contenido === "undefined") ? null : contenido;
+
       const updatedNews = await pool.query(
-        "UPDATE noticias SET titulo = $1, bajad = $2, contenido = $3, imagen_url = $4 WHERE id = $5 RETURNING *",
-        [titulo, bajad, contenido, main_image_url, id]
+        "UPDATE noticias SET titulo = $1, bajad = $2, contenido = $3, imagen_url = $4, fecha = COALESCE($6, fecha) WHERE id = $5 RETURNING *",
+        [titulo, finalBajad || null, finalContenido || null, main_image_url, id, finalFecha]
       );
 
       res.json(updatedNews.rows[0]);
@@ -489,9 +497,13 @@ app.post(
           imagen_url = `/uploads/${req.file.filename}`;
         }
       }
+      const finalDia = (dia_horario && dia_horario !== "undefined" && dia_horario.trim() !== "") ? dia_horario : null;
+      const finalProfesor = (profesor === "undefined") ? null : profesor;
+      const finalDescripcion = (descripcion === "undefined") ? null : descripcion;
+
       const newSport = await pool.query(
         "INSERT INTO deportes (nombre, dia_horario, profesor, descripcion, imagen_url) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-        [nombre, dia_horario, profesor, descripcion, imagen_url]
+        [nombre, finalDia, finalProfesor || null, finalDescripcion || null, imagen_url]
       );
       res.json(newSport.rows[0]);
     } catch (err) {
@@ -552,9 +564,13 @@ app.put(
         }
       }
 
+      const finalDia = (dia_horario && dia_horario !== "undefined" && dia_horario.trim() !== "") ? dia_horario : null;
+      const finalProfesor = (profesor === "undefined") ? null : profesor;
+      const finalDescripcion = (descripcion === "undefined") ? null : descripcion;
+
       const updatedSport = await pool.query(
         "UPDATE deportes SET nombre = $1, dia_horario = $2, profesor = $3, descripcion = $4, imagen_url = $5 WHERE id = $6 RETURNING *",
-        [nombre, dia_horario, profesor, descripcion, imagen_url, id]
+        [nombre, finalDia, finalProfesor || null, finalDescripcion || null, imagen_url, id]
       );
 
       res.json(updatedSport.rows[0]);
@@ -571,8 +587,21 @@ app.put(
   upload.single("foto_perfil"),
   async (req, res) => {
     try {
-      const { telefono, email, fecha_nacimiento } = req.body;
+      const { telefono, email, fecha_nacimiento, nro_socio } = req.body;
       const userId = req.user.id;
+
+      // Unificar validación de nro_socio si se envía
+      const finalNroSocio = nro_socio && nro_socio.trim() !== "" ? nro_socio.trim() : null;
+      if (finalNroSocio) {
+        const socioCheck = await pool.query(
+          "SELECT * FROM socios WHERE nro_socio = $1 AND id != $2",
+          [finalNroSocio, userId]
+        );
+        if (socioCheck.rows.length > 0) {
+          return res.status(409).json({ error: "El Número de Socio ya está registrado por otro miembro." });
+        }
+      }
+
       const currentUserRes = await pool.query(
         "SELECT foto_perfil FROM socios WHERE id = $1",
         [userId]
@@ -589,8 +618,8 @@ app.put(
         }
       }
       const result = await pool.query(
-        "UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3, fecha_nacimiento = COALESCE($5, fecha_nacimiento) WHERE id = $4 RETURNING *",
-        [telefono, email, foto_perfil, userId, fecha_nacimiento]
+        "UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3, fecha_nacimiento = COALESCE($5, fecha_nacimiento), nro_socio = $6 WHERE id = $4 RETURNING *",
+        [telefono, email, foto_perfil, userId, fecha_nacimiento, finalNroSocio]
       );
       if (result.rows.length === 0)
         return res.status(404).json({ error: "Usuario no encontrado" });
@@ -670,7 +699,7 @@ app.get("/api/admin/users", authenticateToken, async (req, res) => {
     if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
       return res.status(403).json({ error: "Acceso denegado." });
     const result = await pool.query(
-      "SELECT id, nombre, apellido, dni, nro_socio, account_status, email, telefono, foto_perfil, rol FROM socios ORDER BY account_status DESC, fecha_alta DESC"
+      "SELECT id, nombre, apellido, dni, nro_socio, account_status, email, telefono, foto_perfil, rol, fecha_nacimiento FROM socios ORDER BY account_status DESC, fecha_alta DESC"
     );
     res.json(result.rows);
   } catch (err) {
@@ -799,7 +828,7 @@ app.get("/api/socios/:id?", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id || req.user.id;
     const result = await pool.query(
-      "SELECT id, dni, nombre, apellido, nro_socio, tipo_socio, email, telefono, foto_perfil, rol, account_status, fecha_alta, estado_cuota, vencimiento_cuota FROM socios WHERE id = $1",
+      "SELECT id, dni, nombre, apellido, nro_socio, tipo_socio, email, telefono, foto_perfil, rol, account_status, fecha_alta, estado_cuota, vencimiento_cuota, fecha_nacimiento FROM socios WHERE id = $1",
       [id]
     );
     if (result.rows.length === 0)

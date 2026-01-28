@@ -48,7 +48,6 @@ const Socios = () => {
       }
     };
     checkSession();
-    checkSession();
   }, []);
 
   useEffect(() => {
@@ -188,6 +187,7 @@ const Socios = () => {
     telefono: "",
     email: "",
     fecha_nacimiento: "",
+    nro_socio: "",
     foto_perfil: null, // File object or null
   });
 
@@ -204,10 +204,19 @@ const Socios = () => {
       cleanTelefono = cleanTelefono.replace(/[{"]/g, "").split(",")[0];
     }
 
+    let formattedDate = "";
+    if (userData.fecha_nacimiento) {
+      const date = new Date(userData.fecha_nacimiento);
+      if (!isNaN(date.getTime())) {
+        formattedDate = date.toISOString().split('T')[0];
+      }
+    }
+
     setEditData({
       telefono: cleanTelefono,
       email: userData.email || "",
-      fecha_nacimiento: userData.fecha_nacimiento ? userData.fecha_nacimiento.split('T')[0] : "",
+      fecha_nacimiento: formattedDate,
+      nro_socio: userData.nro_socio || "",
       foto_perfil: null,
     });
 
@@ -250,6 +259,7 @@ const Socios = () => {
     data.append("telefono", editData.telefono);
     data.append("email", editData.email);
     data.append("fecha_nacimiento", editData.fecha_nacimiento);
+    data.append("nro_socio", editData.nro_socio);
     if (editData.foto_perfil) {
       data.append("foto_perfil", editData.foto_perfil);
     }
@@ -675,6 +685,20 @@ const Socios = () => {
                       onChange={(e) =>
                         setEditData({ ...editData, fecha_nacimiento: e.target.value })
                       }
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">
+                      Número de Socio
+                    </label>
+                    <input
+                      type="text"
+                      value={editData.nro_socio}
+                      onChange={(e) =>
+                        setEditData({ ...editData, nro_socio: e.target.value })
+                      }
+                      placeholder="Ej: 1234"
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
                     />
                   </div>
@@ -1167,6 +1191,12 @@ const Socios = () => {
           )}
         </div>
       </div>
+      <ImageCropperModal
+        isOpen={cropModalOpen}
+        onClose={() => setCropModalOpen(false)}
+        imageSrc={selectedImageSrc}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 };

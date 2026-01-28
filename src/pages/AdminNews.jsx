@@ -5,7 +5,7 @@ import { Edit, Trash2, X, Send } from 'lucide-react';
 
 const AdminNews = () => {
     const [news, setNews] = useState([]);
-    const [formData, setFormData] = useState({ titulo: '', bajad: '', contenido: '', imagenes: [] });
+    const [formData, setFormData] = useState({ titulo: '', contenido: '', imagenes: [], fecha: new Date().toISOString().slice(0, 16) });
     const [message, setMessage] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -26,8 +26,8 @@ const AdminNews = () => {
         setEditId(noticia.id);
         setFormData({
             titulo: noticia.titulo || '',
-            bajad: noticia.bajad || '',
             contenido: noticia.contenido || '',
+            fecha: noticia.fecha ? new Date(noticia.fecha).toISOString().slice(0, 16) : '',
             imagenes: [] // Reset images as they need to be re-selected if changing
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -36,7 +36,7 @@ const AdminNews = () => {
     const cancelEdit = () => {
         setIsEditing(false);
         setEditId(null);
-        setFormData({ titulo: '', bajad: '', contenido: '', imagenes: [] });
+        setFormData({ titulo: '', contenido: '', imagenes: [], fecha: '' });
     };
 
     const handleSubmit = async (e) => {
@@ -45,8 +45,8 @@ const AdminNews = () => {
         
         const data = new FormData();
         data.append('titulo', formData.titulo);
-        data.append('bajad', formData.bajad);
         data.append('contenido', formData.contenido);
+        data.append('fecha', formData.fecha);
         
         if (formData.imagenes) {
             formData.imagenes.forEach(file => {
@@ -131,13 +131,18 @@ const AdminNews = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase">Subtítulo / Bajada</label>
-                        <input className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors" placeholder="Breve resumen..." value={formData.bajad} onChange={e => setFormData({...formData, bajad: e.target.value})} />
+                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase">Descripción (Opcional)</label>
+                        <textarea className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors h-48" placeholder="Escribí aquí toda la noticia..." value={formData.contenido} onChange={e => setFormData({...formData, contenido: e.target.value})} />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase">Contenido</label>
-                        <textarea className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors h-48" placeholder="Escribí aquí toda la noticia..." value={formData.contenido} onChange={e => setFormData({...formData, contenido: e.target.value})} required />
+                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase text-club-red">Fecha de Publicación (Opcional - solo para el calendario)</label>
+                        <input 
+                            type="datetime-local"
+                            className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors"
+                            value={formData.fecha} 
+                            onChange={e => setFormData({...formData, fecha: e.target.value})} 
+                        />
                     </div>
                     
                     <div className="bg-gray-50 p-4 rounded-lg border-2 border-dashed border-gray-200">
@@ -166,9 +171,9 @@ const AdminNews = () => {
                         <div className="flex-grow">
                             <h4 className="font-bold text-lg text-gray-800 group-hover:text-black transition-colors uppercase">{n.titulo}</h4>
                             <div className="flex items-center gap-3 mt-1">
-                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{new Date(n.fecha).toLocaleDateString()}</p>
-                                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                <p className="text-xs font-bold text-gray-500 italic truncate max-w-[200px]">{n.bajad}</p>
+                                {n.fecha && <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{new Date(n.fecha).toLocaleDateString()}</p>}
+                                {n.fecha && n.contenido && <span className="w-1 h-1 bg-gray-300 rounded-full"></span>}
+                                {n.contenido && <p className="text-xs font-bold text-gray-500 italic truncate max-w-[200px]">{n.contenido}</p>}
                             </div>
                         </div>
                         <div className="flex items-center gap-2 w-full md:w-auto">

@@ -8,15 +8,23 @@ export const getImageUrl = (path) => {
     // Esto previene que rutas como "uploads\\imagen.jpg" fallen en producción
     let normalizedPath = path.replace(/\\/g, '/');
 
-    // Asegurar que la ruta empiece con "/" si es relativa
-    if (!normalizedPath.startsWith('/') && !normalizedPath.startsWith('http')) {
+    // Obtener la base de la API sin el "/api" final
+    const apiBase = API_URL.replace(/\/api$/, '');
+    
+    // Si ya es una URL completa, devolverla
+    if (normalizedPath.startsWith('http')) return normalizedPath;
+
+    // Asegurar que la ruta empiece con "/"
+    if (!normalizedPath.startsWith('/')) {
         normalizedPath = '/' + normalizedPath;
     }
 
-    if (window.location.hostname === 'localhost') {
-        const baseUrl = 'http://localhost:3000';
-        return `${baseUrl}${normalizedPath}`;
+    // En producción, si la ruta no empieza con /api, se la agregamos para que pase por el proxy/backend
+    if (window.location.hostname !== 'localhost' && !normalizedPath.startsWith('/api')) {
+        // El servidor sirve las imágenes tanto en /uploads como en /api/uploads
+        // Usar /api/uploads es más seguro si el frontend está en el root
+        normalizedPath = '/api' + normalizedPath;
     }
-    
-    return normalizedPath;
+
+    return `${apiBase}${normalizedPath}`;
 };
