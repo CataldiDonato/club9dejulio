@@ -26,8 +26,7 @@ const Socios = () => {
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [stats, setStats] = useState([]);
-
-  // Check for existing session
+  const [showHelpModal, setShowHelpModal] = useState(false);
   useEffect(() => {
     const checkSession = async () => {
       const token = localStorage.getItem("token");
@@ -508,13 +507,21 @@ const Socios = () => {
                         →
                       </span>
                     </button>
-                    <button className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-bold flex items-center justify-between group">
+                    <a
+                      href="https://wa.me/543465659238"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-bold flex items-center justify-between group"
+                    >
                       Reservas
                       <span className="opacity-0 group-hover:opacity-100 transition-opacity">
                         →
                       </span>
-                    </button>
-                    <button className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-bold flex items-center justify-between group">
+                    </a>
+                    <button
+                      onClick={() => setShowHelpModal(true)}
+                      className="w-full text-left px-4 py-3 bg-gray-50 rounded-lg hover:bg-black hover:text-white transition-all text-sm font-bold flex items-center justify-between group"
+                    >
                       Ayuda
                       <span className="opacity-0 group-hover:opacity-100 transition-opacity">
                         →
@@ -857,6 +864,28 @@ const Socios = () => {
           imageSrc={selectedImageSrc}
           onCropComplete={handleCropComplete}
         />
+
+        {/* Modal de Ayuda */}
+        {showHelpModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 transition-all animate-in fade-in duration-300">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center relative overflow-hidden transform transition-all animate-in zoom-in-95 duration-300">
+              <div className="absolute top-0 left-0 w-full h-2 bg-black"></div>
+              <div className="mx-auto h-20 w-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                <ShieldCheck size={40} className="text-black" />
+              </div>
+              <h3 className="text-2xl font-black mb-2 uppercase tracking-tighter">Próximamente</h3>
+              <p className="text-gray-600 font-medium mb-8">
+                Estamos trabajando en esta sección para brindarte una mejor experiencia.
+              </p>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="w-full py-4 bg-black text-white rounded-xl font-black uppercase tracking-widest hover:bg-gray-800 transition-colors shadow-lg shadow-black/20"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
