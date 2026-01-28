@@ -385,6 +385,10 @@ const Socios = () => {
                   <div className="w-full bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white rounded-xl shadow-2xl overflow-hidden relative aspect-[1.586/1] border-2 border-white/10 group hover:scale-[1.02] transition-transform duration-300">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-5 -mb-5"></div>
+                    {/* Escudo de fondo (Marca de agua) */}
+                    <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-48 h-48 opacity-15 pointer-events-none z-0">
+                      <img src="/9dejulio.svg" alt="" className="w-full h-full object-contain" />
+                    </div>
                     <div className="p-4 relative z-10 flex flex-col h-full justify-between">
                       <div className="flex justify-between items-start">
                         <div>
@@ -395,7 +399,6 @@ const Socios = () => {
                             Berabevú
                           </p>
                         </div>
-                        <ShieldCheck className="text-white/80" size={28} />
                       </div>
                       <div className="text-center my-1">
                         <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto border-4 border-white/20 mb-2 overflow-hidden flex items-center justify-center relative">
@@ -1143,22 +1146,22 @@ const Socios = () => {
         <div className="text-center mt-4">
           {isRegistering ? (
             <p className="text-xs text-gray-500">
-              ¿Ya sos socio?{" "}
+              ¿Ya estás registrado?{" "}
               <button
                 onClick={() => setIsRegistering(false)}
                 className="text-black font-bold hover:underline"
               >
-                Iniciar Sesión
+                Iniciá Sesión
               </button>
             </p>
           ) : (
             <p className="text-xs text-gray-500">
-              ¿Aún no sos socio?{" "}
+              ¿No estás registrado?{" "}
               <button
                 onClick={() => setIsRegistering(true)}
                 className="text-black font-bold hover:underline"
               >
-                Asociate online
+                Registrate acá
               </button>
             </p>
           )}
