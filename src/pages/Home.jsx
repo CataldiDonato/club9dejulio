@@ -126,6 +126,40 @@ const Home = () => {
         </div>
       )}
 
+      {/* Banner Publicidad / Marca */}
+      <div className="bg-white py-20 border-y border-gray-100 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black to-transparent opacity-20"></div>
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="mb-6 inline-flex items-center gap-2 bg-gray-100 px-4 py-1.5 rounded-full">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-club-red opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-club-red"></span>
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Oportunidad para Negocios</span>
+          </div>
+
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-[0.9]">
+            Tu Marca en el <br />
+            <span className="text-club-red">Corazón del Lanudo</span>
+          </h2>
+          
+          <p className="text-gray-600 font-medium text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+            Llegá a toda nuestra comunidad y apoyá al crecimiento del club. 
+            Consultá por nuestros espacios publicitarios exclusivos.
+          </p>
+
+          <a 
+            href="https://wa.me/543465659238?text=Hola!%20Me%20interesa%20sumar%20mi%20marca/negocio%20como%20sponsor%20del%20club.%20Me%20podrían%20dar%20más%20info?"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-4 bg-black text-white px-12 py-5 rounded-none font-black uppercase text-sm tracking-[0.3em] hover:bg-club-red transition-all hover:scale-105 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none group"
+          >
+            <span>Quiero ser Sponsor</span>
+            <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+          </a>
+        </div>
+      </div>
+
       <ClubCalendar />
     </div>
   );
