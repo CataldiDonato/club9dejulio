@@ -1099,18 +1099,29 @@ app.post("/api/predictions", authenticateToken, async (req, res) => {
     const { match_id, home_score, away_score } = req.body;
     const user_id = req.user.id;
 
-    // Check account status
+    // Check account status and quota
     const userStatus = await pool.query(
-      "SELECT account_status FROM socios WHERE id = $1",
+      "SELECT account_status, estado_cuota FROM socios WHERE id = $1",
       [user_id]
     );
-    if (
-      userStatus.rows.length === 0 ||
-      userStatus.rows[0].account_status !== "approved"
-    )
+
+    if (userStatus.rows.length === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const { account_status, estado_cuota } = userStatus.rows[0];
+
+    if (account_status !== "approved") {
       return res
         .status(403)
         .json({ error: "Tu cuenta está pendiente de aprobación." });
+    }
+
+    if (estado_cuota !== "Al Día") {
+      return res
+        .status(403)
+        .json({ error: "Debes tener la cuota al día para participar." });
+    }
 
     // Check match time
     const matchRes = await pool.query(
