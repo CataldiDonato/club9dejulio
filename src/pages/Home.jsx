@@ -45,7 +45,7 @@ const Home = () => {
               <strong>El Lanudo es familia.</strong>
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/socios" className="bg-white hover:bg-gray-200 text-black px-10 py-4 rounded-none font-black text-lg uppercase tracking-widest transition-transform hover:-translate-y-1 flex items-center gap-2">
+              <Link to="/socios?mode=register" className="bg-white hover:bg-gray-200 text-black px-10 py-4 rounded-none font-black text-lg uppercase tracking-widest transition-transform hover:-translate-y-1 flex items-center gap-2">
                 Registrate y participa del Prode
               </Link>
               <Link to="/historia" className="border-2 border-white hover:bg-white hover:text-black text-white px-10 py-4 rounded-none font-bold text-lg uppercase tracking-widest transition-colors">

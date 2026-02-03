@@ -340,6 +340,8 @@ const AdminProde = () => {
               <option value="Final Ida">Final Ida</option>
               <option value="Final Vuelta">Final Vuelta</option>
               <option value="Tercer Partido">Final Tercer Partido</option>
+              <option value="Amistoso">Amistoso</option>
+              <option value="Torneo de Verano">Torneo de Verano</option>
             </select>
           </div>
           <div>
@@ -581,6 +583,8 @@ const AdminProde = () => {
                   <option value="Final Ida">Final Ida</option>
                   <option value="Final Vuelta">Final Vuelta</option>
                   <option value="Tercer Partido">Tercer Partido</option>
+                  <option value="Amistoso">Amistoso</option>
+                  <option value="Torneo de Verano">Torneo de Verano</option>
                 </select>
               </div>
               <div>

@@ -9,6 +9,7 @@ import {
   Edit,
   Camera,
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import ImageCropperModal from "../components/ImageCropperModal";
 import { getImageUrl } from "../utils/imageUtils";
 import { API_URL } from "../config";
@@ -79,7 +80,10 @@ const Socios = () => {
   }, [isLoggedIn]);
 
   // Toggle Register Mode
-  const [isRegistering, setIsRegistering] = useState(false);
+  const location = useLocation();
+  const [isRegistering, setIsRegistering] = useState(
+    new URLSearchParams(location.search).get("mode") === "register"
+  );
 
   // Extra fields for registration
   const [regData, setRegData] = useState({

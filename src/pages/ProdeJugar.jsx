@@ -172,6 +172,8 @@ const ProdeJugar = () => {
         "Final Ida",
         "Final Vuelta",
         "Tercer Partido",
+        "Amistoso",
+        "Torneo de Verano",
       ];
       return order.indexOf(a) - order.indexOf(b);
     }
