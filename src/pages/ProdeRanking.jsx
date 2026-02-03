@@ -337,9 +337,7 @@ const ProdeRanking = () => {
                 </div>
             </div>
 
-            <div className="mt-12">
-                <SponsorList location="prode" />
-            </div>
+
         </div>
     );
 };
