@@ -35,7 +35,7 @@ const ClubCalendar = () => {
             // Normalizar eventos
             const allEvents = [
                 ...news.map(n => ({ ...n, type: 'noticia', date: new Date(n.fecha) })),
-                ...sports.map(s => ({ ...s, type: 'deporte', date: new Date(s.dia_horario) })),
+                ...sports.map(s => ({ ...s, type: 'actividad', date: new Date(s.dia_horario) })),
                 ...gallery.map(g => ({ ...g, type: 'evento', date: new Date(g.fecha) }))
             ].filter(e => !isNaN(e.date.getTime()));
 
@@ -114,7 +114,7 @@ const ClubCalendar = () => {
                     </span>
                     <div className="mt-1 flex flex-wrap gap-1">
                         {dayEvents.map((e, idx) => (
-                            <div key={idx} className={`w-2 h-2 rounded-full ${e.type === 'noticia' ? 'bg-black' : e.type === 'deporte' ? 'bg-blue-600' : 'bg-red-500'}`} title={e.titulo || e.nombre}></div>
+                            <div key={idx} className={`w-2 h-2 rounded-full ${e.type === 'noticia' ? 'bg-black' : e.type === 'actividad' ? 'bg-blue-600' : 'bg-red-500'}`} title={e.titulo || e.nombre}></div>
                         ))}
                     </div>
                     {dayEvents.length > 0 && (
@@ -161,10 +161,10 @@ const ClubCalendar = () => {
                             >
                                 <div className={`p-3 rounded-lg ${
                                     e.type === 'noticia' ? 'bg-black text-white' : 
-                                    e.type === 'deporte' ? 'bg-blue-600 text-white' : 
+                                    e.type === 'actividad' ? 'bg-blue-600 text-white' : 
                                     'bg-red-500 text-white'
                                 }`}>
-                                    {e.type === 'noticia' ? <Newspaper size={20} /> : e.type === 'deporte' ? <Clock size={20} /> : <Camera size={20} />}
+                                    {e.type === 'noticia' ? <Newspaper size={20} /> : e.type === 'actividad' ? <Clock size={20} /> : <Camera size={20} />}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">

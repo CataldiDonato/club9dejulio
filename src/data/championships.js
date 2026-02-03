@@ -1124,17 +1124,17 @@ export const championships = [
   },
   {
     year: 2018,
-    title: "Un Año Memorable: Apertura, Clausura y Final del Año",
+    title: "Campeón Clausura y Final del Año",
     image: img2018,
-    photoCaption: "Equipo Campeón 2018: Apertura, Clausura y Final del Año.",
+    photoCaption: "Equipo Campeón 2018: Clausura y Final del Año.",
     description:
-      "Temporada histórica con tres títulos conquistados: Apertura, Clausura y Final del Año.",
-    fullText: `El 2018 fue uno de los años más gloriosos en la historia de 9 de Julio. El equipo conquistó tres títulos en diferentes categorías demostrando consistencia, calidad futbolística y capacidad competitiva durante toda la temporada. Desde el Torneo Apertura hasta la Final del Año, el equipo mantuvo un nivel excepcional que lo posicionó como potencia regional indiscutible.`,
+      "Una temporada de gran protagonismo: llegamos a semifinales del Apertura y nos coronamos en el Clausura y la Final del Año.",
+    fullText: `El 2018 consolidó a 9 de Julio como el equipo más fuerte de la región. Tras una gran campaña en el Apertura donde se alcanzó la semifinal, el equipo de Néstor Perussia no se detuvo y conquistó el Torneo Clausura y la Final del Año. Fue una demostración de consistencia, calidad futbolística y entrega, logrando dos títulos de máxima relevancia en una misma temporada.`,
     stats: { pj: 44, pg: 27, pe: 7, pp: 10, gf: 93, gc: 54 },
     tournaments: {
       apertura: {
         title: "Torneo Apertura 2018",
-        description: "Primera coronación de la temporada",
+        description: "Semifinalista",
         stats: { pj: 15, pg: 7, pe: 3, pp: 5, gf: 23, gc: 19 },
       },
       clausura: {
@@ -1525,6 +1525,7 @@ export const championships = [
       { name: "M. Gruchi", pos: "Suplente" },
       { name: "M. Asencio", pos: "Suplente" },
       { name: "J. Sayago", pos: "Suplente" },
+      { name: "Nestor Perussia", pos: "DT" },
     ],
   },
 

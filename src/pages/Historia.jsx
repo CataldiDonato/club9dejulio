@@ -518,6 +518,14 @@ const Historia = () => {
                   Final vs Huracán (Los Quirquinchos): 3-0 global.
                 </p>
               </div>
+              <div className="border-l-4 border-yellow-500 pl-6">
+                <h3 className="text-2xl font-bold text-yellow-600 mb-2">
+                  2018 - Clausura y Final del Año 🏆
+                </h3>
+                <p className="text-gray-700">
+                  Bajo la conducción de <strong>Néstor Perussia</strong>, el club obtuvo el Torneo Clausura y la Final del Año. En el Torneo Apertura, el equipo tuvo una gran actuación llegando hasta las semifinales.
+                </p>
+              </div>
               <div className="border-l-4 border-gray-400 pl-6">
                 <h3 className="text-2xl font-bold text-gray-600 mb-2">
                   2024 - Subcampeón 🥈
@@ -639,7 +647,11 @@ const Historia = () => {
               </div>
               <div className="bg-white p-3 rounded shadow">
                 <p className="font-bold">Carlos René Montot</p>
-                <p className="text-gray-600">2011/2025</p>
+                <p className="text-gray-600">2011/2024</p>
+              </div>
+              <div className="bg-white p-3 rounded shadow">
+                <p className="font-bold">Mauro Riva</p>
+                <p className="text-gray-600">2025/Actualidad</p>
               </div>
             </div>
           </div>

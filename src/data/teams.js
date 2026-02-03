@@ -10,5 +10,7 @@ export const TEAMS = [
     'Federacion',
     'Godeken',
     'Huracan',
-    'Independiente'
+    'Independiente',
+    'Unión de Cruz Alta',
+    'Defensores de Armstrong'
 ];

@@ -16,7 +16,9 @@ const TEAMS = [
   'Federacion',
   'Godeken',
   'Huracan',
-  'Independiente'
+  'Independiente',
+  'Defensores de Armstrong',
+  'Unión de Cruz Alta'
 ];
 const multer = require("multer");
 const bcrypt = require("bcryptjs");
@@ -850,17 +852,36 @@ app.get("/api/socios/:id?", authenticateToken, async (req, res) => {
 // Prode
 app.get("/api/matches", authenticateToken, async (req, res) => {
   try {
-    const { season } = req.query;
+    const { season, admin } = req.query;
     let query = "SELECT * FROM matches";
     const params = [];
+    const whereFlags = [];
+
     if (season) {
-      query += " WHERE season = $1";
+      whereFlags.push(`season = $${params.length + 1}`);
       params.push(season);
     }
+
+    // Default: only show visible matches unless explicitly asking for admin view (and being admin)
+    if (admin === 'true') {
+      const userResult = await pool.query("SELECT rol FROM socios WHERE id = $1", [req.user.id]);
+      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin") {
+        whereFlags.push("visible = TRUE");
+      }
+      // If admin, don't filter by visible
+    } else {
+      whereFlags.push("visible = TRUE");
+    }
+
+    if (whereFlags.length > 0) {
+      query += " WHERE " + whereFlags.join(" AND ");
+    }
+
     query += " ORDER BY start_time ASC";
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Error fetching matches" });
   }
 });
@@ -885,15 +906,16 @@ app.post("/api/matches", authenticateToken, async (req, res) => {
     );
     if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
       return res.status(403).json({ error: "Acceso denegado." });
-    const { home_team, away_team, start_time, matchday, season } = req.body;
+    const { home_team, away_team, start_time, matchday, season, visible } = req.body;
     const newMatch = await pool.query(
-      "INSERT INTO matches (home_team, away_team, start_time, matchday, season) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      "INSERT INTO matches (home_team, away_team, start_time, matchday, season, visible) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
       [
         home_team,
         away_team,
         start_time,
         matchday,
         season || new Date().getFullYear().toString(),
+        visible !== undefined ? visible : true
       ]
     );
     res.json(newMatch.rows[0]);
@@ -946,7 +968,7 @@ app.put("/api/matches/:id", authenticateToken, async (req, res) => {
       return res.status(403).json({ error: "Acceso denegado." });
 
     const { id } = req.params;
-    const { home_team, away_team, start_time, matchday, season } = req.body;
+    const { home_team, away_team, start_time, matchday, season, visible } = req.body;
 
     // Validaciones básicas
     if (!home_team || !away_team || !start_time || !matchday) {
@@ -954,13 +976,14 @@ app.put("/api/matches/:id", authenticateToken, async (req, res) => {
     }
 
     const result = await pool.query(
-      "UPDATE matches SET home_team = $1, away_team = $2, start_time = $3, matchday = $4, season = $5 WHERE id = $6 RETURNING *",
+      "UPDATE matches SET home_team = $1, away_team = $2, start_time = $3, matchday = $4, season = $5, visible = $6 WHERE id = $7 RETURNING *",
       [
         home_team,
         away_team,
         start_time,
         matchday,
         season || new Date().getFullYear().toString(),
+        visible !== undefined ? visible : true,
         id,
       ]
     );
@@ -973,6 +996,34 @@ app.put("/api/matches/:id", authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error al editar el partido" });
+  }
+});
+
+app.put("/api/matches/:id/visibility", authenticateToken, async (req, res) => {
+  try {
+    const userResult = await pool.query(
+      "SELECT rol FROM socios WHERE id = $1",
+      [req.user.id]
+    );
+    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      return res.status(403).json({ error: "Acceso denegado." });
+
+    const { id } = req.params;
+    const { visible } = req.body;
+
+    const result = await pool.query(
+      "UPDATE matches SET visible = $1 WHERE id = $2 RETURNING *",
+      [visible, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Partido no encontrado" });
+    }
+
+    res.json({ success: true, match: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al cambiar visibilidad" });
   }
 });
 
@@ -1576,8 +1627,14 @@ const initDb = async () => {
         matchday INTEGER,
         season VARCHAR(20),
         home_score INTEGER,
-        away_score INTEGER
+        away_score INTEGER,
+        visible BOOLEAN DEFAULT TRUE
       );
+    `);
+
+    // Add column if it doesn't exist (for existing tables)
+    await pool.query(`
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;
     `);
 
     // 8. Predictions (Prode)

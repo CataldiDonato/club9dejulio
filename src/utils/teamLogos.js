@@ -12,6 +12,8 @@ import federacion from '../images/clubes/Federacion.jpg';
 import godeken from '../images/clubes/Godeken.jpg';
 import huracan from '../images/clubes/Huracan.jpg';
 import independiente from '../images/clubes/Independiente.jpg';
+import defensores from '../images/clubes/clubdeportivodefensores.jpg';
+import union from '../images/clubes/union.jpg';
 
 // Default placeholder if needed
 // const placeholder = ...
@@ -29,6 +31,8 @@ const LOGO_MAP = {
     'Godeken': godeken,
     'Huracan': huracan,
     'Independiente': independiente,
+    'Defensores de Armstrong': defensores,
+    'Unión de Cruz Alta': union,
 };
 
 /**

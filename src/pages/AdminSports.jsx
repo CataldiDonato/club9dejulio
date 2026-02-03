@@ -77,12 +77,12 @@ const AdminSports = () => {
         });
 
         if (res.ok) {
-            setMessage(isEditing ? 'Deporte actualizado!' : 'Deporte agregado correctamente!');
+            setMessage(isEditing ? 'Actividad actualizada!' : 'Actividad agregada correctamente!');
             cancelEdit();
             fetchSports();
             setTimeout(() => setMessage(''), 3000);
         } else {
-            setMessage('Error al procesar el deporte');
+            setMessage('Error al procesar la actividad');
         }
     };
 
@@ -119,14 +119,14 @@ const AdminSports = () => {
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal({ isOpen: false, id: null })}
                 onConfirm={handleDelete}
-                title="Eliminar Deporte"
-                message="¿Estás seguro de que querés eliminar este deporte? Esta acción no se puede deshacer."
+                title="Eliminar Actividad"
+                message="¿Estás seguro de que querés eliminar esta actividad? Esta acción no se puede deshacer."
                 confirmText="Eliminar"
                 isDestructive={true}
             />
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <h2 className="text-3xl font-black uppercase text-club-dark">Administrar Deportes</h2>
+                <h2 className="text-3xl font-black uppercase text-club-dark">Administrar Actividades</h2>
                 <button onClick={() => window.location.href='/socios'} className="bg-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-300 uppercase text-sm transition-colors">Volver</button>
             </div>
             
@@ -135,7 +135,7 @@ const AdminSports = () => {
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-xl border border-gray-100 mb-12">
                 <div className="flex justify-between items-center mb-6 border-b pb-2">
                     <h3 className="text-2xl font-black uppercase text-gray-800">
-                        {isEditing ? 'Editar Deporte' : 'Nuevo Deporte'}
+                        {isEditing ? 'Editar Actividad' : 'Nueva Actividad'}
                     </h3>
                     {isEditing && (
                         <button type="button" onClick={cancelEdit} className="text-red-500 hover:text-red-700 flex items-center gap-1 font-bold text-sm uppercase">
@@ -146,7 +146,7 @@ const AdminSports = () => {
 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase text-club-red">Nombre del Deporte</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-1 uppercase text-club-red">Nombre de la Actividad</label>
                         <input className="w-full border-2 p-3 rounded-lg focus:border-black outline-none transition-colors" placeholder="ej: Fútbol, Padel..." value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} required />
                     </div>
 
@@ -175,12 +175,12 @@ const AdminSports = () => {
 
                     <button type="submit" className={`w-full flex justify-center items-center gap-2 text-white px-6 py-4 rounded-lg font-black uppercase text-lg shadow-lg transition-all transform hover:scale-[1.02] ${isEditing ? 'bg-gray-800' : 'bg-black hover:bg-gray-800'}`}>
                         {isEditing ? <Edit size={20} /> : <Plus size={20} />}
-                        {isEditing ? 'Guardar Cambios' : 'Agregar Deporte'}
+                        {isEditing ? 'Guardar Cambios' : 'Agregar Actividad'}
                     </button>
                 </div>
             </form>
 
-            <h3 className="text-2xl font-black uppercase mb-6 text-gray-800 border-l-4 border-black pl-3">Deportes Activos</h3>
+            <h3 className="text-2xl font-black uppercase mb-6 text-gray-800 border-l-4 border-black pl-3">Actividades Activas</h3>
             <div className="grid gap-4">
                 {sports.map(s => (
                     <div key={s.id} className="group flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all gap-4">

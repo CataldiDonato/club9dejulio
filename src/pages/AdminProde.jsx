@@ -11,6 +11,7 @@ const AdminProde = () => {
     away_team: TEAMS[1],
     start_time: "",
     matchday: "Fecha 1",
+    visible: true,
   });
 
   // Modal State
@@ -22,6 +23,7 @@ const AdminProde = () => {
     start_time: "",
     matchday: "Fecha 1",
     season: new Date().getFullYear(),
+    visible: true,
   });
 
   // Auth check should be here or handled by a higher-level component/router, but basic check:
@@ -29,7 +31,7 @@ const AdminProde = () => {
 
   const fetchMatches = async () => {
     try {
-      const res = await fetch(`${API_URL}/matches`, {
+      const res = await fetch(`${API_URL}/matches?admin=true`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.status === 401 || res.status === 403) {
@@ -101,6 +103,7 @@ const AdminProde = () => {
       start_time: match.start_time,
       matchday: match.matchday,
       season: match.season || new Date().getFullYear(),
+      visible: match.visible !== undefined ? match.visible : true,
     });
   };
 
@@ -200,6 +203,28 @@ const AdminProde = () => {
         fetchMatches();
       } else {
         alert("Error al eliminar el partido");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión");
+    }
+  };
+
+  const handleToggleVisibility = async (matchId, currentVisible) => {
+    try {
+      const res = await fetch(`${API_URL}/matches/${matchId}/visibility`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ visible: !currentVisible }),
+      });
+
+      if (res.ok) {
+        fetchMatches();
+      } else {
+        alert("Error al cambiar visibilidad");
       }
     } catch (err) {
       console.error(err);
@@ -331,9 +356,21 @@ const AdminProde = () => {
               className="w-full border p-2 rounded"
             />
           </div>
+          <div className="flex items-center gap-2 pb-3">
+            <input
+              type="checkbox"
+              id="visible"
+              name="visible"
+              checked={formData.visible}
+              onChange={(e) => setFormData({ ...formData, visible: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <label htmlFor="visible" className="text-sm font-bold">Visible para usuarios</label>
+          </div>
+          <div></div> 
           <button
             type="submit"
-            className="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700"
+            className="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 w-full"
           >
             Crear Partido
           </button>
@@ -355,6 +392,7 @@ const AdminProde = () => {
                   <th className="px-4 py-2 text-left">Jornada</th>
                   <th className="px-4 py-2 text-left">Fecha</th>
                   <th className="px-4 py-2 text-left">Estado</th>
+                  <th className="px-4 py-2 text-left">Visible</th>
                   <th className="px-4 py-2 text-left">Resultado</th>
                   <th className="px-4 py-2 text-left">Acciones</th>
                 </tr>
@@ -384,6 +422,19 @@ const AdminProde = () => {
                       >
                         {m.status === "finished" ? "Finalizado" : "Programado"}
                       </span>
+                    </td>
+                    <td className="px-4 py-2">
+                       <button
+                         onClick={() => handleToggleVisibility(m.id, m.visible)}
+                         className={`px-2 py-1 rounded text-xs font-bold transition-colors ${
+                           m.visible 
+                             ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' 
+                             : 'bg-red-100 text-red-800 hover:bg-red-200'
+                         }`}
+                         title="Click para cambiar visibilidad"
+                       >
+                        {m.visible ? 'SÍ' : 'NO'}
+                       </button>
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">
                       {m.status === "finished" ? (
@@ -548,6 +599,16 @@ const AdminProde = () => {
                   min="2024"
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
                 />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="edit_visible"
+                  checked={editFormData.visible}
+                  onChange={(e) => setEditFormData({ ...editFormData, visible: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <label htmlFor="edit_visible" className="text-sm font-bold">Visible para usuarios</label>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button

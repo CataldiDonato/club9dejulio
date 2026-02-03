@@ -567,7 +567,7 @@ const Socios = () => {
                         onClick={() => (window.location.href = "/admin/sports")}
                         className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                       >
-                        <span>Deportes</span>
+                        <span>Actividades</span>
                       </button>
                       <button
                         onClick={() => (window.location.href = "/admin/news")}

@@ -29,7 +29,7 @@ function App() {
             <Route path="/historia" element={<Historia />} />
             <Route path="/noticias" element={<Noticias />} />
             <Route path="/noticias/:id" element={<NewsDetail />} />
-            <Route path="/deportes" element={<Deportes />} />
+            <Route path="/actividades" element={<Deportes />} />
             <Route path="/instalaciones" element={<Instalaciones />} />
             <Route path="/galeria" element={<Galeria />} />
             <Route path="/socios" element={<Socios />} />
