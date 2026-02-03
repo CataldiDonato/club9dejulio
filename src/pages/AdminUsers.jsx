@@ -138,6 +138,7 @@ const AdminUsers = () => {
     };
 
     const [editingNroSocio, setEditingNroSocio] = useState({ userId: null, value: '' });
+    const [editingRole, setEditingRole] = useState({ userId: null, value: '' });
 
     const handleUpdateNroSocio = async (userId) => {
         const token = localStorage.getItem('token');
@@ -157,6 +158,35 @@ const AdminUsers = () => {
                 fetchUsers();
             } else {
                 alert(data.error || 'Error al actualizar');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión');
+        }
+    };
+
+    const handleUpdateRole = async (userId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/admin/users/${userId}/role`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ role: editingRole.value })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                setEditingRole({ userId: null, value: '' });
+                fetchUsers();
+                if (userId === JSON.parse(atob(token.split('.')[1])).id) {
+                     alert("Has cambiado tu propio rol. Por favor inicia sesión nuevamente.");
+                     window.location.reload();
+                }
+            } else {
+                alert(data.error || 'Error al actualizar rol');
             }
         } catch (err) {
             console.error(err);
@@ -469,7 +499,33 @@ const AdminUsers = () => {
                                                             {user.account_status === 'approved' ? 'ACTIVO' : user.account_status}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-500 uppercase">{user.rol}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-500 uppercase">
+                                                        {editingRole.userId === user.id ? (
+                                                             <div className="flex items-center gap-1">
+                                                                 <select
+                                                                     className="border rounded px-2 py-1 text-sm outline-none focus:border-black"
+                                                                     value={editingRole.value}
+                                                                     onChange={(e) => setEditingRole({ ...editingRole, value: e.target.value })}
+                                                                 >
+                                                                     <option value="user">USER</option>
+                                                                     <option value="representante">REPRESENTANTE</option>
+                                                                     <option value="admin">ADMIN</option>
+                                                                 </select>
+                                                                 <button onClick={() => handleUpdateRole(user.id)} className="bg-black text-white px-2 py-1 rounded text-xs font-bold transition-colors">OK</button>
+                                                                 <button onClick={() => setEditingRole({ userId: null, value: '' })} className="bg-gray-200 text-gray-600 px-2 py-1 rounded text-xs font-bold transition-colors">X</button>
+                                                             </div>
+                                                        ) : (
+                                                            <div className="flex items-center gap-2 group">
+                                                                <span>{user.rol}</span>
+                                                                <button 
+                                                                    onClick={() => setEditingRole({ userId: user.id, value: user.rol })}
+                                                                    className="opacity-0 group-hover:opacity-100 text-black text-[10px] font-black hover:underline transition-opacity"
+                                                                >
+                                                                    EDITAR
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                         {user.rol !== 'admin' && ( 
                                                             <div className="flex gap-2 justify-end">

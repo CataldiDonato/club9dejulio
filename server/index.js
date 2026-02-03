@@ -205,6 +205,9 @@ app.get("/api/noticias/:id", async (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// POST /api/noticias
+// -----------------------------------------------------------------------------
 app.post(
   "/api/noticias",
   authenticateToken,
@@ -215,7 +218,10 @@ app.post(
         "SELECT rol FROM socios WHERE id = $1",
         [req.user.id]
       );
-      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      if (
+        userResult.rows.length === 0 ||
+        (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+      )
         return res.status(403).json({ error: "Acceso denegado." });
       const { titulo, bajad, contenido, fecha } = req.body;
 
@@ -264,13 +270,19 @@ app.post(
   }
 );
 
+// -----------------------------------------------------------------------------
+// DELETE /api/noticias/:id
+// -----------------------------------------------------------------------------
 app.delete("/api/noticias/:id", authenticateToken, async (req, res) => {
   try {
     const userResult = await pool.query(
       "SELECT rol FROM socios WHERE id = $1",
       [req.user.id]
     );
-    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+    if (
+      userResult.rows.length === 0 ||
+      (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+    )
       return res.status(403).json({ error: "Acceso denegado." });
     const { id } = req.params;
     await pool.query("DELETE FROM noticias WHERE id = $1", [id]);
@@ -281,6 +293,9 @@ app.delete("/api/noticias/:id", authenticateToken, async (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// PUT /api/noticias/:id
+// -----------------------------------------------------------------------------
 app.put(
   "/api/noticias/:id",
   authenticateToken,
@@ -291,7 +306,10 @@ app.put(
         "SELECT rol FROM socios WHERE id = $1",
         [req.user.id]
       );
-      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      if (
+        userResult.rows.length === 0 ||
+        (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+      )
         return res.status(403).json({ error: "Acceso denegado." });
 
       const { id } = req.params;
@@ -400,7 +418,10 @@ app.post(
         "SELECT rol FROM socios WHERE id = $1",
         [req.user.id]
       );
-      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      if (
+        userResult.rows.length === 0 ||
+        (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+      )
         return res.status(403).json({ error: "Acceso denegado." });
 
       const { titulo, fecha } = req.body;
@@ -451,7 +472,10 @@ app.delete("/api/galeria/:id", authenticateToken, async (req, res) => {
       "SELECT rol FROM socios WHERE id = $1",
       [req.user.id]
     );
-    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+    if (
+      userResult.rows.length === 0 ||
+      (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+    )
       return res.status(403).json({ error: "Acceso denegado." });
 
     const { id } = req.params;
@@ -486,7 +510,10 @@ app.post(
         "SELECT rol FROM socios WHERE id = $1",
         [req.user.id]
       );
-      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      if (
+        userResult.rows.length === 0 ||
+        (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+      )
         return res.status(403).json({ error: "Acceso denegado." });
       const { nombre, dia_horario, profesor, descripcion } = req.body;
       let imagen_url = req.body.imagen_url;
@@ -521,7 +548,10 @@ app.delete("/api/deportes/:id", authenticateToken, async (req, res) => {
       "SELECT rol FROM socios WHERE id = $1",
       [req.user.id]
     );
-    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+    if (
+      userResult.rows.length === 0 ||
+      (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+    )
       return res.status(403).json({ error: "Acceso denegado." });
     const { id } = req.params;
     await pool.query("DELETE FROM deportes WHERE id = $1", [id]);
@@ -542,7 +572,10 @@ app.put(
         "SELECT rol FROM socios WHERE id = $1",
         [req.user.id]
       );
-      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      if (
+        userResult.rows.length === 0 ||
+        (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante")
+      )
         return res.status(403).json({ error: "Acceso denegado." });
 
       const { id } = req.params;
@@ -822,6 +855,46 @@ app.put(
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Error updating password" });
+    }
+  }
+);
+
+app.put(
+  "/api/admin/users/:id/role",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userResult = await pool.query(
+        "SELECT rol FROM socios WHERE id = $1",
+        [req.user.id]
+      );
+      if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+        return res.status(403).json({ error: "Acceso denegado." });
+
+      const { id } = req.params;
+      const { role } = req.body;
+
+      // Validate role
+      if (!['user', 'admin', 'representante'].includes(role)) {
+        return res.status(400).json({ error: "Rol inválido" });
+      }
+
+      const result = await pool.query(
+        "UPDATE socios SET rol = $1 WHERE id = $2 RETURNING *",
+        [role, id]
+      );
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      const updatedUser = result.rows[0];
+      delete updatedUser.password;
+
+      res.json({ success: true, user: updatedUser });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error updating role" });
     }
   }
 );

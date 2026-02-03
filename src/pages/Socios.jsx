@@ -548,8 +548,8 @@ const Socios = () => {
                 </div>
               </div>
 
-              {/* Columna Derecha: Sidebar Admin */}
-              {userData.rol === "admin" && (
+              {/* Columna Derecha: Sidebar Admin / Representante */}
+              {(userData.rol === "admin" || userData.rol === "representante") && (
                 <div className="flex flex-col h-full">
                   <div className="bg-black rounded-xl p-6 border border-gray-800 shadow-xl sticky top-8">
                     <h4 className="font-bold text-white mb-6 uppercase flex items-center gap-2 border-b border-gray-800 pb-4">
@@ -557,50 +557,65 @@ const Socios = () => {
                       Administración
                     </h4>
                     <div className="space-y-3">
-                      <button
-                        onClick={() => (window.location.href = "/admin/users")}
-                        className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
-                      >
-                        <UserCheck
-                          size={18}
-                          className="group-hover:text-yellow-400 transition-colors"
-                        />{" "}
-                        <span>Usuarios</span>
-                      </button>
+                      {userData.rol === "admin" && (
+                        <button
+                          onClick={() => (window.location.href = "/admin/users")}
+                          className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
+                        >
+                          <UserCheck
+                            size={18}
+                            className="group-hover:text-yellow-400 transition-colors"
+                          />{" "}
+                          <span>Usuarios</span>
+                        </button>
+                      )}
+                      
                       <button
                         onClick={() => (window.location.href = "/admin/sports")}
                         className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                       >
+                         <div className="w-[18px]" /> {/* Spacer/Icon placeholder if needed to align with Users icon */}
                         <span>Actividades</span>
                       </button>
+                      
                       <button
                         onClick={() => (window.location.href = "/admin/news")}
                         className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                       >
+                         <div className="w-[18px]" />
                         <span>Noticias</span>
                       </button>
+                      
                       <button
                         onClick={() =>
                           (window.location.href = "/admin/galeria")
                         }
                         className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                       >
+                         <div className="w-[18px]" />
                         <span>Galería</span>
                       </button>
-                      <button
-                        onClick={() => (window.location.href = "/admin/prode")}
-                        className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
-                      >
-                        <span>Prode</span>
-                      </button>
-                      <button
-                        onClick={() =>
-                          (window.location.href = "/admin/sponsors")
-                        }
-                        className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
-                      >
-                        <span>Publicidad</span>
-                      </button>
+
+                      {userData.rol === "admin" && (
+                        <>
+                          <button
+                            onClick={() => (window.location.href = "/admin/prode")}
+                            className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
+                          >
+                             <div className="w-[18px]" />
+                            <span>Prode</span>
+                          </button>
+                          <button
+                            onClick={() =>
+                              (window.location.href = "/admin/sponsors")
+                            }
+                            className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
+                          >
+                             <div className="w-[18px]" />
+                            <span>Publicidad</span>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
