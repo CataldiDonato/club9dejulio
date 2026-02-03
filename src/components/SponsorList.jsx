@@ -3,42 +3,33 @@ import { API_URL } from '../config';
 
 const SponsorList = ({ location = 'footer', className = '', isSidebar = false }) => {
     const [sponsors, setSponsors] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
-
-    useEffect(() => {
-        const handleResize = () => setIsDesktop(window.innerWidth >= 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     useEffect(() => {
         fetch(`${API_URL}/sponsors`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
+                    // Filter active sponsors
                     let filtered = data.filter(s => s.activo !== false);
 
-                    // If 'prode' is requested but no sponsors found, fallback to 'home'
-                    let locationSponsors = filtered.filter(s => s.ubicacion === location);
-                    if (locationSponsors.length === 0 && location === 'prode') {
-                        locationSponsors = filtered.filter(s => s.ubicacion === 'home');
+                    if (isSidebar) {
+                       // Sidebar still uses specific filtering or just random distinct ones
+                       // Let's grab random 5
+                       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+                       setSponsors(shuffled.slice(0, 5));
+                    } else {
+                       // For footer and home carousel, we want ALL sponsors to show support
+                       // Just shuffle them so it's not always same order
+                       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+                       setSponsors(shuffled);
                     }
-
-                    // Shuffle logic
-                    const shuffled = [...locationSponsors].sort(() => 0.5 - Math.random());
-                    
-                    // Limit logic: In sidebar show only 5, otherwise keep all (for carousels)
-                    const finalSponsors = isSidebar ? shuffled.slice(0, 5) : locationSponsors;
-
-                    setSponsors(finalSponsors);
                 } else {
                     console.error('Data is not an array:', data);
                     setSponsors([]);
                 }
             })
             .catch(err => console.error('Error fetching sponsors:', err));
-    }, [location]);
+    }, [isSidebar]);
 
     const handleSponsorClick = async (id) => {
         try {
@@ -48,166 +39,87 @@ const SponsorList = ({ location = 'footer', className = '', isSidebar = false })
         }
     };
 
-    // Carousel Auto-slide logic
-    useEffect(() => {
-        if (sponsors.length === 0 || location === 'footer') return;
-
-        // Desktop: show 3, Mobile: show 1
-        // We move 1 item at a time for smooth scrolling
-        const interval = setInterval(() => {
-            setCurrentIndex(prev => (prev + 1) % sponsors.length);
-        }, 3000); // 3 seconds
-
-        return () => clearInterval(interval);
-    }, [sponsors.length, location]);
-
-    const nextSlide = () => {
-        setCurrentIndex(prev => (prev + 1) % sponsors.length);
-    };
-
-    const prevSlide = () => {
-        setCurrentIndex(prev => (prev - 1 + sponsors.length) % sponsors.length);
-    };
-
     if (sponsors.length === 0) return null;
 
-    if (location === 'footer') {
+    // --- SIDEBAR VIEW (Vertical Stack) ---
+    if (isSidebar) {
         return (
-            <div className={`py-8 bg-gray-50 border-t border-b overflow-hidden ${className}`}>
-                <div className="max-w-7xl mx-auto px-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 text-center">Nuestros Sponsors Institucionales</p>
-                    <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-                        {sponsors.map(sponsor => (
-                            <a 
-                                key={sponsor.id} 
-                                href={sponsor.link || '#'} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                onClick={() => handleSponsorClick(sponsor.id)}
-                                className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500"
-                            >
-                                <img 
-                                    src={`${API_URL}${sponsor.imagen_url}`} 
-                                    alt={sponsor.nombre} 
-                                    className="h-8 md:h-12 w-auto object-contain"
-                                />
-                            </a>
-                        ))}
-                    </div>
-                </div>
+            <div className={`space-y-4 ${className}`}>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 px-2">Publicidad</p>
+                {sponsors.map(sponsor => (
+                    <a 
+                        key={sponsor.id} 
+                        href={sponsor.link || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => handleSponsorClick(sponsor.id)}
+                        className="block group relative overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                    >
+                        <div className="aspect-[4/3] overflow-hidden bg-white p-4 flex items-center justify-center">
+                            <img 
+                                src={`${API_URL}${sponsor.imagen_url}`} 
+                                alt={sponsor.nombre} 
+                                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                            />
+                        </div>
+                        <div className="absolute top-2 right-2 bg-black/5 backdrop-blur-sm text-[8px] font-black uppercase px-2 py-0.5 rounded-full text-black/20">
+                            Ad
+                        </div>
+                    </a>
+                ))}
             </div>
         );
     }
 
-    if (location === 'home' || location === 'prode') {
-        const visibleItems = 3; // For Desktop logic mainly
-        
-        if (isSidebar) {
-            return (
-                <div className={`space-y-4 ${className}`}>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 px-2">Publicidad</p>
-                    {sponsors.slice(0, 4).map(sponsor => (
+    // --- MARQUEE VIEW (Footer & Home) ---
+    // We duplicate the array to ensure smooth infinity loop visual
+    const marqueeSponsors = [...sponsors, ...sponsors, ...sponsors]; // Triple it for safety on wide screens
+
+    return (
+        <div className={`w-full overflow-hidden bg-white border-y border-gray-100 py-6 ${className}`}>
+            <div className="relative w-full">
+                <div 
+                    className="flex items-center gap-12 animate-marquee whitespace-nowrap"
+                    style={{ animationDuration: `${sponsors.length * 5}s` }} // Adjust speed based on count
+                >
+                    {marqueeSponsors.map((sponsor, index) => (
                         <a 
-                            key={sponsor.id} 
-                            href={sponsor.link || '#'}
-                            target="_blank"
+                            key={`${sponsor.id}-${index}`} 
+                            href={sponsor.link || '#'} 
+                            target="_blank" 
                             rel="noopener noreferrer"
                             onClick={() => handleSponsorClick(sponsor.id)}
-                            className="block group relative overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 transition-all hover:shadow-md"
+                            className="inline-block flex-shrink-0 group grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
                         >
-                            <div className="aspect-[2/3] md:aspect-[1/2] overflow-hidden bg-gray-50">
+                            <div className="h-16 md:h-20 w-auto px-4 flex items-center justify-center bg-white rounded-lg">
                                 <img 
                                     src={`${API_URL}${sponsor.imagen_url}`} 
                                     alt={sponsor.nombre} 
-                                    className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                                    className="h-full w-auto max-w-[200px] object-contain"
                                 />
-                            </div>
-                            <div className="absolute top-2 right-2 bg-black/5 backdrop-blur-sm text-[8px] font-black uppercase px-2 py-0.5 rounded-full text-black/20">
-                                Ad
                             </div>
                         </a>
                     ))}
                 </div>
-            );
-        }
-
-        return (
-            <div className={`my-8 relative group ${className}`}>
-                 {/* Carousel Container */}
-                <div className="overflow-hidden w-full relative">
-                    <div 
-                        className="flex transition-transform duration-700 ease-in-out"
-                        style={{ 
-                            // Mobile: 100% width per item, translate 100% per index
-                            // Desktop: 33.33% width per item, translate 33.33% per index
-                            // We use a CSS variable or media query logic implicitly via tailwind classes if possible, 
-                            // but for transform we need specific calculations.
-                            // Let's rely on standard Tailwind Responsive values implies we might need JS matchMedia or just accept standard behavior.
-                            // Simple approach: Always translate by percentage * index.
-                            // To handle responsive 'width' cleanly in transform:
-                            // We will simply render items with strictly defined widths: w-full (mobile) vs w-1/3 (desktop).
-                            // And the translateX will be -100% * currentIndex (mobile) or -33.33% * currentIndex (desktop).
-                            transform: `translateX(-${currentIndex * (isSidebar ? 100 : (isDesktop ? 33.33 : 100))}%)` 
-                        }}
-                    >
-                         {/* 
-                            NOTE: For a true infinite loop we'd need duplicated items. 
-                            For simple carousel we just slide to end and jump back.
-                         */}
-                        {sponsors.map(sponsor => (
-                            <div 
-                                key={sponsor.id} 
-                                className={`${isSidebar ? 'w-full' : 'w-full md:w-1/3'} flex-shrink-0 px-2`}
-                            >
-                                <a 
-                                    href={sponsor.link || '#'}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={() => handleSponsorClick(sponsor.id)}
-                                    className="block relative overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all hover:shadow-xl hover:-translate-y-1"
-                                >
-                                    <div className="aspect-[21/9] md:aspect-[21/9] overflow-hidden">
-                                        <img 
-                                            src={`${API_URL}${sponsor.imagen_url}`} 
-                                            alt={sponsor.nombre} 
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div className="absolute top-2 right-2 bg-black/10 backdrop-blur-sm text-[8px] font-black uppercase px-2 py-0.5 rounded-full text-white/50">
-                                        Publicidad
-                                    </div>
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Controls - Hidden on mobile usually, or small overlays */}
-                {sponsors.length > 1 && (
-                    <>
-                        <button 
-                            onClick={prevSlide}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 -ml-3 md:ml-0 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                            </svg>
-                        </button>
-                        <button 
-                            onClick={nextSlide}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 -mr-3 md:mr-0 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                        >
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-                    </>
-                )}
             </div>
-        );
-    }
-
-    return null;
+            {/* Add global style specifically for this animation if needed, or assume tailwind config. 
+                Since we can't easily edit tailwind config, we inject style here or rely on standard if available.
+                Standard tailwind doesn't have 'animate-marquee'. We'll inject a style tag.
+            */}
+            <style>{`
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); } 
+                }
+                .animate-marquee {
+                    animation: marquee linear infinite;
+                }
+                .animate-marquee:hover {
+                    animation-play-state: paused;
+                }
+            `}</style>
+        </div>
+    );
 };
 
 export default SponsorList;
