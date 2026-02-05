@@ -270,6 +270,8 @@ app.post(
   }
 );
 
+
+
 // -----------------------------------------------------------------------------
 // DELETE /api/noticias/:id
 // -----------------------------------------------------------------------------
@@ -653,8 +655,8 @@ app.put(
         }
       }
       const result = await pool.query(
-        "UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3, fecha_nacimiento = COALESCE($5, fecha_nacimiento), nro_socio = $6 WHERE id = $4 RETURNING *",
-        [telefono, email, foto_perfil, userId, fecha_nacimiento, finalNroSocio]
+        "UPDATE socios SET telefono = $1, email = $2, foto_perfil = $3, fecha_nacimiento = COALESCE($5, fecha_nacimiento), nro_socio = $6, nombre = COALESCE($7, nombre), apellido = COALESCE($8, apellido) WHERE id = $4 RETURNING *",
+        [telefono, email, foto_perfil, userId, fecha_nacimiento, finalNroSocio, req.body.nombre, req.body.apellido]
       );
       if (result.rows.length === 0)
         return res.status(404).json({ error: "Usuario no encontrado" });
@@ -956,6 +958,52 @@ app.get("/api/matches", authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error fetching matches" });
+  }
+});
+
+app.get("/api/matches/stats", async (req, res) => {
+  try {
+    const { season } = req.query;
+    let seasonFilter = "";
+    const params = [];
+
+    if (season) {
+        seasonFilter = "WHERE m.season = $1";
+        params.push(season);
+    }
+
+    const query = `
+      SELECT 
+        p.match_id,
+        COUNT(*) as total_votes,
+        COUNT(CASE WHEN p.home_score > p.away_score THEN 1 END) as home_votes,
+        COUNT(CASE WHEN p.home_score < p.away_score THEN 1 END) as away_votes,
+        COUNT(CASE WHEN p.home_score = p.away_score THEN 1 END) as draw_votes
+      FROM predictions p
+      JOIN matches m ON p.match_id = m.id
+      ${seasonFilter}
+      GROUP BY p.match_id
+    `;
+
+    const result = await pool.query(query, params);
+    
+    const stats = {};
+    result.rows.forEach(row => {
+        const total = parseInt(row.total_votes);
+        if (total > 0) {
+            stats[row.match_id] = {
+                home_pct: Math.round((row.home_votes / total) * 100),
+                away_pct: Math.round((row.away_votes / total) * 100),
+                draw_pct: Math.round((row.draw_votes / total) * 100),
+                total
+            };
+        }
+    });
+
+    res.json(stats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error calculating stats" });
   }
 });
 

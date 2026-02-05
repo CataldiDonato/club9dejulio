@@ -192,6 +192,8 @@ const Socios = () => {
     email: "",
     fecha_nacimiento: "",
     nro_socio: "",
+    nombre: "",
+    apellido: "",
     foto_perfil: null, // File object or null
   });
 
@@ -221,6 +223,8 @@ const Socios = () => {
       email: userData.email || "",
       fecha_nacimiento: formattedDate,
       nro_socio: userData.nro_socio || "",
+      nombre: userData.nombre || "",
+      apellido: userData.apellido || "",
       foto_perfil: null,
     });
 
@@ -264,6 +268,8 @@ const Socios = () => {
     data.append("email", editData.email);
     data.append("fecha_nacimiento", editData.fecha_nacimiento);
     data.append("nro_socio", editData.nro_socio);
+    data.append("nombre", editData.nombre);
+    data.append("apellido", editData.apellido);
     if (editData.foto_perfil) {
       data.append("foto_perfil", editData.foto_perfil);
     }
@@ -666,6 +672,36 @@ const Socios = () => {
               {/* TAB 1: Datos Personales */}
               {activeTab === "datos" && (
                 <form onSubmit={handleUpdate} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        value={editData.nombre}
+                        onChange={(e) =>
+                          setEditData({ ...editData, nombre: e.target.value })
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
+                        placeholder="Juan"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Apellido
+                      </label>
+                      <input
+                        type="text"
+                        value={editData.apellido}
+                        onChange={(e) =>
+                          setEditData({ ...editData, apellido: e.target.value })
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
+                        placeholder="Pérez"
+                      />
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       Email

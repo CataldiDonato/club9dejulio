@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTeamLogo } from '../utils/teamLogos';
 
-const MatchCard = ({ match, prediction, onPredict }) => {
+const MatchCard = ({ match, prediction, stats, onPredict }) => {
     // ... existing hooks ...
     const [homeScore, setHomeScore] = useState(prediction?.home_score || '');
     const [awayScore, setAwayScore] = useState(prediction?.away_score || '');
@@ -46,6 +46,40 @@ const MatchCard = ({ match, prediction, onPredict }) => {
 
     const homeLogo = getTeamLogo(match.home_team);
     const awayLogo = getTeamLogo(match.away_team);
+
+    // Stats Color Logic
+    const getBarColor = (value, allValues) => {
+        const max = Math.max(...allValues);
+        const min = Math.min(...allValues);
+        
+        if (allValues.every(v => v === 0)) return 'bg-gray-200';
+        if (value === max) return 'bg-green-500';
+        if (value === min && value !== max) return 'bg-red-500'; // Only red if strictly min and not equal to max (e.g. all equal)
+        return 'bg-yellow-400'; // Intermediate
+    };
+
+    const renderStats = () => {
+        if (!stats || stats.total === 0) return null;
+        
+        const { home_pct, draw_pct, away_pct } = stats;
+        const values = [home_pct, draw_pct, away_pct];
+
+        return (
+            <div className="mt-4 pt-3 border-t border-gray-100 w-full">
+                <p className="text-[10px] text-gray-400 font-bold uppercase text-center mb-2">Tendencia de Votos ({stats.total})</p>
+                <div className="flex items-center gap-1 h-2 rounded-full overflow-hidden mb-1">
+                    <div className={`h-full ${getBarColor(home_pct, values)} transition-all`} style={{ width: `${home_pct}%` }}></div>
+                    <div className={`h-full ${getBarColor(draw_pct, values)} transition-all`} style={{ width: `${draw_pct}%` }}></div>
+                    <div className={`h-full ${getBarColor(away_pct, values)} transition-all`} style={{ width: `${away_pct}%` }}></div>
+                </div>
+                <div className="flex justify-between text-[10px] font-bold text-gray-500 px-1">
+                   <span className={home_pct === Math.max(...values) ? 'text-green-600' : ''}>{home_pct}% Local</span>
+                   <span className={draw_pct === Math.max(...values) ? 'text-green-600' : ''}>{draw_pct}% Empate</span>
+                   <span className={away_pct === Math.max(...values) ? 'text-green-600' : ''}>{away_pct}% Visita</span>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="bg-white shadow-md rounded-lg p-4 border border-gray-200 flex flex-col items-center">
@@ -147,6 +181,8 @@ const MatchCard = ({ match, prediction, onPredict }) => {
                     )}
                 </div>
             )}
+
+            {renderStats()}
         </div>
     );
 };

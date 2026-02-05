@@ -10,6 +10,7 @@ import { HelpCircle } from "lucide-react";
 const ProdeJugar = () => {
   const [matches, setMatches] = useState([]);
   const [myPredictions, setMyPredictions] = useState([]);
+  const [matchStats, setMatchStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -55,9 +56,20 @@ const ProdeJugar = () => {
           throw new Error("Error al cargar pronósticos");
         }
         const predsData = await predsRes.json();
+        
+        // 3. Get Stats
+        const statsRes = await fetch(`${API_URL}/matches/stats?season=${currentSeason}`);
+        const contentType = statsRes.headers.get("content-type");
+        let statsData = {};
+        if (statsRes.ok && contentType && contentType.includes("application/json")) {
+           statsData = await statsRes.json();
+        } else {
+           console.warn("API de Stats no disponible o respuesta inválida (¿Servidor reiniciado?)");
+        }
 
         setMatches(matchesData);
         setMyPredictions(predsData);
+        setMatchStats(statsData);
       } catch (err) {
         console.error(err);
         setError(err.message);
@@ -266,6 +278,7 @@ const ProdeJugar = () => {
                   key={match.id}
                   match={match}
                   prediction={myPredictions.find((p) => p.match_id === match.id)}
+                  stats={matchStats[match.id]}
                   onPredict={handlePredictRequest}
                 />
               ))}
@@ -284,6 +297,7 @@ const ProdeJugar = () => {
                     key={match.id}
                     match={match}
                     prediction={myPredictions.find((p) => p.match_id === match.id)}
+                    stats={matchStats[match.id]}
                     onPredict={handlePredictRequest}
                   />
                 ))}

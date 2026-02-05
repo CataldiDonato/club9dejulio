@@ -97,10 +97,19 @@ const AdminProde = () => {
 
   const requestEditMatch = (match) => {
     setEditingMatch(match);
+    let formattedDate = "";
+    if (match.start_time) {
+      const date = new Date(match.start_time);
+      // Adjust to local time format for the input: YYYY-MM-DDThh:mm
+      // We subtract timezone offset to get local time ISO string
+      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      formattedDate = localDate.toISOString().slice(0, 16);
+    }
+
     setEditFormData({
       home_team: match.home_team,
       away_team: match.away_team,
-      start_time: match.start_time,
+      start_time: formattedDate,
       matchday: match.matchday,
       season: match.season || new Date().getFullYear(),
       visible: match.visible !== undefined ? match.visible : true,
