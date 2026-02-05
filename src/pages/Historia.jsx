@@ -4,17 +4,17 @@ import ChampionshipModal from "../components/ChampionshipModal";
 import ImageViewer from "../components/ImageViewer";
 import { championships } from "../data/championships";
 import primerEquipo from "../images/historia/primerequipo.gif";
-import primerEquipoIA from "../images/historia/primerequipoIA.png";
+import primerEquipoIA from "../images/historia/primerequipoIA.webp";
 import ano1926 from "../images/historia/ano1926.gif";
-import ano1926IA from "../images/historia/ano1926IA.png";
-import comision1963 from "../images/historia/comision 1963.jpg";
-import comision1963IA from "../images/historia/comision 1963 IA.png";
-import festejo30 from "../images/historia/Festejo30.jpg";
-import festejo30IA from "../images/historia/Festejo30IA.png";
-import challenger from "../images/historia/Challenguer1.jpg";
-import challengerIA from "../images/historia/Challenguer1IA.png";
-import regional87 from "../images/historia/regional87.jpg";
-import regional87IA from "../images/historia/regional87IA.png";
+import ano1926IA from "../images/historia/ano1926IA.webp";
+import comision1963 from "../images/historia/comision 1963.webp";
+import comision1963IA from "../images/historia/comision 1963 IA.webp";
+import festejo30 from "../images/historia/Festejo30.webp";
+import festejo30IA from "../images/historia/Festejo30IA.webp";
+import challenger from "../images/historia/Challenguer1.webp";
+import challengerIA from "../images/historia/Challenguer1IA.webp";
+import regional87 from "../images/historia/regional87.webp";
+import regional87IA from "../images/historia/regional87IA.webp";
 
 const Historia = () => {
   const [selectedChampionship, setSelectedChampionship] = useState(null);

@@ -1,10 +1,10 @@
 import { MapPin, Instagram } from 'lucide-react';
-import estadio from '../images/estadio.jpg';
-import sede from '../images/sede.png';
-import gimnasio from '../images/gimnasio.png';
-import salon from '../images/salon.png';
-import padel from '../images/padel.png';
-import pileta from '../images/pileta.png';
+import estadio from '../images/estadio.webp';
+import sede from '../images/sede.webp';
+import gimnasio from '../images/gimnasio.webp';
+import salon from '../images/salon.webp';
+import padel from '../images/padel.webp';
+import pileta from '../images/pileta.webp';
 const Instalaciones = () => {
   const facilities = [
     {

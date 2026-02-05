@@ -65,8 +65,11 @@ const Home = () => {
               </div>
             ) : (
               <img 
-                src="/jugadores.png" 
+                src="/jugadores.webp" 
                 alt="Jugadores Club 9 de Julio" 
+                fetchpriority="high"
+                width="1200"
+                height="800"
                 className="w-full h-auto max-h-[400px] lg:max-h-[750px] scale-110 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] animate-in fade-in duration-1000"
               />
             )}

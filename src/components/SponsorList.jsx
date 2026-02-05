@@ -59,6 +59,7 @@ const SponsorList = ({ location = 'footer', className = '', isSidebar = false })
                             <img 
                                 src={`${API_URL}${sponsor.imagen_url}`} 
                                 alt={sponsor.nombre} 
+                                loading="lazy"
                                 className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                             />
                         </div>
@@ -95,6 +96,7 @@ const SponsorList = ({ location = 'footer', className = '', isSidebar = false })
                                 <img 
                                     src={`${API_URL}${sponsor.imagen_url}`} 
                                     alt={sponsor.nombre} 
+                                    loading="lazy"
                                     className="h-full w-auto max-w-[200px] object-contain"
                                 />
                             </div>

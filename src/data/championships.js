@@ -1,13 +1,13 @@
 import img1932 from "../images/campeonatos/ano1932.gif";
-import img1933 from "../images/campeonatos/Campeon 1933.jpg";
+import img1933 from "../images/campeonatos/Campeon 1933.webp";
 import img1963 from "../images/campeonatos/campeones 1963.gif";
 import img1975 from "../images/campeonatos/campeon 1975.gif";
-import img1984 from "../images/campeonatos/Campeon 1984.jpg";
+import img1984 from "../images/campeonatos/Campeon 1984.webp";
 import img1986 from "../images/campeonatos/campeon1986.gif";
-import img2011 from "../images/campeonatos/Campeon 2011.jpg";
-import img2016 from "../images/campeonatos/2016.jpeg";
-import img2018 from "../images/campeonatos/2018.jpeg";
-import img2023 from "../images/campeonatos/2023.jpeg";
+import img2011 from "../images/campeonatos/Campeon 2011.webp";
+import img2016 from "../images/campeonatos/2016.webp";
+import img2018 from "../images/campeonatos/2018.webp";
+import img2023 from "../images/campeonatos/2023.webp";
 
 export const championships = [
   {

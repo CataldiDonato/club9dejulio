@@ -1,19 +1,19 @@
 
 // Import images explicitly for Vite/Webpack to process them
 const club9dejulio = '/9dejulio.svg';
-import alianza from '../images/clubes/Alianza.jpg';
-import arteaga from '../images/clubes/Arteaga.jpg';
-import belgrano from '../images/clubes/Belgrano.jpg';
-import cafferata from '../images/clubes/Cafferata.jpg';
-import centenario from '../images/clubes/Centenario.jpg';
-import chanarense from '../images/clubes/Chanarense.jpg';
-import deportivo from '../images/clubes/Deportivo.jpg';
-import federacion from '../images/clubes/Federacion.jpg';
-import godeken from '../images/clubes/Godeken.jpg';
-import huracan from '../images/clubes/Huracan.jpg';
-import independiente from '../images/clubes/Independiente.jpg';
-import defensores from '../images/clubes/clubdeportivodefensores.jpg';
-import union from '../images/clubes/union.jpg';
+import alianza from '../images/clubes/Alianza.webp';
+import arteaga from '../images/clubes/Arteaga.webp';
+import belgrano from '../images/clubes/Belgrano.webp';
+import cafferata from '../images/clubes/Cafferata.webp';
+import centenario from '../images/clubes/Centenario.webp';
+import chanarense from '../images/clubes/Chanarense.webp';
+import deportivo from '../images/clubes/Deportivo.webp';
+import federacion from '../images/clubes/Federacion.webp';
+import godeken from '../images/clubes/Godeken.webp';
+import huracan from '../images/clubes/Huracan.webp';
+import independiente from '../images/clubes/Independiente.webp';
+import defensores from '../images/clubes/clubdeportivodefensores.webp';
+import union from '../images/clubes/union.webp';
 
 // Default placeholder if needed
 // const placeholder = ...
