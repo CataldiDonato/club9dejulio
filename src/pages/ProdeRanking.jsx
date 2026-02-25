@@ -95,7 +95,7 @@ const ProdeRanking = () => {
                 backgroundColor: '#ffffff',
                 logging: false,
                 onclone: (clonedDoc) => {
-                    // You can modify the clone if needed (e.g., hide buttons)
+                    // Hide sharing buttons in the screenshot
                     const buttons = clonedDoc.querySelectorAll('.share-btn-hidden');
                     buttons.forEach(b => b.style.display = 'none');
                 }
@@ -103,25 +103,34 @@ const ProdeRanking = () => {
 
             const dataUrl = canvas.toDataURL('image/png');
             
+            let shared = false;
+            // Try to use the native share API
             if (navigator.share && navigator.canShare) {
-                const blob = await (await fetch(dataUrl)).blob();
-                const file = new File([blob], `${title}.png`, { type: 'image/png' });
+                try {
+                    const blob = await (await fetch(dataUrl)).blob();
+                    const file = new File([blob], `${title}.png`, { type: 'image/png' });
 
-                if (navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: title,
-                        text: `Mira la ${title} de Club 9 de Julio`
-                    });
-                } else {
-                    downloadImage(dataUrl, title);
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: title,
+                            text: `Mira la ${title} de Club 9 de Julio`
+                        });
+                        shared = true;
+                    }
+                } catch (shareErr) {
+                    console.warn('Native share failed, falling back to download:', shareErr);
+                    // It likely failed because of "User gesture" requirement after async html2canvas
                 }
-            } else {
+            }
+
+            // Fallback to direct download if share failed or wasn't available
+            if (!shared) {
                 downloadImage(dataUrl, title);
             }
         } catch (error) {
-            console.error('Error sharing image:', error);
-            alert('No se pudo generar la imagen para compartir.');
+            console.error('Error generating image:', error);
+            alert('No se pudo generar la imagen. Intenta de nuevo.');
         } finally {
             setSharing(false);
         }
@@ -209,7 +218,7 @@ const ProdeRanking = () => {
                                                     <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
                                                         <img 
                                                             className="w-full h-full rounded-full object-cover border"
-                                                            src={getImageUrl(row.foto_perfil) || "https://via.placeholder.com/150"}
+                                                            src={getImageUrl(row.foto_perfil) || "https://placehold.co/150x150?text=9J"}
                                                             alt={row.nombre}
                                                         />
                                                     </div>
@@ -303,7 +312,7 @@ const ProdeRanking = () => {
                                             <div className="flex-shrink-0 w-10 h-10">
                                                 <img 
                                                     className="w-full h-full rounded-full object-cover border-2 border-white shadow"
-                                                    src={getImageUrl(player.foto_perfil) || "https://via.placeholder.com/150"}
+                                                    src={getImageUrl(player.foto_perfil) || "https://placehold.co/150x150?text=9J"}
                                                     alt={player.nombre}
                                                 />
                                             </div>
