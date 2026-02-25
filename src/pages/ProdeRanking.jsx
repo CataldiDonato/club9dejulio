@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { API_URL } from '../config';
 import { getImageUrl } from '../utils/imageUtils';
 import SponsorList from '../components/SponsorList';
+import html2canvas from 'html2canvas';
+import { Share2, Download, Camera } from 'lucide-react';
 
 const ProdeRanking = () => {
     const [ranking, setRanking] = useState([]);
@@ -10,6 +12,10 @@ const ProdeRanking = () => {
     const [seasons, setSeasons] = useState([]);
     const [selectedSeason, setSelectedSeason] = useState('');
     const [loading, setLoading] = useState(true);
+    const [sharing, setSharing] = useState(false);
+
+    const rankingRef = useRef(null);
+    const standingsRef = useRef(null);
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -75,6 +81,59 @@ const ProdeRanking = () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+    const handleShare = async (ref, title) => {
+        if (!ref.current || sharing) return;
+        
+        setSharing(true);
+        try {
+            // Give time for any UI updates
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const canvas = await html2canvas(ref.current, {
+                useCORS: true,
+                scale: 2, // Higher quality
+                backgroundColor: '#ffffff',
+                logging: false,
+                onclone: (clonedDoc) => {
+                    // You can modify the clone if needed (e.g., hide buttons)
+                    const buttons = clonedDoc.querySelectorAll('.share-btn-hidden');
+                    buttons.forEach(b => b.style.display = 'none');
+                }
+            });
+
+            const dataUrl = canvas.toDataURL('image/png');
+            
+            if (navigator.share && navigator.canShare) {
+                const blob = await (await fetch(dataUrl)).blob();
+                const file = new File([blob], `${title}.png`, { type: 'image/png' });
+
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: title,
+                        text: `Mira la ${title} de Club 9 de Julio`
+                    });
+                } else {
+                    downloadImage(dataUrl, title);
+                }
+            } else {
+                downloadImage(dataUrl, title);
+            }
+        } catch (error) {
+            console.error('Error sharing image:', error);
+            alert('No se pudo generar la imagen para compartir.');
+        } finally {
+            setSharing(false);
+        }
+    };
+
+    const downloadImage = (dataUrl, title) => {
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${title}.png`;
+        link.click();
+    };
+
     if (loading && !selectedSeason) return <div className="p-8 text-center">Cargando Ranking...</div>;
 
     return (
@@ -100,7 +159,18 @@ const ProdeRanking = () => {
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Main Ranking - Left/Center (2 columns) */}
                 <div className="lg:col-span-2">
-                    <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+                    <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200" ref={rankingRef}>
+                        <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
+                            <h2 className="font-bold text-gray-700">Ranking Prode</h2>
+                            <button 
+                                onClick={() => handleShare(rankingRef, 'Ranking Prode')}
+                                disabled={sharing}
+                                className="share-btn-hidden flex items-center gap-2 px-3 py-1 bg-club-dark text-white rounded-md hover:bg-black transition-colors text-sm font-medium disabled:opacity-50"
+                            >
+                                <Share2 size={16} /> 
+                                {sharing ? 'Generando...' : 'Compartir'}
+                            </button>
+                        </div>
                     <div className="overflow-x-auto">
                         <table className="min-w-full leading-normal">
                             <thead>
@@ -265,12 +335,20 @@ const ProdeRanking = () => {
                     </div>
 
                     {/* Team Standings Table */}
-                    <div className="bg-white shadow-lg rounded-lg border border-gray-200 mt-6 overflow-hidden">
-                        <div className="bg-gradient-to-r from-club-black to-gray-800 text-white p-4">
+                    <div className="bg-white shadow-lg rounded-lg border border-gray-200 mt-6 overflow-hidden" ref={standingsRef}>
+                        <div className="bg-gradient-to-r from-club-black to-gray-800 text-white p-4 flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <span className="text-2xl">📊</span>
                                 <h2 className="text-lg font-black">Tabla de Posiciones</h2>
                             </div>
+                            <button 
+                                onClick={() => handleShare(standingsRef, 'Tabla de Posiciones')}
+                                disabled={sharing}
+                                className="share-btn-hidden flex items-center gap-2 px-3 py-1 bg-white text-black rounded-md hover:bg-gray-200 transition-colors text-sm font-bold disabled:opacity-50"
+                            >
+                                <Camera size={16} />
+                                {sharing ? '...' : 'Compartir'}
+                            </button>
                         </div>
                         
                         {teamStandings.length > 0 ? (

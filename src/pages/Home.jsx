@@ -7,7 +7,6 @@ import { getImageUrl } from "../utils/imageUtils";
 import ClubCalendar from '../components/ClubCalendar';
 
 const Home = () => {
-  const [heroAsset, setHeroAsset] = useState('logo'); // 'logo' or 'players'
   const [birthdays, setBirthdays] = useState([]);
 
   useEffect(() => {
@@ -16,11 +15,6 @@ const Home = () => {
       .then((res) => res.json())
       .then((data) => setBirthdays(data))
       .catch((err) => console.error("Error fetching birthdays:", err));
-      
-    // Randomize on mount
-    const assets = ['logo', 'players'];
-    const randomAsset = assets[Math.floor(Math.random() * assets.length)];
-    setHeroAsset(randomAsset);
   }, []);
 
   return (
@@ -34,19 +28,22 @@ const Home = () => {
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12">
           <div className="flex-1">
             <div className="border-l-8 border-white pl-6 mb-6 lg:mb-8 mt-4 lg:mt-12">
+              <h2 className="text-xl md:text-2xl font-bold uppercase tracking-[0.2em] mb-2 text-gray-400">
+                Primera División 2026
+              </h2>
               <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-none">
-                Pasión <br />
-                <span className="text-gray-400">En Blanco</span> <br />
-                Y Negro
+                Nueva <br />
+                <span className="text-white">Armadura</span> <br />
+                Lanuda
               </h1>
             </div>
             <p className="text-lg md:text-2xl text-gray-300 max-w-2xl mb-8 lg:mb-12 font-medium tracking-wide">
-              Más de 110 años escribiendo la historia de Berabevú. <br />
-              <strong>El Lanudo es familia.</strong>
+              Presentamos la indumentaria oficial para la nueva temporada. <br />
+              <strong>Más de 110 años de pasión.</strong>
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/socios?mode=register" className="bg-white hover:bg-gray-200 text-black px-10 py-4 rounded-none font-black text-lg uppercase tracking-widest transition-transform hover:-translate-y-1 flex items-center gap-2">
-                Registrate y participa del Prode
+                Asociate al Club
               </Link>
               <Link to="/prode/jugar" className="border-2 border-white hover:bg-white hover:text-black text-white px-10 py-4 rounded-none font-bold text-lg uppercase tracking-widest transition-colors">
                 Prode
@@ -55,24 +52,12 @@ const Home = () => {
           </div>
 
           <div className="flex flex-1 justify-center items-center w-full max-w-sm lg:max-w-none">
-            {heroAsset === 'logo' ? (
-              <div className="logo-3d-container">
-                <img 
-                  src="/9dejulio.svg" 
-                  alt="Club 9 de Julio 3D Logo" 
-                  className="w-48 h-48 md:w-80 md:h-80 object-contain logo-3d-rotate drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-                />
-              </div>
-            ) : (
               <img 
-                src="/jugadores.webp" 
-                alt="Jugadores Club 9 de Julio" 
+                src="/Camisetas2026.png" 
+                alt="Camisetas Primera División 2026 - Club 9 de Julio" 
                 fetchpriority="high"
-                width="1200"
-                height="800"
-                className="w-full h-auto max-h-[400px] lg:max-h-[750px] scale-110 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] animate-in fade-in duration-1000"
+                className="w-full h-auto max-h-[500px] lg:max-h-[750px] scale-110 lg:scale-125 object-contain drop-shadow-[0_0_50px_rgba(255,255,255,0.25)] animate-in fade-in slide-in-from-right-12 duration-1000"
               />
-            )}
           </div>
         </div>
       </div>
