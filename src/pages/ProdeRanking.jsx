@@ -86,6 +86,14 @@ const ProdeRanking = () => {
         
         setSharing(true);
         try {
+            const today = new Date().toLocaleDateString('es-AR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            }).replace(/\//g, '-');
+            
+            const finalTitle = `${title} ${today} LIF`;
+
             // Give time for any UI updates
             await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -108,25 +116,24 @@ const ProdeRanking = () => {
             if (navigator.share && navigator.canShare) {
                 try {
                     const blob = await (await fetch(dataUrl)).blob();
-                    const file = new File([blob], `${title}.png`, { type: 'image/png' });
+                    const file = new File([blob], `${finalTitle}.png`, { type: 'image/png' });
 
                     if (navigator.canShare({ files: [file] })) {
                         await navigator.share({
                             files: [file],
-                            title: title,
-                            text: `Mira la ${title} de Club 9 de Julio`
+                            title: finalTitle,
+                            text: finalTitle
                         });
                         shared = true;
                     }
                 } catch (shareErr) {
                     console.warn('Native share failed, falling back to download:', shareErr);
-                    // It likely failed because of "User gesture" requirement after async html2canvas
                 }
             }
 
             // Fallback to direct download if share failed or wasn't available
             if (!shared) {
-                downloadImage(dataUrl, title);
+                downloadImage(dataUrl, finalTitle);
             }
         } catch (error) {
             console.error('Error generating image:', error);
