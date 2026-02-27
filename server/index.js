@@ -1212,7 +1212,9 @@ app.post("/api/notify-prode-update", authenticateToken, async (req, res) => {
       return res.status(403).json({ error: "Acceso denegado." });
     }
 
-    const { ONESIGNAL_APP_ID, ONESIGNAL_REST_API_KEY } = process.env;
+    const { ONESIGNAL_APP_ID, ONESIGNAL_REST_API_KEY, SITE_URL } = process.env;
+    const finalSiteUrl = SITE_URL || 'https://club9dejulioberabevu.com';
+    const redirectUrl = `${finalSiteUrl.endsWith('/') ? finalSiteUrl.slice(0, -1) : finalSiteUrl}/prode/ranking#tabla`;
 
     if (!ONESIGNAL_APP_ID || !ONESIGNAL_REST_API_KEY || ONESIGNAL_REST_API_KEY === 'TU_REST_API_KEY_AQUI') {
       return res.status(500).json({ error: "OneSignal no está configurado correctamente en el servidor." });
@@ -1232,6 +1234,7 @@ app.post("/api/notify-prode-update", authenticateToken, async (req, res) => {
           en: "Check out the new tournament positions now!",
           es: "Ingresa ahora para ver las nuevas posiciones del torneo."
         },
+        url: redirectUrl,
       }),
     });
 

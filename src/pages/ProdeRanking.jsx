@@ -36,7 +36,7 @@ const ProdeRanking = () => {
 
         setLoading(true);
         setCurrentPage(1); // Reset to page 1 on season change
-        
+
         // Fetch main ranking
         fetch(`${API_URL}/ranking?season=${selectedSeason}`)
             .then(res => res.json())
@@ -83,15 +83,15 @@ const ProdeRanking = () => {
 
     const handleShare = async (ref, title) => {
         if (!ref.current || sharing) return;
-        
+
         setSharing(true);
         try {
-            const today = new Date().toLocaleDateString('es-AR', { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric' 
+            const today = new Date().toLocaleDateString('es-AR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
             }).replace(/\//g, '-');
-            
+
             const finalTitle = `${title} ${today} LIF`;
 
             // Give time for any UI updates
@@ -110,7 +110,7 @@ const ProdeRanking = () => {
             });
 
             const dataUrl = canvas.toDataURL('image/png');
-            
+
             let shared = false;
             // Try to use the native share API
             if (navigator.share && navigator.canShare) {
@@ -155,14 +155,14 @@ const ProdeRanking = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8 border-b pb-4">
-                 <h1 className="text-3xl font-bold text-club-dark border-l-4 border-black pl-4">
+                <h1 className="text-3xl font-bold text-club-dark border-l-4 border-black pl-4">
                     Tabla de Posiciones
                 </h1>
-                
+
                 {/* Season Selector */}
                 <div className="flex items-center gap-2">
                     <label className="font-bold text-gray-600">Temporada:</label>
-                    <select 
+                    <select
                         value={selectedSeason}
                         onChange={(e) => setSelectedSeason(e.target.value)}
                         className="border-2 border-black rounded px-3 py-1 font-bold text-club-dark bg-white outline-none"
@@ -178,111 +178,111 @@ const ProdeRanking = () => {
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200" ref={rankingRef}>
                         <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
                             <h2 className="font-bold text-gray-700">Ranking Prode</h2>
-                            <button 
+                            <button
                                 onClick={() => handleShare(rankingRef, 'Ranking Prode')}
                                 disabled={sharing}
                                 className="share-btn-hidden flex items-center gap-2 px-3 py-1 bg-club-dark text-white rounded-md hover:bg-black transition-colors text-sm font-medium disabled:opacity-50"
                             >
-                                <Share2 size={16} /> 
+                                <Share2 size={16} />
                                 {sharing ? 'Generando...' : 'Compartir'}
                             </button>
                         </div>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full leading-normal">
-                            <thead>
-                                <tr>
-                                    <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Pos
-                                    </th>
-                                    <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Usuario
-                                    </th>
-                                    <th className="px-2 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Plenos <span className="hidden sm:inline">(3pts)</span>
-                                    </th>
-                                    <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black uppercase tracking-wider">
-                                        Pts <span className="hidden sm:inline">Totales</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentRanking.map((row, idx) => {
-                                    const index = indexOfFirstItem + idx;
-                                    return (
-                                        <tr key={index} className={`hover:bg-gray-50 ${index < 3 ? 'bg-yellow-50' : ''}`}>
-                                            <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
-                                                <div className={`
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full leading-normal">
+                                <thead>
+                                    <tr>
+                                        <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Pos
+                                        </th>
+                                        <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Usuario
+                                        </th>
+                                        <th className="px-2 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Plenos <span className="hidden sm:inline">(3pts)</span>
+                                        </th>
+                                        <th className="px-3 sm:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-black uppercase tracking-wider">
+                                            Pts <span className="hidden sm:inline">Totales</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentRanking.map((row, idx) => {
+                                        const index = indexOfFirstItem + idx;
+                                        return (
+                                            <tr key={index} className={`hover:bg-gray-50 ${index < 3 ? 'bg-yellow-50' : ''}`}>
+                                                <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
+                                                    <div className={`
                                                     flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full font-bold text-xs sm:text-sm
-                                                    ${index === 0 ? 'bg-yellow-400 text-white' : 
-                                                      index === 1 ? 'bg-gray-400 text-white' : 
-                                                      index === 2 ? 'bg-orange-400 text-white' : 'text-gray-500'}
+                                                    ${index === 0 ? 'bg-yellow-400 text-white' :
+                                                            index === 1 ? 'bg-gray-400 text-white' :
+                                                                index === 2 ? 'bg-orange-400 text-white' : 'text-gray-500'}
                                                 `}>
-                                                    {index + 1}
-                                                </div>
-                                            </td>
-                                            <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
-                                                <div className="flex items-center">
-                                                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
-                                                        <img 
-                                                            className="w-full h-full rounded-full object-cover border"
-                                                            src={getImageUrl(row.foto_perfil) || "https://placehold.co/150x150?text=9J"}
-                                                            alt={row.nombre}
-                                                        />
+                                                        {index + 1}
                                                     </div>
-                                                    <div className="ml-2 sm:ml-3">
-                                                        <p className="text-gray-900 whitespace-no-wrap font-bold truncate max-w-[120px] sm:max-w-none">
-                                                            {row.nombre} {row.apellido}
-                                                        </p>
+                                                </td>
+                                                <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm">
+                                                    <div className="flex items-center">
+                                                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+                                                            <img
+                                                                className="w-full h-full rounded-full object-cover border"
+                                                                src={getImageUrl(row.foto_perfil) || "https://placehold.co/150x150?text=9J"}
+                                                                alt={row.nombre}
+                                                            />
+                                                        </div>
+                                                        <div className="ml-2 sm:ml-3">
+                                                            <p className="text-gray-900 whitespace-no-wrap font-bold truncate max-w-[120px] sm:max-w-none">
+                                                                {row.nombre} {row.apellido}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-2 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
-                                                <span className="relative inline-block px-2 sm:px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                    <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                    <span className="relative">{row.plenos}</span>
-                                                </span>
-                                            </td>
-                                            <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
-                                                <span className="text-lg sm:text-xl font-black text-club-dark">{row.total_points}</span>
+                                                </td>
+                                                <td className="px-2 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
+                                                    <span className="relative inline-block px-2 sm:px-3 py-1 font-semibold text-green-900 leading-tight">
+                                                        <span aria-hidden className="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                                        <span className="relative">{row.plenos}</span>
+                                                    </span>
+                                                </td>
+                                                <td className="px-3 sm:px-5 py-4 sm:py-5 border-b border-gray-200 text-xs sm:text-sm text-center">
+                                                    <span className="text-lg sm:text-xl font-black text-club-dark">{row.total_points}</span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                    {ranking.length === 0 && (
+                                        <tr>
+                                            <td colSpan="4" className="px-5 py-5 text-center text-gray-500">
+                                                Aún no hay puntos registrados.
                                             </td>
                                         </tr>
-                                    );
-                                })}
-                                {ranking.length === 0 && (
-                                    <tr>
-                                        <td colSpan="4" className="px-5 py-5 text-center text-gray-500">
-                                            Aún no hay puntos registrados.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                    <div className="flex justify-center items-center gap-4 mt-6">
-                        <button
-                            onClick={() => paginate(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Anterior
-                        </button>
-                        <span className="text-sm font-medium text-gray-700">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <button
-                            onClick={() => paginate(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Siguiente
-                        </button>
-                    </div>
-                )}
-            </div>
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-4 mt-6">
+                            <button
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Anterior
+                            </button>
+                            <span className="text-sm font-medium text-gray-700">
+                                Página {currentPage} de {totalPages}
+                            </span>
+                            <button
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Siguiente
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 {/* Top Players by Matchday - Right Sidebar (1 column) */}
                 <div className="lg:col-span-1">
@@ -293,31 +293,30 @@ const ProdeRanking = () => {
                                 Mejores de la Fecha
                             </h2>
                         </div>
-                        
+
                         {topByMatchday.matchday ? (
                             <>
                                 <p className="text-sm font-semibold text-gray-600 mb-4 text-center bg-white rounded px-3 py-2 shadow-sm">
                                     {topByMatchday.matchday}
                                 </p>
-                                
+
                                 <div className="space-y-3">
                                     {topByMatchday.topPlayers.map((player, index) => (
-                                        <div 
-                                            key={index} 
-                                            className={`flex items-center gap-3 p-3 rounded-lg transition-all hover:shadow-md ${
-                                                index === 0 ? 'bg-yellow-100 border-2 border-yellow-400' : 'bg-white border border-gray-200'
-                                            }`}
+                                        <div
+                                            key={index}
+                                            className={`flex items-center gap-3 p-3 rounded-lg transition-all hover:shadow-md ${index === 0 ? 'bg-yellow-100 border-2 border-yellow-400' : 'bg-white border border-gray-200'
+                                                }`}
                                         >
                                             <div className={`
                                                 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
-                                                 ${index === 0 ? 'bg-yellow-500 text-white' : 
-                                                  index === 1 ? 'bg-gray-400 text-white' : 
-                                                  index === 2 ? 'bg-orange-400 text-white' : 'bg-gray-300 text-gray-700'}
+                                                 ${index === 0 ? 'bg-yellow-500 text-white' :
+                                                    index === 1 ? 'bg-gray-400 text-white' :
+                                                        index === 2 ? 'bg-orange-400 text-white' : 'bg-gray-300 text-gray-700'}
                                             `}>
                                                 {index + 1}
                                             </div>
                                             <div className="flex-shrink-0 w-10 h-10">
-                                                <img 
+                                                <img
                                                     className="w-full h-full rounded-full object-cover border-2 border-white shadow"
                                                     src={getImageUrl(player.foto_perfil) || "https://placehold.co/150x150?text=9J"}
                                                     alt={player.nombre}
@@ -335,7 +334,7 @@ const ProdeRanking = () => {
                                                 </div>
                                             </div>
                                             <div className="flex-shrink-0">
-                                            <div className="bg-black text-white rounded-full w-10 h-10 flex items-center justify-center font-black text-sm">
+                                                <div className="bg-black text-white rounded-full w-10 h-10 flex items-center justify-center font-black text-sm">
                                                     {player.matchday_points}
                                                 </div>
                                             </div>
@@ -351,13 +350,14 @@ const ProdeRanking = () => {
                     </div>
 
                     {/* Team Standings Table */}
-                    <div className="bg-white shadow-lg rounded-lg border border-gray-200 mt-6 overflow-hidden" ref={standingsRef}>
+                    <div id="tabla" className="bg-white shadow-lg rounded-lg border border-gray-200 mt-6 overflow-hidden" ref={standingsRef}>
+
                         <div className="bg-gradient-to-r from-club-black to-gray-800 text-white p-4 flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <span className="text-2xl">📊</span>
                                 <h2 className="text-lg font-black">Tabla de Posiciones</h2>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => handleShare(standingsRef, 'Tabla de Posiciones')}
                                 disabled={sharing}
                                 className="share-btn-hidden flex items-center gap-2 px-3 py-1 bg-white text-black rounded-md hover:bg-gray-200 transition-colors text-sm font-bold disabled:opacity-50"
@@ -366,7 +366,7 @@ const ProdeRanking = () => {
                                 {sharing ? '...' : 'Compartir'}
                             </button>
                         </div>
-                        
+
                         {teamStandings.length > 0 ? (
                             <div className="overflow-x-auto">
                                 <table className="min-w-full text-xs">
@@ -386,18 +386,16 @@ const ProdeRanking = () => {
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
                                         {teamStandings.map((team, index) => (
-                                            <tr 
-                                                key={index} 
-                                                className={`hover:bg-gray-50 ${
-                                                    index === 0 ? 'bg-green-50' : 
-                                                    index < 4 ? 'bg-gray-50' : ''
-                                                }`}
+                                            <tr
+                                                key={index}
+                                                className={`hover:bg-gray-50 ${index === 0 ? 'bg-green-50' :
+                                                        index < 4 ? 'bg-gray-50' : ''
+                                                    }`}
                                             >
                                                 <td className="px-2 py-2 text-center">
-                                                    <span className={`font-bold ${
-                                                        index === 0 ? 'text-green-600' : 
-                                                        index < 4 ? 'text-black font-black' : 'text-gray-600'
-                                                    }`}>
+                                                    <span className={`font-bold ${index === 0 ? 'text-green-600' :
+                                                            index < 4 ? 'text-black font-black' : 'text-gray-600'
+                                                        }`}>
                                                         {index + 1}
                                                     </span>
                                                 </td>
@@ -408,10 +406,9 @@ const ProdeRanking = () => {
                                                 <td className="px-2 py-2 text-center text-red-600">{team.lost}</td>
                                                 <td className="px-2 py-2 text-center text-gray-700">{team.goals_for}</td>
                                                 <td className="px-2 py-2 text-center text-gray-700">{team.goals_against}</td>
-                                                <td className={`px-2 py-2 text-center font-semibold ${
-                                                    team.goal_difference > 0 ? 'text-green-600' : 
-                                                    team.goal_difference < 0 ? 'text-red-600' : 'text-gray-600'
-                                                }`}>
+                                                <td className={`px-2 py-2 text-center font-semibold ${team.goal_difference > 0 ? 'text-green-600' :
+                                                        team.goal_difference < 0 ? 'text-red-600' : 'text-gray-600'
+                                                    }`}>
                                                     {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
                                                 </td>
                                                 <td className="px-2 py-2 text-center">
