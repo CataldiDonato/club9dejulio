@@ -6,7 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Club 9 de Julio de Berabevú</title>
     <script defer src="https://herramientas-umami.i41qxr.easypanel.host/script.js" data-website-id="4561b237-ff6d-422e-ace6-d2440d5476de"></script>
-    
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "144c02e0-cc7e-449d-a277-c3815dda7c8f",
+          safari_web_id: "web.onesignal.auto.44737891-769a-4856-a052-0f3c94719003",
+          notifyButton: {
+            enable: true,
+          },
+        });
+      });
+    </script>
+
     <!-- SEO & Social Media Meta Tags -->
     <meta name="description" content="Sitio oficial del Club Atlético 9 de Julio de Berabevú. Pasión en Blanco y Negro. Noticias, deportes, historia y toda la información para el socio." />
     

@@ -441,7 +441,7 @@ app.post(
             return `/uploads/${file.filename}`;
           }
         }));
-        
+
         portada_url = processedImages[0]; // First one is cover
         fotos_urls = processedImages;
       }
@@ -650,8 +650,8 @@ app.put(
           const buffer = await optimizeImage(req.file.path, 'profile');
           foto_perfil = await saveOptimizedImage(buffer, req.file.path);
         } catch (error) {
-           console.error("Error optimizando imagen de perfil:", error);
-           foto_perfil = `/uploads/${req.file.filename}`;
+          console.error("Error optimizando imagen de perfil:", error);
+          foto_perfil = `/uploads/${req.file.filename}`;
         }
       }
       const result = await pool.query(
@@ -885,7 +885,7 @@ app.put(
         "UPDATE socios SET rol = $1 WHERE id = $2 RETURNING *",
         [role, id]
       );
-      
+
       if (result.rows.length === 0) {
         return res.status(404).json({ error: "Usuario no encontrado" });
       }
@@ -968,8 +968,8 @@ app.get("/api/matches/stats", async (req, res) => {
     const params = [];
 
     if (season) {
-        seasonFilter = "WHERE m.season = $1";
-        params.push(season);
+      seasonFilter = "WHERE m.season = $1";
+      params.push(season);
     }
 
     const query = `
@@ -986,18 +986,18 @@ app.get("/api/matches/stats", async (req, res) => {
     `;
 
     const result = await pool.query(query, params);
-    
+
     const stats = {};
     result.rows.forEach(row => {
-        const total = parseInt(row.total_votes);
-        if (total > 0) {
-            stats[row.match_id] = {
-                home_pct: Math.round((row.home_votes / total) * 100),
-                away_pct: Math.round((row.away_votes / total) * 100),
-                draw_pct: Math.round((row.draw_votes / total) * 100),
-                total
-            };
-        }
+      const total = parseInt(row.total_votes);
+      if (total > 0) {
+        stats[row.match_id] = {
+          home_pct: Math.round((row.home_votes / total) * 100),
+          away_pct: Math.round((row.away_votes / total) * 100),
+          draw_pct: Math.round((row.draw_votes / total) * 100),
+          total
+        };
+      }
     });
 
     res.json(stats);
@@ -1202,7 +1202,55 @@ app.put("/api/matches/:id/result", authenticateToken, async (req, res) => {
   }
 });
 
+app.post("/api/notify-prode-update", authenticateToken, async (req, res) => {
+  try {
+    const userResult = await pool.query(
+      "SELECT rol FROM socios WHERE id = $1",
+      [req.user.id]
+    );
+    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin") {
+      return res.status(403).json({ error: "Acceso denegado." });
+    }
+
+    const { ONESIGNAL_APP_ID, ONESIGNAL_REST_API_KEY } = process.env;
+
+    if (!ONESIGNAL_APP_ID || !ONESIGNAL_REST_API_KEY || ONESIGNAL_REST_API_KEY === 'TU_REST_API_KEY_AQUI') {
+      return res.status(500).json({ error: "OneSignal no está configurado correctamente en el servidor." });
+    }
+
+    const response = await fetch("https://onesignal.com/api/v1/notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${ONESIGNAL_REST_API_KEY}`,
+      },
+      body: JSON.stringify({
+        app_id: ONESIGNAL_APP_ID,
+        included_segments: ["Total Subscriptions"],
+        headings: { en: "¡Tabla Actualizada! 📈", es: "¡Tabla Actualizada! 📈" },
+        contents: {
+          en: "Check out the new tournament positions now!",
+          es: "Ingresa ahora para ver las nuevas posiciones del torneo."
+        },
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      res.json({ success: true, data });
+    } else {
+      console.error("OneSignal Error:", data);
+      res.status(response.status).json({ error: "Error al enviar notificación", detail: data });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
 app.get("/api/predictions/my", authenticateToken, async (req, res) => {
+
   try {
     const result = await pool.query(
       "SELECT p.*, m.season, m.matchday FROM predictions p JOIN matches m ON p.match_id = m.id WHERE p.user_id = $1",
@@ -1340,7 +1388,7 @@ app.get("/api/seasons", async (req, res) => {
 app.get("/api/top-players-by-matchday", async (req, res) => {
   try {
     const { season } = req.query;
-    
+
     // Get the most recent matchday with finished matches
     let matchdayQuery = `
       SELECT DISTINCT matchday 
@@ -1348,16 +1396,16 @@ app.get("/api/top-players-by-matchday", async (req, res) => {
       WHERE status = 'finished'
     `;
     let matchdayParams = [];
-    
+
     if (season) {
       matchdayQuery += " AND season = $1";
       matchdayParams.push(season);
     }
-    
+
     matchdayQuery += " ORDER BY matchday DESC LIMIT 1";
-    
+
     const matchdayResult = await pool.query(matchdayQuery, matchdayParams);
-    
+
     if (matchdayResult.rows.length === 0) {
       return res.json({ matchday: null, topPlayers: [] });
     }
@@ -1379,21 +1427,21 @@ app.get("/api/top-players-by-matchday", async (req, res) => {
       WHERE m.status = 'finished' 
         AND m.matchday = $1
     `;
-    
+
     let topPlayersParams = [latestMatchday];
-    
+
     if (season) {
       topPlayersQuery += " AND m.season = $2";
       topPlayersParams.push(season);
     }
-    
+
     topPlayersQuery += `
       GROUP BY s.id, s.nombre, s.apellido, s.foto_perfil 
       HAVING SUM(p.points) > 0
       ORDER BY matchday_points DESC, plenos DESC
       LIMIT 5
     `;
-    
+
     const topPlayersResult = await pool.query(topPlayersQuery, topPlayersParams);
 
     res.json({
@@ -1410,22 +1458,22 @@ app.get("/api/top-players-by-matchday", async (req, res) => {
 app.get("/api/team-standings", async (req, res) => {
   try {
     const { season } = req.query;
-    
+
     let matchesQuery = `
       SELECT home_team, away_team, home_score, away_score
       FROM matches
       WHERE status = 'finished' AND matchday NOT IN ('Amistoso', 'Torneo de Verano')
     `;
     let params = [];
-    
+
     if (season) {
       matchesQuery += " AND season = $1";
       params.push(season);
     }
-    
+
     const matchesResult = await pool.query(matchesQuery, params);
     const matches = matchesResult.rows;
-    
+
     // Calculate standings
     const standings = {};
 
@@ -1459,14 +1507,14 @@ app.get("/api/team-standings", async (req, res) => {
         points: 0
       };
     });
-    
+
     matches.forEach(match => {
       const { home_team, away_team, home_score, away_score } = match;
-      
+
       // Update stats ONLY if teams are official
       // If a team is not in OFFICIAL_TEAMS, we skip calculating points for them in the main standings table if desired by user.
       // But user request implies only those teams should be in the table. So we check if they exist in standings.
-      
+
       if (!standings[home_team]) return; // Skip if home team is unofficial (e.g. friendly vs external)
       if (!standings[away_team]) return; // Skip if away team is unofficial
 
@@ -1474,13 +1522,13 @@ app.get("/api/team-standings", async (req, res) => {
       // Update stats
       standings[home_team].played++;
       standings[away_team].played++;
-      
+
       standings[home_team].goals_for += home_score;
       standings[home_team].goals_against += away_score;
-      
+
       standings[away_team].goals_for += away_score;
       standings[away_team].goals_against += home_score;
-      
+
       // Determine result
       if (home_score > away_score) {
         // Home win
@@ -1499,12 +1547,12 @@ app.get("/api/team-standings", async (req, res) => {
         standings[home_team].points += 1;
         standings[away_team].points += 1;
       }
-      
+
       // Update goal difference
       standings[home_team].goal_difference = standings[home_team].goals_for - standings[home_team].goals_against;
       standings[away_team].goal_difference = standings[away_team].goals_for - standings[away_team].goals_against;
     });
-    
+
     // Convert to array and sort
     const standingsArray = Object.values(standings).sort((a, b) => {
       // Sort by points, then goal difference, then goals for
@@ -1512,7 +1560,7 @@ app.get("/api/team-standings", async (req, res) => {
       if (b.goal_difference !== a.goal_difference) return b.goal_difference - a.goal_difference;
       return b.goals_for - a.goals_for;
     });
-    
+
     res.json(standingsArray);
   } catch (err) {
     console.error(err);

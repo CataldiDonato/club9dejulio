@@ -219,7 +219,34 @@ const AdminProde = () => {
     }
   };
 
+  const handleNotifyUpdate = async () => {
+    if (!window.confirm("¿Enviar notificación push a todos los usuarios sobre la actualización de la tabla?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/notify-prode-update`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("🔔 Notificación enviada con éxito a todos los usuarios.");
+      } else {
+        alert(`Error: ${data.error || "No se pudo enviar la notificación"}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión al intentar enviar la notificación.");
+    }
+  };
+
   const handleToggleVisibility = async (matchId, currentVisible) => {
+
     try {
       const res = await fetch(`${API_URL}/matches/${matchId}/visibility`, {
         method: "PUT",
@@ -253,7 +280,15 @@ const AdminProde = () => {
       />
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold">Administrar Prode</h1>
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <h1 className="text-3xl font-bold">Administrar Prode</h1>
+          <button
+            onClick={handleNotifyUpdate}
+            className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 uppercase text-sm shadow-sm flex items-center gap-2"
+          >
+            <span>🔔</span> Notificar Actualización de Tabla
+          </button>
+        </div>
         <button
           onClick={() => (window.location.href = "/socios")}
           className="bg-gray-200 px-4 py-2 rounded font-bold hover:bg-gray-300 uppercase text-sm"
@@ -378,7 +413,7 @@ const AdminProde = () => {
             />
             <label htmlFor="visible" className="text-sm font-bold">Visible para usuarios</label>
           </div>
-          <div></div> 
+          <div></div>
           <button
             type="submit"
             className="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 w-full"
@@ -425,27 +460,25 @@ const AdminProde = () => {
                     </td>
                     <td className="px-4 py-2">
                       <span
-                        className={`px-2 py-1 rounded text-xs font-bold ${
-                          m.status === "finished"
+                        className={`px-2 py-1 rounded text-xs font-bold ${m.status === "finished"
                             ? "bg-gray-800 text-white"
                             : "bg-green-100 text-green-800"
-                        }`}
+                          }`}
                       >
                         {m.status === "finished" ? "Finalizado" : "Programado"}
                       </span>
                     </td>
                     <td className="px-4 py-2">
-                       <button
-                         onClick={() => handleToggleVisibility(m.id, m.visible)}
-                         className={`px-2 py-1 rounded text-xs font-bold transition-colors ${
-                           m.visible 
-                             ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' 
-                             : 'bg-red-100 text-red-800 hover:bg-red-200'
-                         }`}
-                         title="Click para cambiar visibilidad"
-                       >
+                      <button
+                        onClick={() => handleToggleVisibility(m.id, m.visible)}
+                        className={`px-2 py-1 rounded text-xs font-bold transition-colors ${m.visible
+                            ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                          }`}
+                        title="Click para cambiar visibilidad"
+                      >
                         {m.visible ? 'SÍ' : 'NO'}
-                       </button>
+                      </button>
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">
                       {m.status === "finished" ? (
