@@ -19,12 +19,17 @@ const Home = () => {
 
   return (
     <div className="flex flex-col bg-white">
+      {/* Notification Banner */}
+      <div className="bg-club-red text-black py-2 px-4 text-center font-bold text-sm uppercase tracking-wider animate-pulse">
+        🔔 ¡Activá las notificaciones para recibir resultados en tiempo real!
+      </div>
+
       {/* Abstract Background Elements */}
       <div className="relative min-h-[700px] lg:h-[700px] bg-black text-white overflow-hidden py-12 lg:py-0">
         {/* Abstract Background Elements */}
         <div className="absolute top-0 right-0 w-2/3 h-full bg-club-dark -skew-x-12 translate-x-1/4 opacity-50 z-0"></div>
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1510051640316-543ee0fbf33c?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
-        
+
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12">
           <div className="flex-1">
             <div className="border-l-8 border-white pl-6 mb-6 lg:mb-8 mt-4 lg:mt-12">
@@ -43,7 +48,7 @@ const Home = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/socios?mode=register" className="bg-white hover:bg-gray-200 text-black px-10 py-4 rounded-none font-black text-lg uppercase tracking-widest transition-transform hover:-translate-y-1 flex items-center gap-2">
-                Asociate al Club
+                Registrate
               </Link>
               <Link to="/prode/jugar" className="border-2 border-white hover:bg-white hover:text-black text-white px-10 py-4 rounded-none font-bold text-lg uppercase tracking-widest transition-colors">
                 Prode
@@ -52,12 +57,12 @@ const Home = () => {
           </div>
 
           <div className="flex flex-1 justify-center items-center w-full max-w-sm lg:max-w-none">
-              <img 
-                src="/Camisetas2026.png" 
-                alt="Camisetas Primera División 2026 - Club 9 de Julio" 
-                fetchpriority="high"
-                className="w-full h-auto max-h-[500px] lg:max-h-[750px] scale-110 lg:scale-125 object-contain drop-shadow-[0_0_50px_rgba(255,255,255,0.25)] animate-in fade-in slide-in-from-right-12 duration-1000"
-              />
+            <img
+              src="/Camisetas2026.png"
+              alt="Camisetas Primera División 2026 - Club 9 de Julio"
+              fetchpriority="high"
+              className="w-full h-auto max-h-[500px] lg:max-h-[750px] scale-110 lg:scale-125 object-contain drop-shadow-[0_0_50px_rgba(255,255,255,0.25)] animate-in fade-in slide-in-from-right-12 duration-1000"
+            />
           </div>
         </div>
       </div>
@@ -85,15 +90,15 @@ const Home = () => {
                 Saludamos a los socios que celebran hoy
               </p>
             </div>
-            
+
             <div className="flex flex-wrap justify-center gap-8">
               {birthdays.map((user, index) => (
                 <div key={index} className="flex flex-col items-center group">
                   <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-yellow-400 to-red-500 mb-3 group-hover:scale-105 transition-transform duration-300">
                     <div className="w-full h-full rounded-full border-4 border-white overflow-hidden bg-gray-100">
                       {user.foto_perfil ? (
-                        <img 
-                          src={getImageUrl(user.foto_perfil)} 
+                        <img
+                          src={getImageUrl(user.foto_perfil)}
                           alt={`${user.nombre} ${user.apellido}`}
                           className="w-full h-full object-cover"
                         />
@@ -130,13 +135,13 @@ const Home = () => {
             Tu Marca en el <br />
             <span className="text-club-red">Corazón del Lanudo</span>
           </h2>
-          
+
           <p className="text-gray-600 font-medium text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-            Llegá a toda nuestra comunidad y apoyá al crecimiento del club. 
+            Llegá a toda nuestra comunidad y apoyá al crecimiento del club.
             Consultá por nuestros espacios publicitarios exclusivos.
           </p>
 
-          <a 
+          <a
             href="https://wa.me/543465659238?text=Hola!%20Me%20interesa%20sumar%20mi%20marca/negocio%20como%20sponsor%20del%20club.%20Me%20podrían%20dar%20más%20info?"
             target="_blank"
             rel="noopener noreferrer"

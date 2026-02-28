@@ -1148,6 +1148,44 @@ app.put("/api/matches/:id/visibility", authenticateToken, async (req, res) => {
   }
 });
 
+// Helper function to send push notifications via OneSignal
+const sendOneSignalNotification = async ({ headings, contents, url }) => {
+  const { ONESIGNAL_APP_ID, ONESIGNAL_REST_API_KEY } = process.env;
+
+  if (!ONESIGNAL_APP_ID || !ONESIGNAL_REST_API_KEY || ONESIGNAL_REST_API_KEY === 'TU_REST_API_KEY_AQUI') {
+    console.error("OneSignal no está configurado correctamente en el servidor.");
+    return { success: false, error: "OneSignal config missing" };
+  }
+
+  try {
+    const response = await fetch("https://onesignal.com/api/v1/notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${ONESIGNAL_REST_API_KEY}`,
+      },
+      body: JSON.stringify({
+        app_id: ONESIGNAL_APP_ID,
+        included_segments: ["Total Subscriptions"],
+        headings,
+        contents,
+        url,
+      }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      return { success: true, data };
+    } else {
+      console.error("OneSignal Error:", data);
+      return { success: false, error: data };
+    }
+  } catch (err) {
+    console.error("Fetch error sending OneSignal notification:", err);
+    return { success: false, error: err.message };
+  }
+};
+
 app.put("/api/matches/:id/result", authenticateToken, async (req, res) => {
   const client = await pool.connect();
   try {
@@ -1168,6 +1206,9 @@ app.put("/api/matches/:id/result", authenticateToken, async (req, res) => {
       await client.query("ROLLBACK");
       return res.status(404).json({ error: "Partido no encontrado" });
     }
+
+    const match = matchRes.rows[0];
+
     const predsRes = await client.query(
       "SELECT * FROM predictions WHERE match_id = $1",
       [id]
@@ -1188,13 +1229,31 @@ app.put("/api/matches/:id/result", authenticateToken, async (req, res) => {
       ]);
     }
     await client.query("COMMIT");
+
+    // Enviar notificación después del COMMIT exitoso
+    const { SITE_URL } = process.env;
+    const finalSiteUrl = SITE_URL || 'https://club9dejulioberabevu.com';
+    const redirectUrl = `${finalSiteUrl.endsWith('/') ? finalSiteUrl.slice(0, -1) : finalSiteUrl}/prode/ranking#tabla`;
+
+    await sendOneSignalNotification({
+      headings: {
+        en: "Final Score! ⚽",
+        es: "¡Final del partido! ⚽"
+      },
+      contents: {
+        en: `Final result: ${match.home_team} ${home_score} - ${away_score} ${match.away_team}`,
+        es: `Final del partido: ${match.home_team} ${home_score} - ${away_score} ${match.away_team}`
+      },
+      url: redirectUrl
+    });
+
     res.json({
       success: true,
-      match: matchRes.rows[0],
+      match: match,
       processed_predictions: predictions.length,
     });
   } catch (err) {
-    await client.query("ROLLBACK");
+    if (client) await client.query("ROLLBACK");
     console.error(err);
     res.status(500).json({ error: "Error updating result" });
   } finally {
@@ -1212,39 +1271,26 @@ app.post("/api/notify-prode-update", authenticateToken, async (req, res) => {
       return res.status(403).json({ error: "Acceso denegado." });
     }
 
-    const { ONESIGNAL_APP_ID, ONESIGNAL_REST_API_KEY, SITE_URL } = process.env;
+    const { SITE_URL } = process.env;
     const finalSiteUrl = SITE_URL || 'https://club9dejulioberabevu.com';
     const redirectUrl = `${finalSiteUrl.endsWith('/') ? finalSiteUrl.slice(0, -1) : finalSiteUrl}/prode/ranking#tabla`;
 
-    if (!ONESIGNAL_APP_ID || !ONESIGNAL_REST_API_KEY || ONESIGNAL_REST_API_KEY === 'TU_REST_API_KEY_AQUI') {
-      return res.status(500).json({ error: "OneSignal no está configurado correctamente en el servidor." });
-    }
-
-    const response = await fetch("https://onesignal.com/api/v1/notifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${ONESIGNAL_REST_API_KEY}`,
+    const result = await sendOneSignalNotification({
+      headings: {
+        en: "Table Updated! 📈",
+        es: "¡Tabla Actualizada! 📈"
       },
-      body: JSON.stringify({
-        app_id: ONESIGNAL_APP_ID,
-        included_segments: ["Total Subscriptions"],
-        headings: { en: "¡Tabla Actualizada! 📈", es: "¡Tabla Actualizada! 📈" },
-        contents: {
-          en: "Check out the new tournament positions now!",
-          es: "Ingresa ahora para ver las nuevas posiciones del torneo."
-        },
-        url: redirectUrl,
-      }),
+      contents: {
+        en: "Check out the new tournament positions now!",
+        es: "Ingresa ahora para ver las nuevas posiciones del torneo."
+      },
+      url: redirectUrl
     });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      res.json({ success: true, data });
+    if (result.success) {
+      res.json({ success: true, data: result.data });
     } else {
-      console.error("OneSignal Error:", data);
-      res.status(response.status).json({ error: "Error al enviar notificación", detail: data });
+      res.status(500).json({ error: "Error al enviar notificación", detail: result.error });
     }
   } catch (err) {
     console.error(err);
