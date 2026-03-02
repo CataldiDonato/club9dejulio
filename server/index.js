@@ -1440,7 +1440,7 @@ app.get("/api/top-players-by-matchday", async (req, res) => {
 
     // Get the most recent matchday with finished matches
     let matchdayQuery = `
-      SELECT DISTINCT matchday 
+      SELECT matchday 
       FROM matches 
       WHERE status = 'finished'
     `;
@@ -1451,7 +1451,7 @@ app.get("/api/top-players-by-matchday", async (req, res) => {
       matchdayParams.push(season);
     }
 
-    matchdayQuery += " ORDER BY matchday DESC LIMIT 1";
+    matchdayQuery += " GROUP BY matchday ORDER BY MAX(start_time) DESC LIMIT 1";
 
     const matchdayResult = await pool.query(matchdayQuery, matchdayParams);
 

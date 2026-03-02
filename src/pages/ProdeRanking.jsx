@@ -13,6 +13,7 @@ const ProdeRanking = () => {
     const [selectedSeason, setSelectedSeason] = useState('');
     const [loading, setLoading] = useState(true);
     const [sharing, setSharing] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const rankingRef = useRef(null);
     const standingsRef = useRef(null);
@@ -72,14 +73,20 @@ const ProdeRanking = () => {
             });
     }, [selectedSeason]);
 
-    // Pagination logic
     const safeRanking = Array.isArray(ranking) ? ranking : [];
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    // Filtered ranking based on search term
+    const filteredRanking = safeRanking.filter(user =>
+        user.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.apellido?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Pagination logic using filtered results
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentRanking = safeRanking.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(safeRanking.length / itemsPerPage);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const currentRanking = filteredRanking.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredRanking.length / itemsPerPage);
 
     const handleShare = async (ref, title) => {
         if (!ref.current || sharing) return;
@@ -176,8 +183,31 @@ const ProdeRanking = () => {
                 {/* Main Ranking - Left/Center (2 columns) */}
                 <div className="lg:col-span-2">
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200" ref={rankingRef}>
-                        <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
+                        <div className="p-4 bg-gray-50 border-b flex flex-col sm:flex-row justify-between items-center gap-3">
                             <h2 className="font-bold text-gray-700">Ranking Prode</h2>
+
+                            {/* Search Input */}
+                            <div className="relative w-full sm:w-64">
+                                <input
+                                    type="text"
+                                    placeholder="Buscar usuario..."
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        setCurrentPage(1); // Reset to page 1 on search
+                                    }}
+                                    className="w-full px-4 py-1.5 text-sm border-2 border-gray-200 rounded-full focus:border-black outline-none transition-colors pl-9"
+                                />
+                                <svg
+                                    className="absolute left-3 top-2 w-4 h-4 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+
                             <button
                                 onClick={() => handleShare(rankingRef, 'Ranking Prode')}
                                 disabled={sharing}
@@ -248,13 +278,19 @@ const ProdeRanking = () => {
                                             </tr>
                                         );
                                     })}
-                                    {ranking.length === 0 && (
+                                    {ranking.length === 0 ? (
                                         <tr>
                                             <td colSpan="4" className="px-5 py-5 text-center text-gray-500">
                                                 Aún no hay puntos registrados.
                                             </td>
                                         </tr>
-                                    )}
+                                    ) : filteredRanking.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="4" className="px-5 py-5 text-center text-gray-500 italic">
+                                                No se encontraron resultados para "{searchTerm}"
+                                            </td>
+                                        </tr>
+                                    ) : null}
                                 </tbody>
                             </table>
                         </div>
@@ -388,13 +424,13 @@ const ProdeRanking = () => {
                                         {teamStandings.map((team, index) => (
                                             <tr
                                                 key={index}
-                                                className={`hover:bg-gray-50 ${index === 0 ? 'bg-green-50' :
-                                                        index < 4 ? 'bg-gray-50' : ''
+                                                className={`hover:bg-gray-100 transition-colors ${index === 0 ? 'bg-green-50' :
+                                                    index < 8 ? 'bg-gray-100 border-l-4 border-l-gray-400' : ''
                                                     }`}
                                             >
                                                 <td className="px-2 py-2 text-center">
                                                     <span className={`font-bold ${index === 0 ? 'text-green-600' :
-                                                            index < 4 ? 'text-black font-black' : 'text-gray-600'
+                                                        index < 8 ? 'text-black font-black' : 'text-gray-600'
                                                         }`}>
                                                         {index + 1}
                                                     </span>
@@ -407,7 +443,7 @@ const ProdeRanking = () => {
                                                 <td className="px-2 py-2 text-center text-gray-700">{team.goals_for}</td>
                                                 <td className="px-2 py-2 text-center text-gray-700">{team.goals_against}</td>
                                                 <td className={`px-2 py-2 text-center font-semibold ${team.goal_difference > 0 ? 'text-green-600' :
-                                                        team.goal_difference < 0 ? 'text-red-600' : 'text-gray-600'
+                                                    team.goal_difference < 0 ? 'text-red-600' : 'text-gray-600'
                                                     }`}>
                                                     {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
                                                 </td>
