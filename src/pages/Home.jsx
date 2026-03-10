@@ -18,7 +18,7 @@ const Home = () => {
       .catch((err) => console.error("Error fetching birthdays:", err));
 
     // Randomize on mount
-    const assets = ['logo', 'players'];
+    const assets = ['logo', 'players', 'jersey'];
     const randomAsset = assets[Math.floor(Math.random() * assets.length)];
     setHeroAsset(randomAsset);
   }, []);
@@ -68,10 +68,16 @@ const Home = () => {
                   className="w-48 h-48 md:w-80 md:h-80 object-contain logo-3d-rotate drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                 />
               </div>
-            ) : (
+            ) : heroAsset === 'players' ? (
               <img
                 src="/jugadores.webp"
                 alt="Jugadores Club 9 de Julio"
+                className="w-full h-auto max-h-[400px] lg:max-h-[750px] scale-110 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] animate-in fade-in duration-1000"
+              />
+            ) : (
+              <img
+                src="/camisetanueva.png"
+                alt="Nueva Camiseta Club 9 de Julio"
                 className="w-full h-auto max-h-[400px] lg:max-h-[750px] scale-110 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] animate-in fade-in duration-1000"
               />
             )}

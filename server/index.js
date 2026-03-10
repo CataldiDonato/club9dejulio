@@ -1010,7 +1010,7 @@ app.get("/api/matches/stats", async (req, res) => {
 app.get("/api/birthdays", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT nombre, apellido, foto_perfil FROM socios WHERE EXTRACT(MONTH FROM fecha_nacimiento) = EXTRACT(MONTH FROM CURRENT_DATE) AND EXTRACT(DAY FROM fecha_nacimiento) = EXTRACT(DAY FROM CURRENT_DATE)"
+      "SELECT nombre, apellido, foto_perfil FROM socios WHERE EXTRACT(MONTH FROM fecha_nacimiento) = EXTRACT(MONTH FROM CURRENT_TIMESTAMP AT TIME ZONE 'America/Argentina/Buenos_Aires') AND EXTRACT(DAY FROM fecha_nacimiento) = EXTRACT(DAY FROM CURRENT_TIMESTAMP AT TIME ZONE 'America/Argentina/Buenos_Aires')"
     );
     res.json(result.rows);
   } catch (err) {
