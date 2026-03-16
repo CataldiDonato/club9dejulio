@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const app = express();
 const pool = require("./db");
 
@@ -36,8 +37,21 @@ if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
 }
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin ||
+      origin.startsWith("http://localhost:") ||
+      origin.startsWith("http://127.0.0.1:") ||
+      origin.includes("club9dejulioberabevu.com")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 // Servir Estáticos (Uploads) - Ruta única y absoluta
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -1230,22 +1244,26 @@ app.put("/api/matches/:id/result", authenticateToken, async (req, res) => {
     }
     await client.query("COMMIT");
 
-    // Enviar notificación después del COMMIT exitoso
-    const { SITE_URL } = process.env;
-    const finalSiteUrl = SITE_URL || 'https://club9dejulioberabevu.com';
-    const redirectUrl = `${finalSiteUrl.endsWith('/') ? finalSiteUrl.slice(0, -1) : finalSiteUrl}/prode/ranking#tabla`;
+    // Enviar notificación después del COMMIT exitoso (SOLO EN PRODUCCIÓN)
+    if (process.env.NODE_ENV === "production") {
+      const { SITE_URL } = process.env;
+      const finalSiteUrl = SITE_URL || 'https://club9dejulioberabevu.com';
+      const redirectUrl = `${finalSiteUrl.endsWith('/') ? finalSiteUrl.slice(0, -1) : finalSiteUrl}/prode/ranking#tabla`;
 
-    await sendOneSignalNotification({
-      headings: {
-        en: "Final Score! ⚽",
-        es: "¡Final del partido! ⚽"
-      },
-      contents: {
-        en: `Final result: ${match.home_team} ${home_score} - ${away_score} ${match.away_team}`,
-        es: `Final del partido: ${match.home_team} ${home_score} - ${away_score} ${match.away_team}`
-      },
-      url: redirectUrl
-    });
+      await sendOneSignalNotification({
+        headings: {
+          en: "Final Score! ⚽",
+          es: "¡Final del partido! ⚽"
+        },
+        contents: {
+          en: `Final result: ${match.home_team} ${home_score} - ${away_score} ${match.away_team}`,
+          es: `Final del partido: ${match.home_team} ${home_score} - ${away_score} ${match.away_team}`
+        },
+        url: redirectUrl
+      });
+    } else {
+      console.log("[DEBUG] Notificación omitida (Modo Desarrollo)");
+    }
 
     res.json({
       success: true,
@@ -1269,6 +1287,10 @@ app.post("/api/notify-prode-update", authenticateToken, async (req, res) => {
     );
     if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin") {
       return res.status(403).json({ error: "Acceso denegado." });
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      return res.json({ success: true, message: "Modo Desarrollo: Notificación simulada con éxito." });
     }
 
     const { SITE_URL } = process.env;
@@ -1341,20 +1363,22 @@ app.post("/api/predictions", authenticateToken, async (req, res) => {
         .json({ error: "Debes tener la cuota al día para participar." });
     }
 
-    // Check match time
+    // Check match time (Argentina Time)
     const matchRes = await pool.query(
       "SELECT start_time FROM matches WHERE id = $1",
       [match_id]
     );
     if (matchRes.rows.length === 0)
       return res.status(404).json({ error: "Partido no encontrado" });
-    if (
-      new Date() >=
-      new Date(
-        new Date(matchRes.rows[0].start_time).getTime() - 2 * 60 * 60 * 1000
-      )
-    )
-      return res.status(400).json({ error: "El tiempo límite ha pasado." });
+
+    // Consistent comparison: Force Argentina timezone (-0300) for comparison
+    const nowArg = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+    // matchRes.rows[0].start_time is stored as local time in DB (TIMESTAMP WITHOUT TZ)
+    // We treat it as Argentina time
+    const matchStart = new Date(matchRes.rows[0].start_time);
+
+    if (nowArg >= new Date(matchStart.getTime() - 3 * 3600000))
+      return res.status(400).json({ error: "El tiempo límite ha pasado (3 horas antes del inicio)." });
 
     // Check existing prediction limit
     const existingPred = await pool.query(
@@ -1747,6 +1771,240 @@ app.post("/api/sponsors/:id/click", async (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// JUGADOR DE LA FECHA (Votaciones)
+// -----------------------------------------------------------------------------
+
+// Helper para obtener la sesión de votación actual basada en el calendario
+const getCurrentVotingSession = async () => {
+  try {
+    // La sesión para un partido comienza 3 horas antes de su inicio.
+    // Comparamos start_time con el tiempo actual del servidor (UTC)
+    const result = await pool.query(`
+            SELECT *, 
+            (home_team || ' vs ' || away_team || ' - ' || TO_CHAR(start_time, 'DD/MM')) as match_name
+            FROM matches 
+            WHERE (home_team = '9 de julio' OR away_team = '9 de julio')
+            AND (start_time - INTERVAL '3 hours') <= NOW()
+            ORDER BY start_time DESC 
+            LIMIT 1
+        `);
+
+    if (result.rows.length === 0) {
+      const future = await pool.query(`
+                SELECT *, 
+                (home_team || ' vs ' || away_team || ' - ' || TO_CHAR(start_time, 'DD/MM')) as match_name
+                FROM matches 
+                WHERE (home_team = '9 de julio' OR away_team = '9 de julio')
+                ORDER BY start_time ASC 
+                LIMIT 1
+            `);
+      return future.rows[0] || null;
+    }
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error in getCurrentVotingSession:", err);
+    return null;
+  }
+};
+
+// Obtener jugadores para votación (solo los que juegan)
+app.get("/api/jugadores-fecha", async (req, res) => {
+  try {
+    const session = await getCurrentVotingSession();
+    const fecha_torneo = session ? session.match_name : "General";
+    console.log(`[DEBUG] Voting for session: "${fecha_torneo}"`);
+
+    const result = await pool.query(
+      `SELECT * FROM jugadores WHERE juega = TRUE ORDER BY nombre ASC`
+    );
+    console.log(`[DEBUG] Active players in DB: ${result.rows.length}`);
+
+    // We keep the structure for compatibility but we don't count votes in this query yet to simplify
+    const jugadoresWithVotos = await Promise.all(result.rows.map(async (j) => {
+      const countRes = await pool.query(
+        "SELECT COUNT(*) FROM votaciones WHERE jugador_id = $1 AND fecha_torneo = $2",
+        [j.id, fecha_torneo]
+      );
+      return { ...j, votos: parseInt(countRes.rows[0].count) };
+    }));
+
+    res.json({
+      jugadores: jugadoresWithVotos,
+      session: {
+        name: fecha_torneo,
+        match_id: session ? session.id : null
+      }
+    });
+  } catch (err) {
+    console.error("[ERROR] in /api/jugadores-fecha:", err);
+    res.status(500).json({ error: "Error al obtener jugadores" });
+  }
+});
+
+// Obtener el ganador de la fecha anterior (para el Home)
+app.get("/api/jugador-ganador", async (req, res) => {
+  try {
+    const session = await getCurrentVotingSession();
+    if (!session) return res.json(null);
+
+    // Regla: Solo aparece 1 hora después de terminado el partido (aprox 3h después del start_time)
+    // O si el partido ya está marcado como finalizado manualmente.
+    const matchStart = new Date(session.start_time);
+    const threeHoursPassed = Date.now() >= (matchStart.getTime() + 3 * 3600000);
+    const isFinished = session.status === 'finished';
+
+    if (!isFinished && !threeHoursPassed) {
+      return res.json(null); // Aún no es tiempo de mostrar
+    }
+
+    const fecha_torneo = session.match_name;
+
+    const result = await pool.query(
+      `SELECT j.*, COUNT(v.id) as votos
+       FROM jugadores j
+       JOIN votaciones v ON j.id = v.jugador_id
+       WHERE v.fecha_torneo = $1
+       GROUP BY j.id
+       HAVING COUNT(v.id) > 1
+       ORDER BY votos DESC
+       LIMIT 1`,
+      [fecha_torneo]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json(null);
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al obtener el ganador" });
+  }
+});
+
+// Admin: Listar todos los jugadores
+app.get("/api/admin/jugadores", authenticateToken, async (req, res) => {
+  try {
+    const userResult = await pool.query("SELECT rol FROM socios WHERE id = $1", [req.user.id]);
+    if (userResult.rows.length === 0 || (userResult.rows[0].rol !== "admin" && userResult.rows[0].rol !== "representante"))
+      return res.status(403).json({ error: "Acceso denegado." });
+
+    const result = await pool.query("SELECT * FROM jugadores ORDER BY nombre ASC");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al listar jugadores" });
+  }
+});
+
+// Admin: Crear jugador
+app.post("/api/admin/jugadores", authenticateToken, upload.single("imagen"), async (req, res) => {
+  try {
+    const userResult = await pool.query("SELECT rol FROM socios WHERE id = $1", [req.user.id]);
+    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      return res.status(403).json({ error: "Acceso denegado." });
+
+    const { nombre, juega } = req.body;
+    let imagen_url = null;
+
+    if (req.file) {
+      imagen_url = `/uploads/${req.file.filename}`;
+    }
+
+    const result = await pool.query(
+      "INSERT INTO jugadores (nombre, imagen_url, juega) VALUES ($1, $2, $3) RETURNING *",
+      [nombre, imagen_url, juega === 'true' || juega === true]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al crear jugador" });
+  }
+});
+
+// Admin: Actualizar jugador
+app.put("/api/admin/jugadores/:id", authenticateToken, upload.single("imagen"), async (req, res) => {
+  try {
+    const userResult = await pool.query("SELECT rol FROM socios WHERE id = $1", [req.user.id]);
+    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      return res.status(403).json({ error: "Acceso denegado." });
+
+    const { id } = req.params;
+    const { nombre, juega } = req.body;
+    let query = "UPDATE jugadores SET nombre = $1, juega = $2";
+    const params = [nombre, juega === 'true' || juega === true];
+
+    if (req.file) {
+      const imagen_url = `/uploads/${req.file.filename}`;
+      query += ", imagen_url = $3 WHERE id = $4 RETURNING *";
+      params.push(imagen_url, id);
+    } else {
+      query += " WHERE id = $3 RETURNING *";
+      params.push(id);
+    }
+
+    const result = await pool.query(query, params);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al actualizar jugador" });
+  }
+});
+
+// Admin: Eliminar jugador
+app.delete("/api/admin/jugadores/:id", authenticateToken, async (req, res) => {
+  try {
+    const userResult = await pool.query("SELECT rol FROM socios WHERE id = $1", [req.user.id]);
+    if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
+      return res.status(403).json({ error: "Acceso denegado." });
+
+    const { id } = req.params;
+    await pool.query("DELETE FROM jugadores WHERE id = $1", [id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al eliminar jugador" });
+  }
+});
+
+
+// Registrar un voto
+app.post("/api/votar-jugador", async (req, res) => {
+  const { jugador_id } = req.body;
+
+  if (!jugador_id) {
+    return res.status(400).json({ error: "Faltan datos obligatorios" });
+  }
+
+  try {
+    const session = await getCurrentVotingSession();
+    const fecha_torneo = session ? session.match_name : "General";
+
+    const cookieName = `voted_jugador_${fecha_torneo.replace(/[^a-zA-Z0-9]/g, "_")}`;
+
+    if (req.cookies && req.cookies[cookieName]) {
+      return res.status(403).json({ error: "Ya has votado para este partido." });
+    }
+
+    await pool.query(
+      "INSERT INTO votaciones (jugador_id, fecha_torneo) VALUES ($1, $2)",
+      [jugador_id, fecha_torneo]
+    );
+
+    res.cookie(cookieName, "true", {
+      maxAge: 259200000, // 3 días
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax"
+    });
+
+    res.json({ success: true, message: "Voto registrado exitosamente." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al registrar el voto" });
+  }
+});
+
 // --- INTEGRACIÓN FRONTEND ---
 // (Estáticos de uploads ya configurados arriba)
 
@@ -1754,14 +2012,14 @@ const distPath = path.join(__dirname, "../dist");
 const indexPath = path.join(distPath, "index.html");
 
 if (fs.existsSync(distPath) && fs.existsSync(indexPath)) {
-  console.log('Modo ProducciÃ³n: Sirviendo frontend desde la carpeta "dist".');
+  console.log('Modo Producción: Sirviendo frontend desde la carpeta "dist".');
   app.use(express.static(distPath));
   app.get("*", (req, res) => {
     res.sendFile(indexPath);
   });
 } else {
   console.log(
-    'Modo Desarrollo: No se encontrÃ³ la carpeta "dist". El servidor solo responderÃ¡ a la API.'
+    'Modo Desarrollo: No se encontró la carpeta "dist". El servidor solo responderá a la API.'
   );
 }
 
@@ -1770,123 +2028,150 @@ const initDb = async () => {
   try {
     // 1. Socios
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS socios (
-        id SERIAL PRIMARY KEY,
-        dni VARCHAR(20) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        nombre VARCHAR(100) NOT NULL,
-        apellido VARCHAR(100) NOT NULL,
-        nro_socio VARCHAR(50),
-        tipo_socio VARCHAR(50),
-        email VARCHAR(100),
-        telefono VARCHAR(50),
-        foto_perfil TEXT,
-        rol VARCHAR(20) DEFAULT 'user',
-        fecha_alta DATE DEFAULT CURRENT_DATE,
-        estado_cuota VARCHAR(20) DEFAULT 'Al Día',
-        vencimiento_cuota DATE,
-        account_status VARCHAR(20) DEFAULT 'pending',
-        fecha_nacimiento DATE
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS socios(
+    id SERIAL PRIMARY KEY,
+    dni VARCHAR(20) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    nro_socio VARCHAR(50),
+    tipo_socio VARCHAR(50),
+    email VARCHAR(100),
+    telefono VARCHAR(50),
+    foto_perfil TEXT,
+    rol VARCHAR(20) DEFAULT 'user',
+    fecha_alta DATE DEFAULT CURRENT_DATE,
+    estado_cuota VARCHAR(20) DEFAULT 'Al Día',
+    vencimiento_cuota DATE,
+    account_status VARCHAR(20) DEFAULT 'pending',
+    fecha_nacimiento DATE
+  );
+  `);
 
     // 2. Noticias
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS noticias (
-        id SERIAL PRIMARY KEY,
-        titulo VARCHAR(255) NOT NULL,
-        bajad TEXT,
-        contenido TEXT,
-        imagen_url TEXT,
-        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS noticias(
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    bajad TEXT,
+    contenido TEXT,
+    imagen_url TEXT,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  `);
 
     // 3. Noticias Imagenes
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS noticias_imagenes (
-        id SERIAL PRIMARY KEY,
-        noticia_id INTEGER REFERENCES noticias(id) ON DELETE CASCADE,
-        imagen_url TEXT NOT NULL
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS noticias_imagenes(
+    id SERIAL PRIMARY KEY,
+    noticia_id INTEGER REFERENCES noticias(id) ON DELETE CASCADE,
+    imagen_url TEXT NOT NULL
+  );
+  `);
 
     // 4. Galeria Eventos
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS galeria_eventos (
-        id SERIAL PRIMARY KEY,
-        titulo VARCHAR(255) NOT NULL,
-        fecha DATE DEFAULT CURRENT_DATE,
-        portada_url TEXT
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS galeria_eventos(
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    fecha DATE DEFAULT CURRENT_DATE,
+    portada_url TEXT
+  );
+  `);
 
     // 5. Galeria Fotos
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS galeria_fotos (
-        id SERIAL PRIMARY KEY,
-        evento_id INTEGER REFERENCES galeria_eventos(id) ON DELETE CASCADE,
-        imagen_url TEXT NOT NULL
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS galeria_fotos(
+    id SERIAL PRIMARY KEY,
+    evento_id INTEGER REFERENCES galeria_eventos(id) ON DELETE CASCADE,
+    imagen_url TEXT NOT NULL
+  );
+  `);
 
     // 6. Deportes
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS deportes (
-        id SERIAL PRIMARY KEY,
-        nombre VARCHAR(100) NOT NULL,
-        dia_horario VARCHAR(255),
-        profesor VARCHAR(100),
-        descripcion TEXT,
-        imagen_url TEXT
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS deportes(
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    dia_horario VARCHAR(255),
+    profesor VARCHAR(100),
+    descripcion TEXT,
+    imagen_url TEXT
+  );
+  `);
 
     // 7. Matches (Prode)
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS matches (
-        id SERIAL PRIMARY KEY,
-        home_team VARCHAR(100) NOT NULL,
-        away_team VARCHAR(100) NOT NULL,
-        start_time TIMESTAMP NOT NULL,
-        matchday INTEGER,
-        season VARCHAR(20),
-        home_score INTEGER,
-        away_score INTEGER,
-        visible BOOLEAN DEFAULT TRUE
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS matches(
+    id SERIAL PRIMARY KEY,
+    home_team VARCHAR(100) NOT NULL,
+    away_team VARCHAR(100) NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    matchday INTEGER,
+    season VARCHAR(20),
+    home_score INTEGER,
+    away_score INTEGER,
+    visible BOOLEAN DEFAULT TRUE
+  );
+  `);
 
     // Add column if it doesn't exist (for existing tables)
     await pool.query(`
       ALTER TABLE matches ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;
-    `);
+  `);
 
     // 8. Predictions (Prode)
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS predictions (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES socios(id) ON DELETE CASCADE,
-        match_id INTEGER REFERENCES matches(id) ON DELETE CASCADE,
-        home_score INTEGER NOT NULL,
-        away_score INTEGER NOT NULL,
-        points INTEGER DEFAULT 0,
-        UNIQUE(user_id, match_id)
-      );
-    `);
+      CREATE TABLE IF NOT EXISTS predictions(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES socios(id) ON DELETE CASCADE,
+    match_id INTEGER REFERENCES matches(id) ON DELETE CASCADE,
+    home_score INTEGER NOT NULL,
+    away_score INTEGER NOT NULL,
+    points INTEGER DEFAULT 0,
+    UNIQUE(user_id, match_id)
+  );
+  `);
 
     // 9. Sponsors
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS sponsors (
+      CREATE TABLE IF NOT EXISTS sponsors(
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    imagen_url TEXT NOT NULL,
+    link TEXT,
+    ubicacion VARCHAR(20) DEFAULT 'footer',
+    activo BOOLEAN DEFAULT TRUE,
+    clics INTEGER DEFAULT 0,
+    fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  `);
+
+    // 10. Jugadores
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS jugadores(
         id SERIAL PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL,
-        imagen_url TEXT NOT NULL,
-        link TEXT,
-        ubicacion VARCHAR(20) DEFAULT 'footer',
-        activo BOOLEAN DEFAULT TRUE,
-        clics INTEGER DEFAULT 0,
-        fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        imagen_url TEXT,
+        juega BOOLEAN DEFAULT TRUE
       );
+    `);
+
+    // 11. Votaciones
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS votaciones(
+        id SERIAL PRIMARY KEY,
+        jugador_id INTEGER REFERENCES jugadores(id) ON DELETE CASCADE,
+        fecha_torneo VARCHAR(50) NOT NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // MIGRACIONES (Para tablas existentes)
+    await pool.query(`
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;
+      ALTER TABLE socios ADD COLUMN IF NOT EXISTS fecha_nacimiento DATE;
+      ALTER TABLE jugadores ADD COLUMN IF NOT EXISTS juega BOOLEAN DEFAULT TRUE;
     `);
 
     console.log("Tablas de base de datos verificadas/creadas correctamente.");

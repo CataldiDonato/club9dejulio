@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS jugadores (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    imagen_url VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS votaciones (
+    id SERIAL PRIMARY KEY,
+    jugador_id INT NOT NULL,
+    fecha_torneo VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (jugador_id) REFERENCES jugadores(id) ON DELETE CASCADE
+);

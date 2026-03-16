@@ -97,7 +97,7 @@ const Socios = () => {
     fecha_nacimiento: "",
     foto_perfil: null, // File object
   });
-  
+
   const [regPreviewImage, setRegPreviewImage] = useState(null);
 
   const handleRegister = async (e) => {
@@ -249,7 +249,7 @@ const Socios = () => {
     const file = new File([croppedBlob], "profile_pic.webp", {
       type: "image/webp",
     });
-    
+
     if (isLoggedIn) {
       setEditData({ ...editData, foto_perfil: file });
       setPreviewImage(URL.createObjectURL(croppedBlob));
@@ -394,9 +394,8 @@ const Socios = () => {
 
           <div className="p-4 md:p-8">
             <div
-              className={`grid grid-cols-1 ${
-                userData.rol === "admin" ? "lg:grid-cols-[1fr_300px]" : ""
-              } gap-8`}
+              className={`grid grid-cols-1 ${userData.rol === "admin" ? "lg:grid-cols-[1fr_300px]" : ""
+                } gap-8`}
             >
               {/* Columna Izquierda: Contenido Socio (Grid 2x2) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 content-start">
@@ -575,30 +574,30 @@ const Socios = () => {
                           <span>Usuarios</span>
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => (window.location.href = "/admin/sports")}
                         className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                       >
-                         <div className="w-[18px]" /> {/* Spacer/Icon placeholder if needed to align with Users icon */}
+                        <div className="w-[18px]" /> {/* Spacer/Icon placeholder if needed to align with Users icon */}
                         <span>Actividades</span>
                       </button>
-                      
+
                       <button
                         onClick={() => (window.location.href = "/admin/news")}
                         className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                       >
-                         <div className="w-[18px]" />
+                        <div className="w-[18px]" />
                         <span>Noticias</span>
                       </button>
-                      
+
                       <button
                         onClick={() =>
                           (window.location.href = "/admin/galeria")
                         }
                         className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                       >
-                         <div className="w-[18px]" />
+                        <div className="w-[18px]" />
                         <span>Galería</span>
                       </button>
 
@@ -608,7 +607,7 @@ const Socios = () => {
                             onClick={() => (window.location.href = "/admin/prode")}
                             className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                           >
-                             <div className="w-[18px]" />
+                            <div className="w-[18px]" />
                             <span>Prode</span>
                           </button>
                           <button
@@ -617,8 +616,15 @@ const Socios = () => {
                             }
                             className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
                           >
-                             <div className="w-[18px]" />
+                            <div className="w-[18px]" />
                             <span>Publicidad</span>
+                          </button>
+                          <button
+                            onClick={() => (window.location.href = "/admin/jugadores")}
+                            className="w-full text-left px-4 py-3 bg-transparent text-gray-300 rounded-lg border border-gray-800 hover:border-white hover:text-white hover:bg-white/5 transition-all text-sm font-bold uppercase flex items-center gap-3 group"
+                          >
+                            <div className="w-[18px]" />
+                            <span>Jugador Fecha</span>
                           </button>
                         </>
                       )}
@@ -646,11 +652,10 @@ const Socios = () => {
                       confirmPassword: "",
                     });
                   }}
-                  className={`flex-1 py-2 px-3 text-sm font-bold border-b-2 transition-colors ${
-                    activeTab === "datos"
+                  className={`flex-1 py-2 px-3 text-sm font-bold border-b-2 transition-colors ${activeTab === "datos"
                       ? "border-black text-black"
                       : "border-transparent text-gray-500 hover:text-black"
-                  }`}
+                    }`}
                 >
                   Mis Datos
                 </button>
@@ -659,11 +664,10 @@ const Socios = () => {
                     setActiveTab("password");
                     setEditData({ telefono: "", email: "", foto_perfil: null });
                   }}
-                  className={`flex-1 py-2 px-3 text-sm font-bold border-b-2 transition-colors ${
-                    activeTab === "password"
+                  className={`flex-1 py-2 px-3 text-sm font-bold border-b-2 transition-colors ${activeTab === "password"
                       ? "border-black text-black"
                       : "border-transparent text-gray-500 hover:text-black"
-                  }`}
+                    }`}
                 >
                   Contraseña
                 </button>
@@ -1072,7 +1076,7 @@ const Socios = () => {
               <label className="text-xs font-bold text-gray-500 uppercase ml-1">
                 Foto de Perfil
               </label>
-              
+
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0">
                   {regPreviewImage ? (
@@ -1210,11 +1214,10 @@ const Socios = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold uppercase rounded-lg text-white ${
-                  isLoading
+                className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold uppercase rounded-lg text-white ${isLoading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-black hover:bg-gray-800"
-                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors`}
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors`}
               >
                 {isLoading ? "Ingresando..." : "Ingresar"}
               </button>
