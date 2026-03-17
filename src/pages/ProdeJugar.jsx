@@ -6,6 +6,7 @@ import ProdeRulesModal from "../components/ProdeRulesModal";
 import SponsorList from "../components/SponsorList";
 import { API_URL } from "../config";
 import { HelpCircle } from "lucide-react";
+import ShareResultsButton from "../components/ShareResultsButton";
 
 const ProdeJugar = () => {
   const [matches, setMatches] = useState([]);
@@ -56,15 +57,15 @@ const ProdeJugar = () => {
           throw new Error("Error al cargar pronósticos");
         }
         const predsData = await predsRes.json();
-        
+
         // 3. Get Stats
         const statsRes = await fetch(`${API_URL}/matches/stats?season=${currentSeason}`);
         const contentType = statsRes.headers.get("content-type");
         let statsData = {};
         if (statsRes.ok && contentType && contentType.includes("application/json")) {
-           statsData = await statsRes.json();
+          statsData = await statsRes.json();
         } else {
-           console.warn("API de Stats no disponible o respuesta inválida (¿Servidor reiniciado?)");
+          console.warn("API de Stats no disponible o respuesta inválida (¿Servidor reiniciado?)");
         }
 
         setMatches(matchesData);
@@ -244,22 +245,39 @@ const ProdeJugar = () => {
 
           {/* Filtro por Jornada */}
           {allMatchdays.length > 0 && (
-            <div className="mb-6 bg-white p-4 rounded-lg shadow-md border border-gray-200">
-              <label className="block text-sm font-bold mb-2 text-gray-700">
-                Filtrar por Jornada:
-              </label>
-              <select
-                value={selectedMatchday}
-                onChange={(e) => setSelectedMatchday(e.target.value)}
-                className="w-full md:w-64 border-2 border-black rounded px-3 py-2 font-bold text-club-dark bg-white outline-none"
-              >
-                <option value="">Todas las Jornadas</option>
-                {allMatchdays.map((day) => (
-                  <option key={day} value={day}>
-                    {day}
-                  </option>
-                ))}
-              </select>
+            <div className="mb-6 bg-white p-4 rounded-lg shadow-md border border-gray-200 flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2 text-gray-700">
+                  Filtrar por Jornada:
+                </label>
+                <select
+                  value={selectedMatchday}
+                  onChange={(e) => setSelectedMatchday(e.target.value)}
+                  className="w-full md:w-64 border-2 border-black rounded px-3 py-2 font-bold text-club-dark bg-white outline-none"
+                >
+                  <option value="">Todas las Jornadas</option>
+                  {allMatchdays.map((day) => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {allMatchdays.length > 0 && (
+                <div className="flex-shrink-0">
+                  <ShareResultsButton
+                    matchday={selectedMatchday || allMatchdays[allMatchdays.length - 1]}
+                    matches={
+                      selectedMatchday
+                        ? [...filteredActiveMatches, ...filteredFinishedMatches]
+                        : matches.filter(m => m.matchday === allMatchdays[allMatchdays.length - 1])
+                    }
+                    predictions={myPredictions}
+                  />
+                </div>
+              )}
+
             </div>
           )}
 
@@ -309,7 +327,7 @@ const ProdeJugar = () => {
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-24">
-             <SponsorList location="prode" isSidebar={true} />
+            <SponsorList location="prode" isSidebar={true} />
           </div>
         </div>
       </div>
