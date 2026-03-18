@@ -169,8 +169,8 @@ const ShareResultsButton = ({ matchday, matches, predictions }) => {
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({
-                    title: `Mi Prode - ${matchday}`,
-                    text: `¡Mirá mis pronósticos para la ${matchday}!`,
+                    title: `Resultados - ${matchday}`,
+                    text: `Resultados ${matchday}`,
                     files: [file],
                 });
             } catch (error) {

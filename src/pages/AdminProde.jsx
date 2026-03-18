@@ -24,6 +24,8 @@ const AdminProde = () => {
     matchday: "Fecha 1",
     season: new Date().getFullYear(),
     visible: true,
+    home_points_override: "",
+    away_points_override: "",
   });
 
   // Auth check should be here or handled by a higher-level component/router, but basic check:
@@ -113,6 +115,8 @@ const AdminProde = () => {
       matchday: match.matchday,
       season: match.season || new Date().getFullYear(),
       visible: match.visible !== undefined ? match.visible : true,
+      home_points_override: match.home_points_override !== null && match.home_points_override !== undefined ? match.home_points_override : "",
+      away_points_override: match.away_points_override !== null && match.away_points_override !== undefined ? match.away_points_override : "",
     });
   };
 
@@ -461,8 +465,8 @@ const AdminProde = () => {
                     <td className="px-4 py-2">
                       <span
                         className={`px-2 py-1 rounded text-xs font-bold ${m.status === "finished"
-                            ? "bg-gray-800 text-white"
-                            : "bg-green-100 text-green-800"
+                          ? "bg-gray-800 text-white"
+                          : "bg-green-100 text-green-800"
                           }`}
                       >
                         {m.status === "finished" ? "Finalizado" : "Programado"}
@@ -472,8 +476,8 @@ const AdminProde = () => {
                       <button
                         onClick={() => handleToggleVisibility(m.id, m.visible)}
                         className={`px-2 py-1 rounded text-xs font-bold transition-colors ${m.visible
-                            ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                          ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                          : 'bg-red-100 text-red-800 hover:bg-red-200'
                           }`}
                         title="Click para cambiar visibilidad"
                       >
@@ -655,6 +659,29 @@ const AdminProde = () => {
                   className="w-4 h-4"
                 />
                 <label htmlFor="edit_visible" className="text-sm font-bold">Visible para usuarios</label>
+              </div>
+              <div className="border-t pt-4 mt-2">
+                <p className="text-xs font-bold text-red-600 mb-2 uppercase">Sanciones / Puntos Administrativos</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Puntos Local (Opcional)</label>
+                    <input type="number"
+                      value={editFormData.home_points_override}
+                      onChange={(e) => setEditFormData({ ...editFormData, home_points_override: e.target.value })}
+                      placeholder="Ej: 0"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Puntos Visita (Opcional)</label>
+                    <input type="number"
+                      value={editFormData.away_points_override}
+                      onChange={(e) => setEditFormData({ ...editFormData, away_points_override: e.target.value })}
+                      placeholder="Ej: 3"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:outline-none"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button

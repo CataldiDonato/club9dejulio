@@ -1103,7 +1103,7 @@ app.put("/api/matches/:id", authenticateToken, async (req, res) => {
       return res.status(403).json({ error: "Acceso denegado." });
 
     const { id } = req.params;
-    const { home_team, away_team, start_time, matchday, season, visible } = req.body;
+    const { home_team, away_team, start_time, matchday, season, visible, home_points_override, away_points_override } = req.body;
 
     // Validaciones básicas
     if (!home_team || !away_team || !start_time || !matchday) {
@@ -1111,7 +1111,7 @@ app.put("/api/matches/:id", authenticateToken, async (req, res) => {
     }
 
     const result = await pool.query(
-      "UPDATE matches SET home_team = $1, away_team = $2, start_time = $3, matchday = $4, season = $5, visible = $6 WHERE id = $7 RETURNING *",
+      "UPDATE matches SET home_team = $1, away_team = $2, start_time = $3, matchday = $4, season = $5, visible = $6, home_points_override = $7, away_points_override = $8 WHERE id = $9 RETURNING *",
       [
         home_team,
         away_team,
@@ -1119,6 +1119,8 @@ app.put("/api/matches/:id", authenticateToken, async (req, res) => {
         matchday,
         season || new Date().getFullYear().toString(),
         visible !== undefined ? visible : true,
+        home_points_override === "" || home_points_override === null || home_points_override === undefined ? null : parseInt(home_points_override),
+        away_points_override === "" || away_points_override === null || away_points_override === undefined ? null : parseInt(away_points_override),
         id,
       ]
     );
@@ -1602,23 +1604,39 @@ app.get("/api/team-standings", async (req, res) => {
       standings[away_team].goals_for += away_score;
       standings[away_team].goals_against += home_score;
 
-      // Determine result
+      // Determine conditional points
+      let home_pts = 0;
+      let away_pts = 0;
+
+      if (match.home_points_override !== null && match.home_points_override !== undefined) {
+        home_pts = parseInt(match.home_points_override);
+      } else if (home_score > away_score) {
+        home_pts = 3;
+      } else if (home_score === away_score) {
+        home_pts = 1;
+      }
+
+      if (match.away_points_override !== null && match.away_points_override !== undefined) {
+        away_pts = parseInt(match.away_points_override);
+      } else if (home_score < away_score) {
+        away_pts = 3;
+      } else if (home_score === away_score) {
+        away_pts = 1;
+      }
+
+      standings[home_team].points += home_pts;
+      standings[away_team].points += away_pts;
+
+      // Maintain accurate Win/Loss/Draw record based strictly on goals
       if (home_score > away_score) {
-        // Home win
         standings[home_team].won++;
-        standings[home_team].points += 3;
         standings[away_team].lost++;
       } else if (home_score < away_score) {
-        // Away win
         standings[away_team].won++;
-        standings[away_team].points += 3;
         standings[home_team].lost++;
       } else {
-        // Draw
         standings[home_team].drawn++;
         standings[away_team].drawn++;
-        standings[home_team].points += 1;
-        standings[away_team].points += 1;
       }
 
       // Update goal difference
