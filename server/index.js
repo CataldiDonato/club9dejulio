@@ -2164,13 +2164,19 @@ const initDb = async () => {
     season VARCHAR(20),
     home_score INTEGER,
     away_score INTEGER,
-    visible BOOLEAN DEFAULT TRUE
+    visible BOOLEAN DEFAULT TRUE,
+    status VARCHAR(20) DEFAULT 'upcoming',
+    home_points_override INTEGER,
+    away_points_override INTEGER
   );
   `);
 
     // Add column if it doesn't exist (for existing tables)
     await pool.query(`
       ALTER TABLE matches ADD COLUMN IF NOT EXISTS visible BOOLEAN DEFAULT TRUE;
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'upcoming';
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS home_points_override INTEGER;
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS away_points_override INTEGER;
   `);
 
     // 8. Predictions (Prode)
@@ -2182,8 +2188,13 @@ const initDb = async () => {
     home_score INTEGER NOT NULL,
     away_score INTEGER NOT NULL,
     points INTEGER DEFAULT 0,
+    update_count INTEGER DEFAULT 0,
     UNIQUE(user_id, match_id)
   );
+  `);
+
+    await pool.query(`
+      ALTER TABLE predictions ADD COLUMN IF NOT EXISTS update_count INTEGER DEFAULT 0;
   `);
 
     // 9. Sponsors
