@@ -87,16 +87,45 @@ const Home = () => {
               </div>
             ) : heroAsset === 'winner' && winner ? (
               <div className="relative group animate-in zoom-in duration-1000">
-                <div className="absolute -inset-4 bg-blue-600/20 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative">
-                  <img
-                    src={winner.imagen_url ? (winner.imagen_url.startsWith('http') ? winner.imagen_url : `${API_URL.replace('/api', '')}${winner.imagen_url}`) : "https://via.placeholder.com/400x400?text=Jugador"}
-                    alt={winner.nombre}
-                    className="w-48 h-48 md:w-80 md:h-80 object-cover rounded-2xl border-4 border-white shadow-2xl transition-transform hover:scale-105 duration-500"
-                  />
-                  <div className="absolute -bottom-6 -right-6 bg-blue-600 text-white p-4 rounded-xl shadow-xl transform rotate-3 hover:rotate-0 transition-transform cursor-default">
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-1">Figura de la Fecha</p>
-                    <p className="text-xl font-black uppercase leading-tight">{winner.nombre}</p>
+                <div className="absolute -inset-10 bg-white/5 blur-3xl rounded-full opacity-30 group-hover:opacity-60 transition-opacity"></div>
+
+                {/* Main Card */}
+                <div className="relative bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 w-64 md:w-80 transition-transform group-hover:scale-[1.02] duration-500">
+
+                  {/* Shield Overlap */}
+                  <div className="absolute -top-4 -right-4 z-30 w-20 h-20 md:w-24 md:h-24 bg-white rounded-full p-3 shadow-2xl border-8 border-black transform group-hover:rotate-12 transition-transform duration-500">
+                    <img
+                      src="/9dejulio.svg"
+                      alt="Escudo"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+
+                  {/* Player Image Content */}
+                  <div className="aspect-[4/5] bg-gray-900 relative overflow-hidden">
+                    <img
+                      src={winner.imagen_url ? (winner.imagen_url.startsWith('http') ? winner.imagen_url : `${API_URL.replace('/api', '')}${winner.imagen_url}`) : "https://via.placeholder.com/400x400?text=Jugador"}
+                      alt={winner.nombre}
+                      className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
+                    />
+                    {/* Subtle Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                  </div>
+
+                  {/* Name Section */}
+                  <div className="bg-white p-4 text-center border-t-4 border-club-red">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">La Figura</p>
+                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-black leading-none">
+                      {winner.nombre}
+                    </h2>
+                  </div>
+
+                  {/* Match Section */}
+                  <div className="bg-black p-4 text-center border-t border-white/10">
+                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 mb-1">Partido</p>
+                    <p className="text-[10px] md:text-xs font-bold uppercase text-gray-300 truncate">
+                      {winner.home_team} {winner.home_score} - {winner.away_score} {winner.away_team}
+                    </p>
                   </div>
                 </div>
               </div>

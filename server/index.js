@@ -1683,7 +1683,16 @@ app.post(
       if (userResult.rows.length === 0 || userResult.rows[0].rol !== "admin")
         return res.status(403).json({ error: "Acceso denegado." });
       const { nombre, link, ubicacion } = req.body;
-      const imagen_url = req.file ? `/uploads/${req.file.filename}` : null;
+      let imagen_url = null;
+      if (req.file) {
+        try {
+          const buffer = await optimizeImage(req.file.path, 'gallery');
+          imagen_url = await saveOptimizedImage(buffer, req.file.path);
+        } catch (error) {
+          console.error("Error optimizando imagen del sponsor:", error);
+          imagen_url = `/uploads/${req.file.filename}`;
+        }
+      }
       if (!nombre || !imagen_url)
         return res.status(400).json({ error: "Faltan datos" });
       const newSponsor = await pool.query(
@@ -1719,9 +1728,16 @@ app.put(
       if (currentRes.rows.length === 0)
         return res.status(404).json({ error: "Sponsor no encontrado" });
       const current = currentRes.rows[0];
-      const finalImagen = req.file
-        ? `/uploads/${req.file.filename}`
-        : current.imagen_url;
+      let finalImagen = current.imagen_url;
+      if (req.file) {
+        try {
+          const buffer = await optimizeImage(req.file.path, 'gallery');
+          finalImagen = await saveOptimizedImage(buffer, req.file.path);
+        } catch (error) {
+          console.error("Error optimizando imagen del sponsor:", error);
+          finalImagen = `/uploads/${req.file.filename}`;
+        }
+      }
       const updated = await pool.query(
         "UPDATE sponsors SET nombre = $1, imagen_url = $2, link = $3, ubicacion = $4, activo = $5 WHERE id = $6 RETURNING *",
         [
@@ -1866,7 +1882,7 @@ app.get("/api/jugador-ganador", async (req, res) => {
        JOIN votaciones v ON j.id = v.jugador_id
        WHERE v.fecha_torneo = $1
        GROUP BY j.id
-       HAVING COUNT(v.id) > 1
+       HAVING COUNT(v.id) > 0
        ORDER BY votos DESC
        LIMIT 1`,
       [fecha_torneo]
@@ -1875,7 +1891,13 @@ app.get("/api/jugador-ganador", async (req, res) => {
     if (result.rows.length === 0) {
       return res.json(null);
     }
-    res.json(result.rows[0]);
+    const winnerData = result.rows[0];
+    winnerData.fecha_torneo = fecha_torneo;
+    winnerData.home_team = session.home_team;
+    winnerData.away_team = session.away_team;
+    winnerData.home_score = session.home_score;
+    winnerData.away_score = session.away_score;
+    res.json(winnerData);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error al obtener el ganador" });
@@ -1908,7 +1930,13 @@ app.post("/api/admin/jugadores", authenticateToken, upload.single("imagen"), asy
     let imagen_url = null;
 
     if (req.file) {
-      imagen_url = `/uploads/${req.file.filename}`;
+      try {
+        const buffer = await optimizeImage(req.file.path, 'profile');
+        imagen_url = await saveOptimizedImage(buffer, req.file.path);
+      } catch (error) {
+        console.error("Error optimizando imagen del jugador:", error);
+        imagen_url = `/uploads/${req.file.filename}`;
+      }
     }
 
     const result = await pool.query(
@@ -1935,7 +1963,14 @@ app.put("/api/admin/jugadores/:id", authenticateToken, upload.single("imagen"), 
     const params = [nombre, juega === 'true' || juega === true];
 
     if (req.file) {
-      const imagen_url = `/uploads/${req.file.filename}`;
+      let imagen_url;
+      try {
+        const buffer = await optimizeImage(req.file.path, 'profile');
+        imagen_url = await saveOptimizedImage(buffer, req.file.path);
+      } catch (error) {
+        console.error("Error optimizando imagen del jugador:", error);
+        imagen_url = `/uploads/${req.file.filename}`;
+      }
       query += ", imagen_url = $3 WHERE id = $4 RETURNING *";
       params.push(imagen_url, id);
     } else {
